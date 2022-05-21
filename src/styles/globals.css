@@ -1,3 +1,293 @@
 @tailwind base;
+
+@layer base {
+  html {
+    text-rendering: optimizeLegibility;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  }
+}
+
+html {
+  @apply antialiased;
+  font-size: 16px;
+  font-feature-settings: "rlig"1, "calt"1, "ss01"1;
+  /* scroll-behavior: smooth; */
+}
+
+body {
+  @apply bg-white;
+}
+
+.dark body {
+  @apply text-gray-100 bg-dark;
+}
+
+
+article h1 {
+  @apply mt-2 text-4xl font-bold tracking-tight;
+}
+
+article h2 {
+  @apply mt-10 text-3xl font-semibold tracking-tight;
+  @apply pb-1;
+}
+
+/* .dark article h2 {
+  @apply border-gray-900;
+} */
+article h3 {
+  @apply mt-8 text-2xl font-semibold tracking-tight;
+}
+
+article h4 {
+  @apply mt-8 text-xl font-semibold tracking-tight;
+}
+
+article h5 {
+  @apply mt-8 text-lg font-semibold tracking-tight;
+}
+
+article h6 {
+  @apply mt-8 text-base font-semibold tracking-tight;
+}
+
+a {
+  @apply text-blue-500 underline;
+  text-underline-position: under;
+}
+
+article p {
+  @apply leading-7;
+}
+
+article p:not(:first-child),
+article blockquote:not(:first-child),
+article .table-container:not(:first-child) {
+  @apply mt-6;
+}
+
+article hr {
+  @apply my-8;
+}
+
+.dark article hr {
+  @apply border-gray-900;
+}
+
+/* TODO code */
 @tailwind components;
 @tailwind utilities;
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+article ul {
+  @apply mt-6 ml-6 list-disc;
+}
+
+article li {
+  @apply mt-2;
+}
+
+article ol {
+  @apply mt-6 ml-6 list-decimal;
+}
+
+article blockquote {
+  @apply pl-6 italic text-gray-700 border-l-2 border-gray-300;
+  @apply dark:border-gray-700 dark:text-gray-400;
+}
+
+article .subheading-anchor {
+  margin-top: -84px;
+  display: inline-block;
+  position: absolute;
+  width: 1px;
+}
+
+article .subheading-anchor+a:hover .anchor-icon {
+  opacity: 1;
+}
+
+article .anchor-icon {
+  opacity: 0;
+  @apply ml-2 text-gray-500 select-none;
+}
+
+.dark article .anchor-icon {
+  @apply text-gray-700;
+}
+
+article h2 a {
+  @apply no-underline;
+}
+
+.logo {
+  @apply w-40;
+}
+
+.logo svg {
+  @apply fill-current text-[#101e46];
+}
+
+.dark .logo svg {
+  @apply text-slate-50;
+}
+
+.sidebar {
+  @apply select-none md:border-r;
+}
+
+.sidebar ul ul {
+  @apply relative ml-5;
+}
+
+.sidebar a:focus-visible,
+.sidebar button:focus-visible {
+  @apply ring;
+}
+
+.sidebar .active-anchor {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.sidebar li.active>a {
+  @apply font-semibold text-black bg-gray-100;
+}
+
+.dark .sidebar li.active>a {
+  @apply text-white bg-gray-800;
+}
+
+.sidebar button,
+.sidebar a {
+  @apply block w-full p-2 mt-1 text-sm text-left text-gray-600 no-underline rounded outline-none select-none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.dark .sidebar button,
+.dark .sidebar a {
+  @apply text-gray-400;
+}
+
+.sidebar a:hover,
+.sidebar button:hover {
+  @apply text-gray-900 bg-gray-100;
+}
+
+.dark .sidebar a:hover,
+.dark .sidebar button:hover {
+  @apply text-white bg-gray-900;
+}
+
+.table-container {
+  @apply bg-white dark:bg-slate-800/25;
+  overflow: auto;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier,
+    monospace;
+}
+
+.table-container tr {
+  @apply transition-all;
+}
+
+.table-container tr:hover {
+  @apply bg-slate-900/[0.06] dark:bg-slate-100/[0.1];
+}
+
+table.table-container tr th[align="center"],
+table.table-container tr td[align="center"] {
+  @apply text-center;
+}
+
+table.table-container tr th[align="right"],
+table.table-container tr td[align="right"] {
+  @apply text-right;
+}
+
+code {
+  @apply text-sm;
+}
+
+.prism-code.language-diff .inserted.prefix,
+.prism-code.language-diff .deleted.prefix {
+  user-select: none;
+  @apply opacity-30;
+}
+
+.prism-code.language-diff .inserted.line {
+  @apply text-green-600;
+}
+
+.prism-code.language-diff .deleted.line {
+  @apply text-red-600;
+}
+
+*::-webkit-scrollbar {
+  @apply bg-transparent w-2 h-2;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar-thumb {
+  transition: background .2s ease-in-out;
+  border: 3px solid transparent;
+  @apply bg-gray-200 dark:bg-dark rounded-full bg-clip-content;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-300 dark:bg-dark;
+}
+
+*::-webkit-scrollbar-corner {
+  @apply bg-transparent;
+}
+.nav {
+  backdrop-filter: saturate(180%) blur(10px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-item~.post-item {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(4rem * var(--tw-space-y-reverse));
+}
+/* 
+.post-item-title {
+  position: relative;
+}
+.post-item-title::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  height: 1px;
+  bottom: 0;
+  left: 51%;
+  right: 51%;
+  background: #4c6a9e;
+  transition-duration: .2s;
+  transition-property: right,left;
+  transition-timing-function: ease-out;
+}
+.post-item-title:hover::before {
+  right: 0;
+  left: 0;
+} */
+
+.wysiwyg pre {
+  background-color: transparent;
+  background: var(--prism-background);
+  margin: 0;
+  padding: 0.875rem 1.125rem;
+  font-size: var(--prism-block-font-size);
+  margin: var(--prism-block-margin-y) var(--prism-block-margin-x);
+  border-radius: var(--prism-block-radius);
+}
