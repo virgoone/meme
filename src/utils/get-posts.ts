@@ -2,7 +2,6 @@ import fs from 'fs'
 import { join } from 'path'
 import matter from 'gray-matter'
 import innerText from 'react-innertext'
-import sortDate from '../utils/sort-date'
 
 const postsDirectory = join(process.cwd(), 'src', '_posts')
 
@@ -60,7 +59,10 @@ export function getAllPosts(fields: string[] = []) {
   const files = getPostSlugs()
   const posts = files
     .map((file) => getPostBySlug(file.name, fields))
-    .sort((post1, post2) => sortDate(post1, post2))
+    .sort((post1, post2) =>
+      new Date(post1.date) > new Date(post2.date) ? -1 : 1,
+    )
+
   // sort posts by date in descending order
   return posts
 }

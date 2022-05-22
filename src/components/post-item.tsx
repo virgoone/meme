@@ -32,7 +32,7 @@ const A = ({
 
 export default function PostItem(props: { post: PostType }) {
   const { title, slug, content, date } = props.post
-  console.log('props.post', props.post)
+
   return (
     <article className="post-item relative group" aria-label={title}>
       <div className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-xl group-hover:bg-slate-50/70 dark:group-hover:bg-slate-800/50"></div>
@@ -49,7 +49,7 @@ export default function PostItem(props: { post: PostType }) {
         <dd className="whitespace-nowrap text-sm leading-6 dark:text-slate-400">
           <A
             className="flex items-center text-sm text-sky-500 font-medium"
-            href={`/p/${slug}`}
+            href={`/${slug}`}
           >
             <span className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span>
             <span className="relative">Read more</span>

@@ -22,58 +22,6 @@ body {
   @apply text-gray-100 bg-dark;
 }
 
-
-article h1 {
-  @apply mt-2 text-4xl font-bold tracking-tight;
-}
-
-article h2 {
-  @apply mt-10 text-3xl font-semibold tracking-tight;
-  @apply pb-1;
-}
-
-/* .dark article h2 {
-  @apply border-gray-900;
-} */
-article h3 {
-  @apply mt-8 text-2xl font-semibold tracking-tight;
-}
-
-article h4 {
-  @apply mt-8 text-xl font-semibold tracking-tight;
-}
-
-article h5 {
-  @apply mt-8 text-lg font-semibold tracking-tight;
-}
-
-article h6 {
-  @apply mt-8 text-base font-semibold tracking-tight;
-}
-
-a {
-  @apply text-blue-500 underline;
-  text-underline-position: under;
-}
-
-article p {
-  @apply leading-7;
-}
-
-article p:not(:first-child),
-article blockquote:not(:first-child),
-article .table-container:not(:first-child) {
-  @apply mt-6;
-}
-
-article hr {
-  @apply my-8;
-}
-
-.dark article hr {
-  @apply border-gray-900;
-}
-
 /* TODO code */
 @tailwind components;
 @tailwind utilities;
@@ -85,23 +33,36 @@ input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance: none;
 }
 
-article ul {
-  @apply mt-6 ml-6 list-disc;
-}
-
-article li {
-  @apply mt-2;
-}
-
-article ol {
-  @apply mt-6 ml-6 list-decimal;
-}
-
-article blockquote {
+article.wysiwyg blockquote {
   @apply pl-6 italic text-gray-700 border-l-2 border-gray-300;
   @apply dark:border-gray-700 dark:text-gray-400;
 }
+article.wysiwyg a.wysiwyg-link {
+  display: inline-block;
+  position: relative;
+}
 
+article.wysiwyg a.wysiwyg-link::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  height: 1px;
+  bottom: 0;
+  left: 51%;
+  right: 51%;
+  background: #4c6a9e;
+  transition-duration: .2s;
+  transition-property: right,left;
+  transition-timing-function: ease-out;
+}
+
+article.wysiwyg a.wysiwyg-link:hover::before {
+  right: 0;
+  left: 0;
+}
+article .subheading {
+  color: inherit;
+}
 article .subheading-anchor {
   margin-top: -84px;
   display: inline-block;
@@ -122,10 +83,6 @@ article .anchor-icon {
   @apply text-gray-700;
 }
 
-article h2 a {
-  @apply no-underline;
-}
-
 .logo {
   @apply w-40;
 }
@@ -136,82 +93,6 @@ article h2 a {
 
 .dark .logo svg {
   @apply text-slate-50;
-}
-
-.sidebar {
-  @apply select-none md:border-r;
-}
-
-.sidebar ul ul {
-  @apply relative ml-5;
-}
-
-.sidebar a:focus-visible,
-.sidebar button:focus-visible {
-  @apply ring;
-}
-
-.sidebar .active-anchor {
-  @apply font-semibold text-gray-900 dark:text-white;
-}
-
-.sidebar li.active>a {
-  @apply font-semibold text-black bg-gray-100;
-}
-
-.dark .sidebar li.active>a {
-  @apply text-white bg-gray-800;
-}
-
-.sidebar button,
-.sidebar a {
-  @apply block w-full p-2 mt-1 text-sm text-left text-gray-600 no-underline rounded outline-none select-none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-.dark .sidebar button,
-.dark .sidebar a {
-  @apply text-gray-400;
-}
-
-.sidebar a:hover,
-.sidebar button:hover {
-  @apply text-gray-900 bg-gray-100;
-}
-
-.dark .sidebar a:hover,
-.dark .sidebar button:hover {
-  @apply text-white bg-gray-900;
-}
-
-.table-container {
-  @apply bg-white dark:bg-slate-800/25;
-  overflow: auto;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier,
-    monospace;
-}
-
-.table-container tr {
-  @apply transition-all;
-}
-
-.table-container tr:hover {
-  @apply bg-slate-900/[0.06] dark:bg-slate-100/[0.1];
-}
-
-table.table-container tr th[align="center"],
-table.table-container tr td[align="center"] {
-  @apply text-center;
-}
-
-table.table-container tr th[align="right"],
-table.table-container tr td[align="right"] {
-  @apply text-right;
-}
-
-code {
-  @apply text-sm;
 }
 
 .prism-code.language-diff .inserted.prefix,
@@ -230,10 +111,6 @@ code {
 
 *::-webkit-scrollbar {
   @apply bg-transparent w-2 h-2;
-}
-
-* {
-  scrollbar-width: thin;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -290,4 +167,9 @@ code {
   font-size: var(--prism-block-font-size);
   margin: var(--prism-block-margin-y) var(--prism-block-margin-x);
   border-radius: var(--prism-block-radius);
+}
+
+.article-excerpt {
+  margin-bottom: 1.25em;
+  margin-top: 1.25em;
 }

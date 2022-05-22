@@ -3,10 +3,9 @@ import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import { join } from 'path'
 import matter from 'gray-matter'
-import { serialize } from 'next-mdx-remote/serialize'
 
-import Layout from '../../layouts/mdx'
-import { postFilePaths, POSTS_PATH } from '../../utils'
+import Layout from '../layouts/mdx'
+import { getPostFileSource, postFilePaths, POSTS_PATH } from '../utils'
 
 type PostType = {
   slug: string
@@ -55,14 +54,7 @@ export async function getStaticProps({ params }: Params) {
 
   data.date = new Date(data.date).toISOString()
 
-  const mdxSource = await serialize(content, {
-    // Optionally pass remark/rehype plugins
-    mdxOptions: {
-      remarkPlugins: [],
-      rehypePlugins: [],
-    },
-    scope: data,
-  })
+  const mdxSource = await getPostFileSource(content, data)
 
   return {
     props: {

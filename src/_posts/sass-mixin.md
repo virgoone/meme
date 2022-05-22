@@ -473,7 +473,7 @@ body {
 
 列表是存在某个值
 
-```
+```scss
 @function contain($list, $value)
 ```
 [【原文链接】](https://github.com/huanz/mixins)

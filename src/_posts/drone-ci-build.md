@@ -43,7 +43,7 @@ subtitle: 集成Gitea和Drone-CI之解放生产力
 
 创建docker-compose.yml配置文件
 
-```
+```bash
 version: '2'
 
 services:
@@ -104,7 +104,7 @@ docker-compose logs
 
 配置如下：
 
-```
+```bash
 ## 将HTTP请求全部重定向至HTTPS
 server {
     listen       80;
@@ -146,7 +146,7 @@ server {
 
 我们打开一个Node项目，新建一个.drone.yml文件，然后push到gitea中试一下
 
-```
+```bash
 workspace:
   base: /ceshi/api
   path: .
@@ -176,7 +176,7 @@ pipeline的设置基本上和其他CI工具差别不大，而且drone还支持�
 
 这个是官方service的一个配置
 
-```
+```bash
 pipeline:
   test:
     image: golang

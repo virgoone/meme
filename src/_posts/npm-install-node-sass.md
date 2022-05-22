@@ -21,7 +21,7 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 
 而这个网址在国内总是网络不稳定，所以我们需要通过第三方服务器下载这个文件。
 
-```
+```javascript
 SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ npm install node-sass
 ```
 
@@ -29,7 +29,7 @@ SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ npm install node-sass
 
 npm安装其它依赖，一般做法是在项目内添加一个.npmrc文件
 
-```
+```javascript
 sass_binary_site=https://npm.taobao.org/mirrors/node-sass/
 electron_mirror=https://npm.taobao.org/mirrors/electron/
 registry=https://registry.npm.taobao.org

@@ -39,7 +39,7 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 
 第一次拍视频
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
-  <source src="http://7xukcb.com1.z0.glb.clouddn.com/dji-01.mp4" type="video/mp4">
+  <source src="http://7xukcb.com1.z0.glb.clouddn.com/dji-01.mp4" type="video/mp4" />
 </video>
 第一次拍照
 
@@ -63,7 +63,7 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 <img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/008.JPG' title='天空视角的东方体育中心' alt='天空视角的东方体育中心'/>
 
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
-  <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-002.mp4" type="video/mp4">
+  <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-002.mp4" type="video/mp4" />
 </video>
 飞行中的御姐
 
@@ -77,7 +77,7 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 
 <img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/013.JPG' title='夜晚的梅赛德斯' alt='夜晚的梅赛德斯'/>
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
-  <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-003.mp4" type="video/mp4">
+  <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-003.mp4" type="video/mp4" />
 </video>
 
 卖萌的御姐镇楼

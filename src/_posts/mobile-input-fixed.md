@@ -24,7 +24,7 @@ subtitle: 论如何解决输入框fixed的bug
 继续修改：
 基于第一步的基础上，给输入框增加一些事件，在输入框获取焦点的时候，刷新输入框的问题，具体：
 
-```js
+```javascript
 document.getElementById('input').scrollIntoView(true);
 ```
 
@@ -32,7 +32,7 @@ document.getElementById('input').scrollIntoView(true);
 
 随后切换输入法，发现位置又开始错乱，遮挡住输入框的问题重新出现，更改代码：
 
-```js
+```javascript
 clearInterval(this.resizeInputInterval);
 this.resizeInputInterval = setInterval(() => {
   this.input.scrollIntoView(true);

@@ -135,7 +135,7 @@ docker-compose logs
 
 配置如下：
 
-```
+```bash
 ## 将HTTP请求全部重定向至HTTPS
 server {
     listen       80;

@@ -11,6 +11,7 @@ categories:
   - 数码
 keywords:
   - Mac,theme,Dark,Github,dark theme,暗黑,暗黑模式,css
+description: 如何使用一行css给网站加上dark效果
 cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 

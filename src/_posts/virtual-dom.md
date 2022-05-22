@@ -114,7 +114,7 @@ Babel默认会把jsx转成React.createElement调用，因为默认是React。
 
 但是我们也能通过添加Babel编译宏，把这个函数的名字改成任何我们想要的名字：
 
-```
+```javascript
 Option 1:
 //.babelrc
 {   "plugins": [
@@ -130,7 +130,7 @@ Option 2:
 
 starting mount和render函数都被转换到了h函数里，这是一切的开端：
 
-```
+```javascript
 //Mount to real DOM
 render(<FilteredList/>, document.getElementById(‘app’));
 //Converted to "h":
@@ -141,7 +141,7 @@ render(h(FilteredList), document.getElementById(‘app’));
 
 h函数接收Babel转换后的JSX，创建一个叫“VNode”的节点（React通过“createElement”创建ReactElement）一个Preact的“VNode”（或者是React的“Element”）就是一个包含自身属性和子元素的DOM节点，看起来像这样：
 
-```
+```javascript
 {
    "nodeName": "",
    "attributes": {},
@@ -150,7 +150,7 @@ h函数接收Babel转换后的JSX，创建一个叫“VNode”的节点（React�
 ```
 举个🌰，我们的App的DOM节点看起来像这样：
 
-```
+```javascript
 {
    "nodeName": "input",
    "attributes": {

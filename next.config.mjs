@@ -1,9 +1,7 @@
-import remarkFrontmatter from 'remark-frontmatter'
-
 /** @type {import('next').NextConfig} */
 export default {
   reactStrictMode: true,
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   webpack: (config, { dev, isServer, ...options }) => {
     // Add our custom markdown loader in order to support frontmatter
     // and layout

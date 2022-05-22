@@ -44,7 +44,7 @@ cd eyepetizer & npm install
 
 生成修改后的项目文件如下
 
-```
+```shell
 ├── build //webpack基本配置文件
 ├── config //配置文件相关
 ├── dist //build生成后的文件相关
@@ -70,7 +70,7 @@ npm install sass-loader vuex style-loader node-sass moment css-loader axios file
 ```
 
 然后在基本页面实现并配置相关路由：
-```
+```javascript
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -116,7 +116,7 @@ Store：
 主要包含：state、action、getters、mutations
 在组件method中通过触发dispatch来修改state
 
-```
+```javascript
 fetchData() {
   const VID = this.$route.params.vid;
   if (!VID) {
@@ -130,7 +130,7 @@ fetchData() {
 
 将state中的对象通过mapGetters映射给自定义变量：
 
-```
+```javascript
 computed:{
   ...mapGetters({
     video: 'videoInfo',
@@ -157,7 +157,7 @@ computed:{
 
 然后在组件中调用：
 
-```
+```javascript
 <div class="vue-meta-positioner">
   <div class="video-meta">
     <h1>{{v.title}}</h1>
