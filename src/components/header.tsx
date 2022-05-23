@@ -10,7 +10,7 @@ export default function Navbar() {
 
   return (
     <nav className="flex h-16 p-2 items-center sticky top-0 z-40 w-full backdrop-blur lg:z-50 bg-white supports-backdrop-blur:bg-white/95 dark:bg-dark/75">
-      <div className="flex flex-none h-full container !max-w-screen-2xl mx-auto px-2 md:px-6">
+      <div className="flex flex-1 h-full container !max-w-screen-2xl mx-auto px-2 md:px-6">
         <Link href="/">
           <a className="inline-flex items-center text-current no-underline hover:opacity-75">
             <Logo className="text-slate-50" />
