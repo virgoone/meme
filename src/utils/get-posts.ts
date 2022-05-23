@@ -1,7 +1,6 @@
 import fs from 'fs'
 import { join } from 'path'
 import matter from 'gray-matter'
-import innerText from 'react-innertext'
 
 const postsDirectory = join(process.cwd(), 'src', '_posts')
 
@@ -45,7 +44,7 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
       items[field] = realSlug
     }
     if (field === 'content') {
-      items[field] = innerText(content)
+      items[field] = content
     }
 
     if (typeof data[field] !== 'undefined') {

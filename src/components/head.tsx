@@ -2,7 +2,6 @@
 /*eslint-disable prefer-rest-params */
 import React, { Fragment } from 'react'
 import NextHead from 'next/head'
-import Script from 'next/script'
 
 interface HeadProps {
   title: string
@@ -31,26 +30,6 @@ export default function Head(props: HeadProps) {
         </title>
         <meta name="description" content={`Koya的个人博客，${description}`} />
         <meta name='keywords' content={`Koya,Blog,个人博客,nextjs,${keywords || 'Nextjs Blog'}`} />
-        {/* Import CSS for nprogress */}
-        <link rel="stylesheet" type="text/css" href="/css/ngprogress.css" />
-        {/* <!-- Global site tag (gtag.js) - Google Analytics --> */}
-        <Script
-          async
-          id="googletagmanager"
-          src="https://www.googletagmanager.com/gtag/js?id=G-0Z128XH378"
-          onLoad={() => {
-            //  @ts-ignore
-            window.dataLayer = window.dataLayer || []
-            function gtag() {
-              // @ts-ignore
-              window.dataLayer.push(arguments)
-            }
-            window.gtag = window.gtag || gtag
-            window?.gtag?.('js', new Date())
-
-            window?.gtag?.('config', 'G-0Z128XH378')
-          }}
-        />
         {children}
       </NextHead>
     </Fragment>
