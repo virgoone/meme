@@ -244,8 +244,8 @@ const loader = (src: string) => {
   ) {
     return {
       format: true,
+      lazy: true,
       src,
-      lazy: 'thumb',
     }
   }
   return {
