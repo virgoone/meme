@@ -12,15 +12,15 @@ categories:
   - preact
 keywords:
   - preact,Virtual DOM,测试,前端开发,React.js,vue.js,node.js,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd5b4e1.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd5b4e1.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
 ---
 对Virtual DOM这个名词并不陌生，但是有什么深入的理解谈不上。看到medium上rajaraodv写的The Inner Workings Of Virtual DOM这篇文章，比较深入的介绍了Virtual DOM的各个方面，在此翻译一下。
 
 这篇文章比较简单，在翻译的过程中都不需要google翻译，但是图片比较多。
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf0889a10c.png' title='Virtual DOM' alt='Virtual DOM'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf0889a10c.png' title='Virtual DOM' alt='Virtual DOM'/>
 
 
 Virtual DOM (VDOM 也叫 VNode) 很魔幻 ✨，但是也很复杂以至于让人难以理解😱。像React，Preact这些js的库都用到了Virtual DOM。不幸的是，我没有找到任何一篇深入浅出的解释VDOM文章或者文档，所以我决定自己写一篇。
@@ -45,13 +45,13 @@ Virtual DOM (VDOM 也叫 VNode) 很魔幻 ✨，但是也很复杂以至于让�
 这个App是一个简单的可过滤搜索器。包含“FilteredList”和“List”两个组件。List组件渲染了一个列表（默认值是“California”和“New York”）。App还有一个搜索框，通过在搜索框里输入文字来过滤列表。
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf135a4356.png' title='Virtual DOM' alt='Virtual DOM'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf135a4356.png' title='Virtual DOM' alt='Virtual DOM'/>
 
 
 首先，我们用JSX来写组件，然后用Babel的CLI工具转成纯JS。然后用Preact的“h” (hyperscript)函数转成VDOM树。最终Preact的Virtual DOM算法把VDOM转换成真正的DOM，这样就生成了我们的App。
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf1f258bf1.png' title='Virtual DOM' alt='Virtual DOM'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf1f258bf1.png' title='Virtual DOM' alt='Virtual DOM'/>
 
 
 在了解VDOM的生命周期之前，先来了解一下JSX.
@@ -63,12 +63,12 @@ Virtual DOM (VDOM 也叫 VNode) 很魔幻 ✨，但是也很复杂以至于让�
 对我们的App来说，html像下面这样
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf232debf4.png' title='Preact' alt='Preact'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf232debf4.png' title='Preact' alt='Preact'/>
 
 
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf2608ddc7.png' title='Preact' alt='Preact'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf2608ddc7.png' title='Preact' alt='Preact'/>
 
 
 
@@ -105,7 +105,7 @@ jsx很酷，但是不是有效的JS，浏览器不支持。我们需要的是真
 怎么样把jsx转换成h函数呢，这就是Babel干的事情。Babel遍历每一个JSX节点，把他们转换成h函数的调用
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf340e99c3.png' title='hyperscript' alt='hyperscript'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf340e99c3.png' title='hyperscript' alt='hyperscript'/>
 
 
 ### Babel JSX (React Vs Preact)
@@ -180,7 +180,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 我们会一步一步的来分析每一个过程，所以不要觉得太复杂。
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf4884c05a.png' title='Preact的虚拟DOM算法流程图' alt='Preact的虚拟DOM算法流程图'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf4884c05a.png' title='Preact的虚拟DOM算法流程图' alt='Preact的虚拟DOM算法流程图'/>
 
 
 要马上理解确实很困难，让我们根据不同的场景来一步步看：
@@ -194,13 +194,13 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 这张图展示了为给定组件创建VNode树的初始循环，在这个循环里没有创建子组件（创建子组件的过程略有不同）
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf506d7ce7.png' title='为指定的组件创建VNode' alt='为指定的组件创建VNode'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf506d7ce7.png' title='为指定的组件创建VNode' alt='为指定的组件创建VNode'/>
 
 
 下面这张图展示了当我们的App第一次运行的时候发生了什么，Preact最终为FilteredList组件创建了一个包含子组件和自身属性的VNode
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf52f0a55c.png' title='App第一次运行的时候发生了什么' alt='App第一次运行的时候发生了什么'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf52f0a55c.png' title='App第一次运行的时候发生了什么' alt='App第一次运行的时候发生了什么'/>
 
 
 目前为止，我们有了一个VNode，其中div是它的父节点，input和List是它的子节点
@@ -214,13 +214,13 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 这一步主要是创建父节点div，循环创建子节点
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf58ac47e4.png' title='创建父节点div' alt='创建父节点div'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf58ac47e4.png' title='创建父节点div' alt='创建父节点div'/>
 
 
 div显示如下
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf5a621d8a.png' title='div显示' alt='div显示'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf5a621d8a.png' title='div显示' alt='div显示'/>
 
 
 相关代码：
@@ -231,7 +231,7 @@ document.createElement: [https://github.com/developit/preact/blob/master/src/dom
 这一步，要循环创建所有节点，对我们的App来说，就是input和List
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/vdom/594cf5f5e9447.png' title='重复创建子节点' alt='重复创建子节点'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/vdom/594cf5f5e9447.png' title='重复创建子节点' alt='重复创建子节点'/>
 
 
 #### 把子节点添加到父节点
@@ -239,13 +239,13 @@ document.createElement: [https://github.com/developit/preact/blob/master/src/dom
 这一步处理叶子节点，因为input有一个div的父节点，我们把input作为div的子节点，然和创建List，也就是div的第二个子节点
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594cf621d7c00.png' title='把子节点添加到父节点' alt='把子节点添加到父节点'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594cf621d7c00.png' title='把子节点添加到父节点' alt='把子节点添加到父节点'/>
 
 
 到这一步，我们的app看上去像这样：
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594cf647a62f8.png' title='app' alt='app'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594cf647a62f8.png' title='app' alt='app'/>
 
 
 注意：创建完input之后并不是立即去创建list组件，而是先把input添加到父div节点之后才继续处理List节点
@@ -257,13 +257,13 @@ appendChild：[https://github.com/developit/preact/blob/master/src/vdom/diff.js]
 控制流又回到1.1开始处理List组件，因为List是一个组件而不是DOM元素，会调用List的render函数生成VNodes
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d29108dbe9.png' title='处理子组件' alt='处理子组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d29108dbe9.png' title='处理子组件' alt='处理子组件'/>
 
 
 List的虚拟节点看上去像下面这样：
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d29c9bc7e3.png' title='处理子组件' alt='处理子组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d29c9bc7e3.png' title='处理子组件' alt='处理子组件'/>
 
 
 相关代码：
@@ -273,13 +273,13 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 #### 重复2.1.1到2.1.4处理所有的子节点
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d2ac77e5f1.png' title='重复2.1.1到1.4处理所有的子节点' alt='重复2.1.1到1.4处理所有的子节点'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d2ac77e5f1.png' title='重复2.1.1到1.4处理所有的子节点' alt='重复2.1.1到1.4处理所有的子节点'/>
 
 
 下面这张图展示了每个节点被添加的过程（深度优先）
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d2b2f86351.png' title='重复1.1到1.4处理所有的子节点' alt='重复1.1到1.4处理所有的子节点'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d2b2f86351.png' title='重复1.1到1.4处理所有的子节点' alt='重复1.1到1.4处理所有的子节点'/>
 
 
 #### 结束处理
@@ -287,7 +287,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 这一步就结束了，调用所有组件的“componentDidMount”函数，然后结束
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d2bd503abb.png' title='结束处理' alt='结束处理'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d2bd503abb.png' title='结束处理' alt='结束处理'/>
 
 
 重要提示：当这些步骤完成以后，每个组件都有一个对真实DOM的引用，用来更新和比较，避免重新创建同样的DOM节点
@@ -297,7 +297,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 当我们在搜索框里输入“cal”，然后敲下回车之后，就只剩下了(New York)这个叶子节点，删除了List的第二个节点
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d2d6d6ce37.png' title='场景2：删除叶子节点' alt='场景2：删除叶子节点'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d2d6d6ce37.png' title='场景2：删除叶子节点' alt='场景2：删除叶子节点'/>
 
 
 让我们看看这个场景的流程是怎么样的：
@@ -313,7 +313,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 另外在update的周期里，如果VNodes对应的DOM元素已经存在，则不会重新创建
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d2de3be470.png' title='创建虚拟节点' alt='创建虚拟节点'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d2de3be470.png' title='创建虚拟节点' alt='创建虚拟节点'/>
 
 
 相关代码：
@@ -326,13 +326,13 @@ insertBefore：[https://github.com/developit/preact/blob/master/src/vdom/diff.js
 像先前提到的，每一个组件都有一个对其在初始化过程中创建的真实DOM的一个引用，下图展示了我们的App的引用
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d300285cb2.png' title='使用组件对真实DOM的引用' alt='使用组件对真实DOM的引用'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d300285cb2.png' title='使用组件对真实DOM的引用' alt='使用组件对真实DOM的引用'/>
 
 
 当虚拟节点创建之后，节点的每一个属性都会和真实DOM的节点属性比较，如果真实DOM是存在的，则循环跳到下一个节点
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d30c9357e5.png' title='使用组件对真实DOM的引用' alt='使用组件对真实DOM的引用'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d30c9357e5.png' title='使用组件对真实DOM的引用' alt='使用组件对真实DOM的引用'/>
 
 
 相关代码：
@@ -342,13 +342,13 @@ innerDiffNode：[https://github.com/developit/preact/blob/master/src/vdom/diff.j
 #### 如果真实DOM里还有其他节点则删除
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d3180a447b.png' title='如果真实DOM里还有其他节点则删除' alt='如果真实DOM里还有其他节点则删除'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d3180a447b.png' title='如果真实DOM里还有其他节点则删除' alt='如果真实DOM里还有其他节点则删除'/>
 
 
 因为有差异，“New York”节点在真实DOM里被下面的流程展示的算法删除了，该算法还会调用“componentDidUpdate”生命周期函数
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d32596ba90.png' title='如果真实DOM里还有其他节点则删除' alt='如果真实DOM里还有其他节点则删除'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d32596ba90.png' title='如果真实DOM里还有其他节点则删除' alt='如果真实DOM里还有其他节点则删除'/>
 
 
 ### 场景3：卸载整个组件
@@ -356,25 +356,25 @@ innerDiffNode：[https://github.com/developit/preact/blob/master/src/vdom/diff.j
 考虑这样一种用户场景：我们在过滤器了输入blabla，因为它既不匹配“California”也不匹配“New York”,所以不需要渲染List这个子组件。这也就意味着我们需要卸载整个组件
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d32ae843e9.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d32ae843e9.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
 
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d32e63f3de.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d32e63f3de.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
 
 
 删除一个组件和删除一个节点类似。另外，当删除一个被组件引用的节点的时候，框架会调用“componentWillUnmount”函数，然后递归删除所有的DOM元素。
 下图展示了真是DOM里ul对List组件的引用
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d33a5726ca.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d33a5726ca.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
 
 
 下图中高亮的部分展示了删除/卸载组件是如何工作的
 The below picture highlights the section in the flowchart to show how deleting/unmounting a component works.
 
 
-<img class="lazy" data-original='https://ooo.0o0.ooo/2017/06/23/594d33f498f3f.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
+<Image className="wysiwyg-image" src='https://ooo.0o0.ooo/2017/06/23/594d33f498f3f.png' title='场景3：卸载整个组件' alt='场景3：卸载整个组件'/>
 
 
 相关代码：

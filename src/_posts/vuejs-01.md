@@ -12,8 +12,8 @@ categories:
   - vuejs
 keywords:
   - vuejs,前端学习,开眼,eyepetizer,开眼视频,前端开发,React.js,vue.js,node.js,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
-cover_detail: https://m-staticcdn.annatarhe.com//blog/poster/5b1a7ecd88810.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/poster/5b1a7ecd88810.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/poster/5b1a7ecd88810.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/poster/5b1a7ecd88810.jpg
 ---
 最近一直在学习vuejs，手痒之余决定使用vuejs做一些东西
 
@@ -171,7 +171,7 @@ computed:{
 ```
 
 最终效果：
-![Douni.one](https://m-staticcdn.annatarhe.com//blog/x7t0ay6xbb.png)
+![Douni.one](https://cdn.ugc.marryto.me//blog/x7t0ay6xbb.png)
 
 ## 部署项目
 执行命令

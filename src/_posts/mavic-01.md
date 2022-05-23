@@ -12,14 +12,14 @@ categories:
   - 数码
 keywords:
   - Instagram,航拍视频,mavic pro,无人机,御姐,数码,大疆无人机,精灵,Github,DJI,大疆创新,Phantom,4轴飞行器,航拍
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 
 ---
 ## #前言
 三个月前入手了DJI的mavic pro可折叠无人机，先放上御姐玉照：
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/dji-mavic-01.jpg' title='御姐' alt='御姐玉照'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/dji-mavic-01.jpg' title='御姐' alt='御姐玉照'/>
 
 > 一部分照片我会先发在Instagram上，如有兴趣，可以移步[这里](https://www.instagram.com/koya.site/?ref=koya)
 
@@ -31,11 +31,11 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 ## #正文
 拆箱
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/001.JPG' title='御姐拆箱' alt='拆箱'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/001.JPG' title='御姐拆箱' alt='拆箱'/>
 
 素颜照
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/002.JPG' title='御姐素颜照' alt='御姐素颜照'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/002.JPG' title='御姐素颜照' alt='御姐素颜照'/>
 
 第一次拍视频
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
@@ -43,46 +43,46 @@ cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
 </video>
 第一次拍照
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/003.JPG' title='第一次拍照' alt='第一次拍照'/>
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/004.JPG' title='第一次拍照2' alt='第一次拍照2'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/003.JPG' title='第一次拍照' alt='第一次拍照'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/004.JPG' title='第一次拍照2' alt='第一次拍照2'/>
 
 同事带我去的他的后花园
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/005.jpg' title='同事的后花园' alt='同事的后花园'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/005.jpg' title='同事的后花园' alt='同事的后花园'/>
 
 和同事出去玩
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/006.JPG' title='和同事出去玩' alt='和同事出去玩'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/006.JPG' title='和同事出去玩' alt='和同事出去玩'/>
 
 素颜的中华艺术宫
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/007.JPG' title='素颜的中华艺术宫' alt='素颜的中华艺术宫'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/007.JPG' title='素颜的中华艺术宫' alt='素颜的中华艺术宫'/>
 
 天空视角的东方体育中心
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/008.JPG' title='天空视角的东方体育中心' alt='天空视角的东方体育中心'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/008.JPG' title='天空视角的东方体育中心' alt='天空视角的东方体育中心'/>
 
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
   <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-002.mp4" type="video/mp4" />
 </video>
 飞行中的御姐
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/009.JPG' title='飞行中的御姐' alt='飞行中的御姐'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/009.JPG' title='飞行中的御姐' alt='飞行中的御姐'/>
 
 加了滤镜的泰晤士小镇
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/011.jpg' title='泰晤士小镇' alt='泰晤士小镇'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/011.jpg' title='泰晤士小镇' alt='泰晤士小镇'/>
 
 夜晚的梅赛德斯
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/013.JPG' title='夜晚的梅赛德斯' alt='夜晚的梅赛德斯'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/013.JPG' title='夜晚的梅赛德斯' alt='夜晚的梅赛德斯'/>
 <video webkit-playsinline="true" playsinline="true" preload="none" controls>
   <source src="http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/dji-003.mp4" type="video/mp4" />
 </video>
 
 卖萌的御姐镇楼
 
-<img class="lazy" data-original='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/012.JPG' title='卖萌的御姐' alt='卖萌的御姐'/>
+<Image className="wysiwyg-image" src='http://7xukcb.com1.z0.glb.clouddn.com/mavic-pro/012.JPG' title='卖萌的御姐' alt='卖萌的御姐'/>
 
 
 ## #期待

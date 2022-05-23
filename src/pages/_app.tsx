@@ -5,6 +5,7 @@ import type { AppProps, NextWebVitalsMetric } from 'next/app'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Script from 'next/script'
+import 'react-cool-image/dist/style.css'
 
 if (typeof window !== 'undefined' && !('requestIdleCallback' in window)) {
   window.requestIdleCallback = (fn) => setTimeout(fn, 1)

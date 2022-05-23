@@ -10,8 +10,8 @@ categories:
   - Nodejs
 keywords:
   - nodejs,测试,前端开发,React.js,vue.js,node.js,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd5b4e1.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd5b4e1.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
 ---
 
 ## 简介

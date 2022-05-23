@@ -5,8 +5,8 @@ categories:
   - Virgo
 tags:
   - Hexo
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecd3722e.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 
 ---
 Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).

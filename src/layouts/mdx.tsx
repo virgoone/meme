@@ -11,10 +11,10 @@ import format from 'date-fns/format'
 import innerText from 'react-innertext'
 import Highlight, { defaultProps, Language } from 'prism-react-renderer'
 import Link from 'next/link'
+import CoolImage, { ImageProps } from 'react-cool-image'
 import Page from './page'
 import Comment from '../components/comment'
 import { useActiveAnchorSet } from '../misc/active-anchor'
-
 export interface IElementProps {
   children: React.ReactNode | string
   language?: Language
@@ -237,6 +237,24 @@ const A = ({ children, ...props }: IElementProps) => {
   )
 }
 
+const loader = (src: string) => {
+  if (
+    src.startsWith('https://cdn.ugc.marryto.me') ||
+    src.startsWith('//cdn.ugc.marryto.me')
+  ) {
+    return {
+      format: true,
+      src,
+      lazy: 'thumb',
+    }
+  }
+  return {
+    format: false,
+    src,
+    webp: false,
+  }
+}
+
 const components = {
   h2: H2,
   h3: H3,
@@ -245,6 +263,20 @@ const components = {
   h6: H6,
   a: A,
   code: Code,
+  img: (props: ImageProps) => {
+    const { src: url, ...other } = props
+    const formatOptions = loader(url)
+    const options = {...other, ...formatOptions} as ImageProps
+
+    return <CoolImage {...options} />
+  },
+  Image: (props: ImageProps) => {
+    const { src: url, ...other } = props
+    const formatOptions = loader(url)
+    const options = {...other, ...formatOptions} as ImageProps
+
+    return <CoolImage {...options} />
+  },
   inlineCode: ({ children }: IElementProps) => (
     <code className="wysiwyg-inlinecode">{children}</code>
   ),

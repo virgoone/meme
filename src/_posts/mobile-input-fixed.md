@@ -7,8 +7,8 @@ tags:
   - scroll
   - bug fix
   - 移动端输入框
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5bd989771fbb5.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5bd989771fbb5.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5bd989771fbb5.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5bd989771fbb5.jpg
 subtitle: 论如何解决输入框fixed的bug
 ---
 

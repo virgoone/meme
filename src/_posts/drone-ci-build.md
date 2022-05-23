@@ -7,8 +7,8 @@ tags:
   - ci
   - cd
   - Drone-CI
-cover_detail: https://m-staticcdn.annatarhe.com//blog/5b1a7ecc2215b.jpg
-cover_index: https://m-staticcdn.annatarhe.com//blog/5b1a7ecc2215b.jpg
+cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
+cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
 subtitle: 集成Gitea和Drone-CI之解放生产力
 ---
 
@@ -16,8 +16,7 @@ subtitle: 集成Gitea和Drone-CI之解放生产力
 
 这个时间突然看到了[Drone](https://drone.io)这个CI工具，了解过后，觉得这个特别适合做为CI、CD工具的入门训练，而且它的功能非常强大
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/5b1beeb0ed6f2.jpg' title='ci.marryto.me' alt='ci.marryto.me'/>
-
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/5b1beeb0ed6f2.jpg' title='ci.marryto.me' alt='ci.marryto.me'/>
 
 [Drone](https://drone.io)也是原生就支持docker的CI，所有编译、测试的流程都在 Docker 容器中进行。
 
@@ -140,7 +139,7 @@ server {
 
 登录验证需要输入gitea的用户名和密码，接下来我们可以体验自己搭建的drone-ci了
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/5b1bf199b5631.png' title='ci.marryto.me' alt='ci.marryto.me'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/5b1bf199b5631.png' title='ci.marryto.me' alt='ci.marryto.me'/>
 
 ## 体验Drone
 
@@ -197,7 +196,7 @@ services:
 将改动push到master之后，我们可以看一下现在drone的页面，现在页面上有一个job在跑，我们可以点开查看一下
 
 
-<img class="lazy" data-original='https://m-staticcdn.annatarhe.com//blog/5b1bf3a55d95c.png' title='ci.marryto.me' alt='ci.marryto.me'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me//blog/5b1bf3a55d95c.png' title='ci.marryto.me' alt='ci.marryto.me'/>
 
 我们的安装完成了
 
