@@ -164,9 +164,13 @@ h函数接收Babel转换后的JSX，创建一个叫“VNode”的节点（React�
 注意：h函数并不会创建整个DOM树，对于指定的节点，只创建一个js的对象，但是因为render函数的参数是一个树形的DOM，最终的VNode看上去就像一棵树
 
 相关代码：
+
 h：[https://github.com/developit/preact/blob/master/src/h.js](https://github.com/developit/preact/blob/master/src/h.js)
+
 VNode：[https://github.com/developit/preact/blob/master/src/vnode.js](https://github.com/developit/preact/blob/master/src/vnode.js)
+
 render：[https://github.com/developit/preact/blob/master/src/render.js](https://github.com/developit/preact/blob/master/src/render.js)
+
 buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/vdom/diff.js#L102](https://github.com/developit/preact/blob/master/src/vdom/diff.js#L102)
 
 ## Preact的虚拟DOM算法流程图
@@ -202,6 +206,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 目前为止，我们有了一个VNode，其中div是它的父节点，input和List是它的子节点
 
 相关代码：
+
 大多数生命周期函数：[https://github.com/developit/preact/blob/master/src/vdom/component.js](https://github.com/developit/preact/blob/master/src/vdom/component.js)
 
 #### 如果不是组件则创建真实的DOM
@@ -262,6 +267,7 @@ List的虚拟节点看上去像下面这样：
 
 
 相关代码：
+
 buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/vdom/diff.js#L102](https://github.com/developit/preact/blob/master/src/vdom/diff.js#L102)
 
 #### 重复2.1.1到2.1.4处理所有的子节点
@@ -312,6 +318,7 @@ buildComponentFromVNode：[https://github.com/developit/preact/blob/master/src/v
 
 相关代码：
 removeNode：[https://github.com/developit/preact/blob/master/src/dom/index.js#L9](https://github.com/developit/preact/blob/master/src/dom/index.js#L9)
+
 insertBefore：[https://github.com/developit/preact/blob/master/src/vdom/diff.js#L253](https://github.com/developit/preact/blob/master/src/vdom/diff.js#L253)
 
 #### 使用组件对真实DOM的引用，避免重新创建DOM
@@ -329,6 +336,7 @@ insertBefore：[https://github.com/developit/preact/blob/master/src/vdom/diff.js
 
 
 相关代码：
+
 innerDiffNode：[https://github.com/developit/preact/blob/master/src/vdom/diff.js#L185](https://github.com/developit/preact/blob/master/src/vdom/diff.js#L185)
 
 #### 如果真实DOM里还有其他节点则删除
@@ -370,6 +378,7 @@ The below picture highlights the section in the flowchart to show how deleting/u
 
 
 相关代码：
+
 unmountComponent：[https://github.com/developit/preact/blob/master/src/vdom/component.js#L250](https://github.com/developit/preact/blob/master/src/vdom/component.js#L250)
 
 《完》

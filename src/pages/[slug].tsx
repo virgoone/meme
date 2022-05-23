@@ -3,17 +3,20 @@ import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import { join } from 'path'
 import matter from 'gray-matter'
+import innerText from 'react-innertext'
 
 import Layout from '../layouts/mdx'
 import { getPostFileSource, postFilePaths, POSTS_PATH } from '../utils'
+import { useEffect, useMemo, useState } from 'react'
 
 type PostType = {
   slug: string
   title: string
   date: string
   coverImage: string
+  description?: string
   author: any
-  excerpt: string
+  excerpt?: string
   ogImage: {
     url: string
   }
@@ -39,6 +42,7 @@ const Post = (props: Props) => {
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
   }
+
   return <Layout source={post.source} frontMatter={post} />
 }
 
@@ -53,6 +57,11 @@ export async function getStaticProps({ params }: Params) {
   const { content, data } = matter(source)
 
   data.date = new Date(data.date).toISOString()
+  data.description =
+    data.description ||
+    innerText(content)
+      ?.substring(0, 50)
+      .replace(/[\r\n]+$/, '')
 
   const mdxSource = await getPostFileSource(content, data)
 

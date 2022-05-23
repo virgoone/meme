@@ -10,6 +10,7 @@ export type PostType = {
   title: string
   subtitle: string
   keywords: string
+  description: string
   tags: string[]
   date: string
   cover_image: string

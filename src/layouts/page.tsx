@@ -10,17 +10,18 @@ interface PageProps {
     title: string
     description?: string
     version?: string
+    keywords?: string
   }
   children: React.ReactNode
 }
 
 export default function Page(props: PageProps) {
   const { children, frontMatter } = props
-  const { title, description } = frontMatter
+  const { title, description, keywords } = frontMatter
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
-      <Head title={title} description={description} />
+      <Head title={title} description={description} keywords={keywords} />
       <Header />
       <ActiveAnchor>
         <main className="max-w-3xl mx-auto px-6 md:px-8 py-8 lg:py-12">{children}</main>
