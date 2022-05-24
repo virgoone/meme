@@ -255,6 +255,14 @@ const loader = (src: string) => {
   }
 }
 
+const Image = (props: ImageProps) => {
+  const { src: url, ...other } = props
+  const formatOptions = loader(url)
+  const options = { ...other, ...formatOptions } as ImageProps
+
+  return <CoolImage {...options} />
+}
+
 const components = {
   h2: H2,
   h3: H3,
@@ -264,18 +272,10 @@ const components = {
   a: A,
   code: Code,
   img: (props: ImageProps) => {
-    const { src: url, ...other } = props
-    const formatOptions = loader(url)
-    const options = {...other, ...formatOptions} as ImageProps
-
-    return <CoolImage {...options} />
+    return <Image {...props} />
   },
   Image: (props: ImageProps) => {
-    const { src: url, ...other } = props
-    const formatOptions = loader(url)
-    const options = {...other, ...formatOptions} as ImageProps
-
-    return <CoolImage {...options} />
+    return <Image {...props} />
   },
   inlineCode: ({ children }: IElementProps) => (
     <code className="wysiwyg-inlinecode">{children}</code>
@@ -309,13 +309,12 @@ export default function MDXLayout({
 }) {
   const slugger = new Slugger()
   const { keywords, ...metadata } = frontMatter
-
   return (
     <SluggerContext.Provider value={{ slugger, index: 0 }}>
       <Page
         frontMatter={{
           ...metadata,
-          keywords: Array.isArray(keywords) ? keywords.join(',') : metadata,
+          keywords: Array.isArray(keywords) ? keywords.join(',') : keywords,
         }}
       >
         <header className="mb-8">
@@ -325,13 +324,24 @@ export default function MDXLayout({
           <p className="article-excerpt relative text-gray-500 dark:text-gray-400">
             {metadata.description}
           </p>
-          <section className="article-byline-content text-sm">
-            <span className="block text-sm text-gray-300 dark:text-gray-500">
-              {format(new Date(metadata.date), 'yyyy-MM-dd')}
-            </span>
+          <section className="article-byline-content text-sm text-gray-400 dark:text-gray-500">
+            <span>{format(new Date(metadata.date), 'yyyy-MM-dd')}</span>
+            {metadata.extra && (
+              <>
+                <span>{`${metadata.extra.minutes || 1} min read`}</span>
+                <span>{`${metadata.extra.count.total || 1} 字`}</span>
+              </>
+            )}
+
+            <>
+              {metadata.tags?.map((tag: string, index: number) => (
+                <span className="tag" key={index}>{`# ${tag}`}</span>
+              ))}
+            </>
           </section>
         </header>
         <article className="container wysiwyg dark:wysiwyg-light max-w-none">
+          {metadata.cover_detail && <Image src={metadata.cover_detail} />}
           <MDXRemote {...source} components={components} />
         </article>
         {frontMatter.comments !== false && <Comment />}

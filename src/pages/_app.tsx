@@ -42,6 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Script
+        async
         src="https://www.googletagmanager.com/gtag/js?id=G-0Z128XH378"
         onLoad={() => {
           //  @ts-ignore

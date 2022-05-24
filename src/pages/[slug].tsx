@@ -4,19 +4,28 @@ import Layout from '../layouts/mdx'
 import { postFilePaths } from '../utils'
 import { getPostBySlug } from '../utils/posts'
 
-type PostType = {
+type PostCount = {
+  total: number
+  cn: number
+  en: number
+}
+
+interface PostType {
   slug: string
   title: string
   date: string
   coverImage: string
   description?: string
+  keywords?: string[] | string
   author: any
-  excerpt?: string
   ogImage: {
     url: string
   }
   content: string
-  source?: any
+  extra: {
+    count: PostCount
+    minutes: number
+  }
 }
 
 type Params = {

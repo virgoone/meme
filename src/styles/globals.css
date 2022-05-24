@@ -173,6 +173,16 @@ article .anchor-icon {
   margin-bottom: 1.25em;
   margin-top: 1.25em;
 }
+.article-byline-content span:not(:first-child)::before {
+  content: "/ ";
+  font-size: 10px;
+  opacity: 0.5;
+  color: inherit;
+  margin: 0 4px;
+}
+.article-byline-content span.tag::before {
+  content: ''
+}
 
 .react-cool-image[data-loaded="false"] img {
   width: 100%;
