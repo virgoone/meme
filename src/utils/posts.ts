@@ -6,16 +6,28 @@ import { getPostFileSource } from '.'
 
 const postsDirectory = join(process.cwd(), 'src', '_posts')
 
-export type PostType = {
+type PostCount = {
+  total: number
+  cn: number
+  en: number
+}
+export interface PostType {
   slug: string
   title: string
-  keywords: string
-  description: string
-  tags: string[]
   date: string
-  cover_image: string
-  cover_detail: string
+  coverImage: string
+  description?: string
+  keywords?: string[] | string
+  tags?: string[] | string
+  author: any
+  ogImage: {
+    url: string
+  }
   content: string
+  extra: {
+    count: PostCount
+    minutes: number
+  }
 }
 
 export function getPostSlugs() {

@@ -328,7 +328,7 @@ export default function MDXLayout({
             <span>{format(new Date(metadata.date), 'yyyy-MM-dd')}</span>
             {metadata.extra && (
               <>
-                <span>{`${metadata.extra.minutes || 1} min read`}</span>
+                <span>{`${metadata.extra.minutes || 1} 分钟`}</span>
                 <span>{`${metadata.extra.count.total || 1} 字`}</span>
               </>
             )}

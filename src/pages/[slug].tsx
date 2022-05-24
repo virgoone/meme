@@ -2,31 +2,7 @@ import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import Layout from '../layouts/mdx'
 import { postFilePaths } from '../utils'
-import { getPostBySlug } from '../utils/posts'
-
-type PostCount = {
-  total: number
-  cn: number
-  en: number
-}
-
-interface PostType {
-  slug: string
-  title: string
-  date: string
-  coverImage: string
-  description?: string
-  keywords?: string[] | string
-  author: any
-  ogImage: {
-    url: string
-  }
-  content: string
-  extra: {
-    count: PostCount
-    minutes: number
-  }
-}
+import { getPostBySlug, PostType } from '../utils/posts'
 
 type Params = {
   params: {

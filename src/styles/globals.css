@@ -37,6 +37,7 @@ article.wysiwyg blockquote {
   @apply pl-6 italic text-gray-700 border-l-2 border-gray-300;
   @apply dark:border-gray-700 dark:text-gray-400;
 }
+
 article.wysiwyg a.wysiwyg-link {
   display: inline-block;
   position: relative;
@@ -52,7 +53,7 @@ article.wysiwyg a.wysiwyg-link::before {
   right: 51%;
   background: #4c6a9e;
   transition-duration: .2s;
-  transition-property: right,left;
+  transition-property: right, left;
   transition-timing-function: ease-out;
 }
 
@@ -60,9 +61,11 @@ article.wysiwyg a.wysiwyg-link:hover::before {
   right: 0;
   left: 0;
 }
+
 article .subheading {
   color: inherit;
 }
+
 article .subheading-anchor {
   margin-top: -84px;
   display: inline-block;
@@ -126,6 +129,7 @@ article .anchor-icon {
 *::-webkit-scrollbar-corner {
   @apply bg-transparent;
 }
+
 .nav {
   backdrop-filter: saturate(180%) blur(10px);
   box-sizing: border-box;
@@ -137,6 +141,7 @@ article .anchor-icon {
   margin-top: calc(4rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(4rem * var(--tw-space-y-reverse));
 }
+
 /* 
 .post-item-title {
   position: relative;
@@ -173,6 +178,7 @@ article .anchor-icon {
   margin-bottom: 1.25em;
   margin-top: 1.25em;
 }
+
 .article-byline-content span:not(:first-child)::before {
   content: "/ ";
   font-size: 10px;
@@ -180,6 +186,7 @@ article .anchor-icon {
   color: inherit;
   margin: 0 4px;
 }
+
 .article-byline-content span.tag::before {
   content: ''
 }
@@ -187,4 +194,8 @@ article .anchor-icon {
 .react-cool-image[data-loaded="false"] img {
   width: 100%;
   height: 150px;
+}
+
+.wysiwyg .react-cool-image:first-of-type img {
+  margin-top: 0;
 }
