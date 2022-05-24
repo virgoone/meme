@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict'
-import { PostType } from '../utils/posts
+import { PostType } from '../utils/posts'
 
 function distanceToNow(dateTime: Date) {
   return formatDistanceToNowStrict(dateTime, {

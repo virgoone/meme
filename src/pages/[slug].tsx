@@ -1,10 +1,8 @@
-import fs from 'fs'
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
-import { join } from 'path'
 import Layout from '../layouts/mdx'
-import { postFilePaths, POSTS_PATH } from '../utils'
-import { getPostBySlug } from '../utils/posts
+import { postFilePaths } from '../utils'
+import { getPostBySlug } from '../utils/posts'
 
 type PostType = {
   slug: string
