@@ -199,3 +199,11 @@ article .anchor-icon {
 .wysiwyg .react-cool-image:first-of-type img {
   margin-top: 0;
 }
+
+.wysiwyg .react-cool-image img {
+  transition: all 0.3s;
+}
+
+.wysiwyg .react-cool-image:hover img {
+  transform: scale(1.0082);
+}
