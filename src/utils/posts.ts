@@ -1,13 +1,14 @@
 import fs from 'fs'
 import { join } from 'path'
 import matter from 'gray-matter'
+import { getWordCount } from './words-count'
+import { getPostFileSource } from '.'
 
 const postsDirectory = join(process.cwd(), 'src', '_posts')
 
 export type PostType = {
   slug: string
   title: string
-  subtitle: string
   keywords: string
   description: string
   tags: string[]
@@ -25,15 +26,31 @@ export function getPostSlugs() {
     .filter((path) => /\.mdx?$/.test(path.name))
 }
 
-export function getPostBySlug(slug: string, fields: string[] = []) {
+export async function getPostBySlug(slug: string, fields: string[] = []) {
   const fullPath = join(postsDirectory, slug)
+  // const postFilePath = join(POSTS_PATH, `${params.slug}.mdx`)
+  // const postFileMDPath = join(POSTS_PATH, `${params.slug}.md`)
   const realSlug = slug.replace(/\.mdx?$/, '')
   const fileContents = fs.readFileSync(fullPath, 'utf8')
   const { data, content } = matter(fileContents)
-  data.date = new Date(data.date).toISOString()
+  if (data.date) {
+    data.date = new Date(data.date).toISOString()
+  }
+
+  const mdxSource = await getPostFileSource(content, data)
+
+  data.extra = getWordCount(content)
 
   type Items = {
     [key: string]: any
+  }
+
+  if (!fields.length) {
+    return {
+      ...data,
+      content: mdxSource,
+      slug: realSlug,
+    }
   }
 
   const items: Items = {}
@@ -44,7 +61,7 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
       items[field] = realSlug
     }
     if (field === 'content') {
-      items[field] = content
+      items[field] = mdxSource
     }
 
     if (typeof data[field] !== 'undefined') {
@@ -55,14 +72,14 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
   return items
 }
 
-export function getAllPosts(fields: string[] = []) {
+export async function getAllPosts(fields: string[] = []) {
   const files = getPostSlugs()
-  const posts = files
-    .map((file) => getPostBySlug(file.name, fields))
-    .sort((post1, post2) =>
-      new Date(post1.date) > new Date(post2.date) ? -1 : 1,
-    )
+  const posts = await Promise.all(
+    files.map((file) => getPostBySlug(file.name, fields)),
+  )
 
   // sort posts by date in descending order
-  return posts
+  return posts.sort((post1, post2) =>
+    new Date(post1.date) > new Date(post2.date) ? -1 : 1,
+  )
 }

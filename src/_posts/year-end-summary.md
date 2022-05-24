@@ -9,6 +9,7 @@ tags:
 categories:
   - 2017
   - 总结
+description: 丁酉鸡年，我的本命年，希望好过一点
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 ---

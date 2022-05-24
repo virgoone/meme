@@ -8,7 +8,7 @@ tags:
   - gitlab
 cover_detail: https://cdn.ugc.marryto.me//blog/poster/qtxbmx321qp.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/poster/qtxbmx321qp.jpg
-subtitle: 如何搭建自己的Git服务器
+description: 使用开源的Gitea来搭建自己的Git服务器吧，自己尝试了下安装Gitea的教程，详细记录了下，可能会有域名、服务器、https证书等相关的技术要求，来一起试试吧
 ---
 
 好久没有写过博客了，续费域名时突然想起来有个博客已经很久未更新了
@@ -177,6 +177,8 @@ server {
 
 ## 资料：
 [https://blog.gitea.io/2016/12/welcome-to-gitea/](https://blog.gitea.io/2016/12/welcome-to-gitea/)
+
 [https://blog.wolfogre.com/posts/gogs-vs-gitea/](https://blog.wolfogre.com/posts/gogs-vs-gitea/)
+
 [https://docs.gitea.io/en-us/comparison/](https://docs.gitea.io/en-us/comparison/)
 

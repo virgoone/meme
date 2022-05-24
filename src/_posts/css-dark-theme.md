@@ -11,7 +11,7 @@ categories:
   - 数码
 keywords:
   - Mac,theme,Dark,Github,dark theme,暗黑,暗黑模式,css
-description: 如何使用一行css给网站加上dark效果
+description: 如果你在使用 macOS 10.14.4 或者之后的系统，并且在系统内开启了深色模式，打开这篇文章时，你就发现我的博客变成了暗黑版本，之前只有Safari浏览器支持，这次发现Chrome也支持了“暗黑”模式
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 

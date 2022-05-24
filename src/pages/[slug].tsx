@@ -2,12 +2,9 @@ import fs from 'fs'
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import { join } from 'path'
-import matter from 'gray-matter'
-import innerText from 'react-innertext'
-
 import Layout from '../layouts/mdx'
-import { getPostFileSource, postFilePaths, POSTS_PATH } from '../utils'
-import { useEffect, useMemo, useState } from 'react'
+import { postFilePaths, POSTS_PATH } from '../utils'
+import { getPostBySlug } from '../utils/posts
 
 type PostType = {
   slug: string
@@ -43,34 +40,20 @@ const Post = (props: Props) => {
     return <ErrorPage statusCode={404} />
   }
 
-  return <Layout source={post.source} frontMatter={post} />
+  return <Layout source={post.content} frontMatter={post} />
 }
 
 export default Post
 
 export async function getStaticProps({ params }: Params) {
-  const postFilePath = join(POSTS_PATH, `${params.slug}.mdx`)
-  const postFileMDPath = join(POSTS_PATH, `${params.slug}.md`)
-  const filePath = fs.statSync(postFileMDPath) ? postFileMDPath : postFilePath
-  const source = fs.readFileSync(filePath)
-
-  const { content, data } = matter(source)
-
-  data.date = new Date(data.date).toISOString()
-  data.description =
-    data.description ||
-    innerText(content)
-      ?.substring(0, 50)
-      .replace(/[\r\n]+$/, '')
-
-  const mdxSource = await getPostFileSource(content, data)
+  const filePath = `${params.slug}.md`
+  const post = await getPostBySlug(filePath)
 
   return {
     props: {
       post: {
-        ...data,
+        ...post,
         slug: params.slug,
-        source: mdxSource,
       },
     },
   }

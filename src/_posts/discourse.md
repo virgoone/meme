@@ -11,6 +11,7 @@ tags:
   - nginx
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
+description: 最近尝试使用Discourse创建了一个论坛，先部署在aws ec2上，随后可能会迁移到阿里云，此坑只针对aws
 
 ---
 第一次打开[atom-china](https://atom-china.org)的时候觉得很惊奇，界面很新，效果挺好，所以就在欢迎邮件里面直接问站长atom-china是用什么模版做的，然后就了解到了[Discourse](https://www.discourse.org/) =>

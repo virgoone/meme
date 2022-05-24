@@ -7,6 +7,7 @@ tags:
   - regex
   - 正则表达式
   - 常用
+description: 前端开发中经常用到的正则表达式都有哪些
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 

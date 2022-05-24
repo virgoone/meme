@@ -10,6 +10,7 @@ tags:
   - 学习
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
+description: jade是一个高性能的模版引擎，Jade是Haml的Javascript实现，在服务端（NodeJS）及客户端均有支持。最新版本的jade更名为pug，对新版有兴趣的可以移步
 
 ---
 jade是一个高性能的模版引擎，Jade是Haml的Javascript实现，在服务端（NodeJS）及客户端均有支持。最新版本的jade更名为pug，对新版有兴趣的可以移步 => [Github地址](https://github.com/pugjs/pug)，因为项目中一直在使用jade作为模版，所以决定记录下学习jade的心得，欢迎交流讨论

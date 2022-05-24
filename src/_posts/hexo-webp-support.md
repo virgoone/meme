@@ -12,6 +12,7 @@ keywords:
   - Hexo,webp,延迟加载,性能优化,lzyload,jquery,移动Web,谷歌,图片格式,图片加载
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecc399f3.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecc399f3.jpg
+description: 使用webp格式来增加用户体验和加载速度
 ---
 前两天再写上边博客时因为使用了大量图片，所以决定采用谷歌的webp格式图片，webp格式相对jpg来说，同等质量下体积更小
 

@@ -10,6 +10,7 @@ categories:
   - Nodejs
 keywords:
   - nodejs,测试,前端开发,React.js,vue.js,node.js,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
+description: 在node中写API的单元测试吧
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd5b4e1.jpg
 ---

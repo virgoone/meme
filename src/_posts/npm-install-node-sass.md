@@ -7,6 +7,7 @@ tags:
   - node-sass
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
+description: 安装 node-sass 的时候总是不成功，各种网络问题，只能自己想法找代理了
 ---
 
 最近安装 node-sass 的时候总是会各种不成功

@@ -12,6 +12,7 @@ categories:
   - vuejs
 keywords:
   - vuejs,前端学习,开眼,eyepetizer,开眼视频,前端开发,React.js,vue.js,node.js,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
+description: 学习vue做的一个简单的小项目，来完成一个网页
 cover_detail: https://cdn.ugc.marryto.me//blog/poster/5b1a7ecd88810.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/poster/5b1a7ecd88810.jpg
 ---

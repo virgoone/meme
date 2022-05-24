@@ -9,7 +9,7 @@ tags:
   - 移动端输入框
 cover_detail: https://cdn.ugc.marryto.me//blog/5bd989771fbb5.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5bd989771fbb5.jpg
-subtitle: 论如何解决输入框fixed的bug
+description: 论如何解决输入框fixed的bug，最近做的一个需求加入了输入发送信息的功能，设计给到的设计稿上需要实现一版fixed输入框，软键盘遮挡到输入框引起的显示问题在移动端比较常见，自己尝试了几种方案
 ---
 
 最近做的一个需求加入了输入发送信息的功能，设计给到的设计稿上需要实现一版fixed输入框，众所周知，在PC上这样的需求很容易就可以实现，但是在手机上因为软键盘弹出的问题，不管是在iOS或者是在Android上，都会有各种严重问题，比如说：软键盘遮挡到输入框引起的显示问题等

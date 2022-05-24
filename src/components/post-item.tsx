@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict'
-import { PostType } from '../utils/get-posts'
+import { PostType } from '../utils/posts
 
 function distanceToNow(dateTime: Date) {
   return formatDistanceToNowStrict(dateTime, {
@@ -31,7 +31,7 @@ const A = ({
 }
 
 export default function PostItem(props: { post: PostType }) {
-  const { title, slug, content, date } = props.post
+  const { title, description, slug, content, date } = props.post
 
   return (
     <article className="post-item relative group" aria-label={title}>
@@ -41,7 +41,7 @@ export default function PostItem(props: { post: PostType }) {
           {title}
         </h3>
         <div className="mt-2 mb-4 wysiwyg wysiwyg-slate wysiwyg-a:relative wysiwyg-a:z-10 dark:wysiwyg-dark line-clamp-3 max-w-none">
-          {content}
+          {description}
         </div>
       </div>
       <dl className="relative">

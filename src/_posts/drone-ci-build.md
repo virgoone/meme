@@ -9,7 +9,7 @@ tags:
   - Drone-CI
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
-subtitle: 集成Gitea和Drone-CI之解放生产力
+description: 上一篇我们搭建了自己的Git服务，搭建Git之后，想找一个能解放生产力的工具，本文是集成Gitea和Drone-CI之解放生产力之方案，可参考步骤搭建自己的CI/CD服务
 ---
 
 上一篇我们搭建了自己的Git服务器 [搭建自己的Git服务器-Gitea安装教程](/build-own-git-server)， 搭建Git之后，想找一个能解放生产力的工具

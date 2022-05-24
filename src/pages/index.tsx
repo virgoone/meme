@@ -1,11 +1,11 @@
 import Head from 'next/head'
 import PageLayout from '../layouts/page'
-import { getAllPosts, PostType } from '../utils/get-posts'
+import { getAllPosts, PostType } from '../utils/posts
 import PostItem from '../components/post-item'
 import { useMemo } from 'react'
 
 export const getStaticProps = async () => {
-  const posts = getAllPosts([
+  const posts =await getAllPosts([
     'title',
     'date',
     'slug',
@@ -14,8 +14,7 @@ export const getStaticProps = async () => {
     'categories',
     'cover_index',
     'keywords',
-    'subtitle',
-    'content',
+    'extra',
     'tags',
   ])
 
