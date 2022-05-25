@@ -52,41 +52,38 @@ export default function PostItem(props: { post: PostType }) {
 
   return (
     <article className="post-item relative group" aria-label={title}>
-      <div className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-xl group-hover:bg-slate-50/70 dark:group-hover:bg-slate-800/50"></div>
-      <div className="relative">
-        <h3 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-200 pt-8 lg:pt-0 post-item-title">
-          {title}
-          <Tags tags={metadata.tags} />
-        </h3>
-        <div className="mt-2 mb-4 wysiwyg wysiwyg-slate wysiwyg-a:relative wysiwyg-a:z-10 dark:wysiwyg-dark line-clamp-3 max-w-none">
-          {description}
-          <A
-            className="flex items-center text-sm text-sky-500 font-medium"
-            href={`/${slug}`}
-          >
-            <span className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span>
-            <span className="relative">Read more</span>
-          </A>
-        </div>
-      </div>
-      <dl className="relative">
-        <dt className="sr-only">Date</dt>
-        <dd className="whitespace-nowrap text-sm leading-6 dark:text-slate-400">
-          <div className="flex items-center">
-            <time className="mr-2" dateTime={date}>
-              {distanceToNow(new Date(date))}
-            </time>
-            {metadata.extra && (
-              <>
-                <span className='ml-2 text-xs text-gray-400 dark:text-gray-500'>{`大概 ${metadata.extra.minutes || 1} 分钟`}</span>
-                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">{`${
-                  metadata.extra.count.total || 1
-                } 字`}</span>
-              </>
-            )}
+      <A href={`/${slug}`}>
+        <div className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-xl group-hover:bg-slate-50/70 dark:group-hover:bg-slate-800/50"></div>
+        <div className="relative">
+          <h3 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-200 pt-8 lg:pt-0 post-item-title">
+            {title}
+            <span className='block'><Tags tags={metadata.tags} /></span>
+          </h3>
+          <div className="mt-2 mb-4 wysiwyg wysiwyg-slate wysiwyg-a:relative wysiwyg-a:z-10 dark:wysiwyg-dark line-clamp-3 max-w-none">
+            {description}
           </div>
-        </dd>
-      </dl>
+        </div>
+        <dl className="relative">
+          <dt className="sr-only">Date</dt>
+          <dd className="whitespace-nowrap text-sm leading-6 dark:text-slate-400">
+            <div className="flex items-center">
+              <time className="mr-2" dateTime={date}>
+                {distanceToNow(new Date(date))}
+              </time>
+              {metadata.extra && (
+                <>
+                  <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">{`大概 ${
+                    metadata.extra.minutes || 1
+                  } 分钟`}</span>
+                  <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">{`${
+                    metadata.extra.count.total || 1
+                  } 字`}</span>
+                </>
+              )}
+            </div>
+          </dd>
+        </dl>
+      </A>
     </article>
   )
 }
