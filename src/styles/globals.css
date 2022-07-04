@@ -212,3 +212,6 @@ article .anchor-icon {
 .wysiwyg .react-cool-image:hover img {
   transform: scale(1.0082);
 }
+.wysiwyg :where(a code):not(:where([class~=not-wysiwyg] *)) {
+  color: var(--prism-decorator);
+}

@@ -9,7 +9,7 @@ tags:
   - 解放生产力
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecc2215b.jpg
-description: 在新公司之后一直在做低代码和无代码工具，虽然之前已经见过很多类似的工具或者平台，而且刚开始接触前端的时候大家很熟悉的使用的dreamvever等，通俗来讲都是低代码工具，那做了这么长时间或者思考这么长时间，对代代码理解到底是怎么样的呢
+description: 在新公司之后一直在做低代码和无代码工具，虽然之前已经见过很多类似的工具或者平台，而且刚开始接触前端的时候大家很熟悉的使用的Dreamvever等，通俗来讲都是低代码工具，那做了这么长时间或者思考这么长时间，对低代码理解到底是怎么样的呢
 ---
 
 ## 前言
