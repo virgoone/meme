@@ -88,8 +88,6 @@ description: 在新公司之后一直在做低代码和无代码工具，虽然�
 
 如果上面所想的完善的话，应该算是一个达到合格线的符合业务使用的低代码平台了
 
-<p>已经完成的编辑项生成平台</p>
-
 <Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me/blog/lowcode/WechatIMG435.jpeg' title='编辑器生成平台' alt='编辑器生成平台'/>
 
 ## 资料：

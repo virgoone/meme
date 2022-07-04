@@ -38,8 +38,8 @@ article.wysiwyg blockquote {
   @apply dark:border-gray-700 dark:text-gray-400;
 }
 
-article.wysiwyg p.figcaption {
-  @apply pl-6 text-gray-700 text-center;
+article.wysiwyg p.wysiwyg-figcaption {
+  @apply pl-6 text-gray-700 text-center opacity-75 text-xs;
   @apply dark:text-gray-400;
 }
 
