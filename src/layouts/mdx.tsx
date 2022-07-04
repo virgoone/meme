@@ -256,11 +256,16 @@ const loader = (src: string) => {
 }
 
 const Image = (props: ImageProps) => {
-  const { src: url, ...other } = props
+  const { src: url, title, ...other } = props
   const formatOptions = loader(url)
-  const options = { ...other, ...formatOptions } as ImageProps
+  const options = { title, ...other, ...formatOptions } as ImageProps
 
-  return <CoolImage {...options} />
+  return (
+    <div className='wysiwyg-image-figure'>
+      <CoolImage {...options} />
+      {title && <p className='wysiwyg-figcaption'>{title}</p>}
+    </div>
+  )
 }
 
 const components = {
