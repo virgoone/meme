@@ -58,6 +58,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       />
       <Script
+        async
+        defer
+        data-website-id="62ebd1d8-92c8-46a0-bcc3-af94aab78fcd"
+        src="https://sa.douni.one/dounione.js"
+        onLoad={() => {
+          // @ts-ignore
+          window.dounione = window.dounione || window.umami || {}
+        }}
+      />
+      <Script
         id="hotjar-base"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{

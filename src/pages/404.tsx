@@ -38,6 +38,8 @@ const NotFoundPage: NextPage = () => {
             onClick={() => {
               router.replace('/')
               window?.gtag?.('event', 'back_to_home')
+              //@ts-ignore
+              window?.dounione?.trackEvent('back_to_home', 'click')
             }}
           >
             回到首页
