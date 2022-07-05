@@ -179,24 +179,24 @@ this.launchArgs = {
 目前C端已经有大部分业务已经接入使用。
 
 <div className="wysiwyg-image-figure">
-  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/641.png' title='案例1' alt='案例1'/>
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/641.jpeg' title='案例1' alt='案例1'/>
   <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/642.png' title='案例2' alt='案例2'/>
   <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/643.png' title='案例3' alt='案例3'/>
-  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/644.png' title='案例4' alt='案例4'/>
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/644.jpeg' title='案例4' alt='案例4'/>
 </div>
 
 ## 性能数据展示
 为了定期监控不同团队接入的性能情况，我们做了一个简单的性能监控页面。
 
-![性能数据展示](https://cdn.ugc.marryto.me/blog/laix/laix/645.png "性能数据展示")
+![性能数据展示](https://cdn.ugc.marryto.me/blog/laix/laix/645.jpeg "性能数据展示")
 
 ## 平台化工具
 
 我们发现在存在一些样式差不多的图片，只是文字的改动，或者是小部分样式改动，需要设计师反复出图，浪费人力，所以我们做了一个可以通过模板生成图片的后台工具。
 
-![平台化工具](https://cdn.ugc.marryto.me/blog/laix/laix/646.png "平台化工具")
+![平台化工具](https://cdn.ugc.marryto.me/blog/laix/laix/646.jpeg "平台化工具")
 
-![平台化工具](https://cdn.ugc.marryto.me/blog/laix/laix/647.png "平台化工具")
+![平台化工具](https://cdn.ugc.marryto.me/blog/laix/laix/647.jpeg "平台化工具")
 
 这里可能有同学会问，模板的代码需要人工去写吗，如果人工去写的话还不如设计师改一下也挺快，所以这边我们还提供一个可以从figma设计稿一键转成react组件的工具，这样整个后台就不需要太大的维护成本，且可以用很小的代价不断扩展模板。
 
