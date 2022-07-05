@@ -2,15 +2,15 @@
 title: 提升流利说图片生产10倍效率的方法
 date: 2020-03-17 13:05:53
 tags:
-  - 暗黑模式
-  - css
-  - dark
-  - theme
+  - 流利说
+  - puppeteer
+  - 内容生成
+  - 渠道投放
 categories:
   - 2017
   - 数码
 keywords:
-  - 流利说,puppeteer
+  - 流利说,puppeteer,内容生成,渠道投放
 description: 流利说是一家比较重内容的公司。围绕着整个英语学习，从渠道投放，商业转化，课程内容，分享等都充满了各种内容生成环节
 cover_detail: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
 cover_index: https://cdn.ugc.marryto.me//blog/5b1a7ecd3722e.jpg
