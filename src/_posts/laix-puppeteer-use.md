@@ -128,49 +128,49 @@ this.launchArgs = {
    <thead> 
     <tr> 
      <th><span>对比维度</span></th> 
-     <th colspan="1">子维度</th> 
+     <th colSpan="1">子维度</th> 
      <th>Canvas/客户端渲染</th> 
      <th>使用MICKEY渲染</th> 
     </tr> 
    </thead> 
    <tbody> 
     <tr> 
-     <td rowspan="3"><span>学习代码<br /><br /></span></td> 
-     <td colspan="1"><span>代码体积</span></td> 
+     <td rowSpan="3"><span>学习代码<br /><br /></span></td> 
+     <td colSpan="1"><span>代码体积</span></td> 
      <td><span>占用包体积</span></td> 
      <td><span>代码存放在服务端，无需下载</span></td> 
     </tr> 
     <tr> 
-     <td colspan="1"><span>代码可读性</span></td> 
+     <td colSpan="1"><span>代码可读性</span></td> 
      <td><span>较差，调试复杂</span></td> 
      <td><span>可读，易于调试</span></td> 
     </tr> 
     <tr> 
-     <td colspan="1"><span>代码复用性</span></td> 
+     <td colSpan="1"><span>代码复用性</span></td> 
      <td><span>多端重复编码</span></td> 
      <td><span>Node 端统一处理，无须重复编码</span></td> 
     </tr> 
     <tr> 
-     <td rowspan="2"><span>兼容性</span></td> 
-     <td colspan="1"><span>小程序</span></td> 
+     <td rowSpan="2"><span>兼容性</span></td> 
+     <td colSpan="1"><span>小程序</span></td> 
      <td><span>小程序 canvas 存在兼容问题</span></td> 
      <td><span>服务器用chrome版本78，可以支持各种新特性，无兼容问题</span></td> 
     </tr> 
     <tr> 
-     <td colspan="1"><span>h5</span></td> 
-     <td colspan="1"><span>低版本android上的canvas存在兼容问题</span></td> 
-     <td colspan="1"><span>服务器用chrome版本78，可以支持各种新特性，无兼容问题</span></td> 
+     <td colSpan="1"><span>h5</span></td> 
+     <td colSpan="1"><span>低版本android上的canvas存在兼容问题</span></td> 
+     <td colSpan="1"><span>服务器用chrome版本78，可以支持各种新特性，无兼容问题</span></td> 
     </tr> 
     <tr> 
-     <td rowspan="2"><span>性能</span></td> 
-     <td colspan="1"><span>字体</span></td> 
-     <td colspan="1"><span>需要额外引入字体库，影响页面性能</span></td> 
-     <td colspan="1"><span>服务器预装字体</span></td> 
+     <td rowSpan="2"><span>性能</span></td> 
+     <td colSpan="1"><span>字体</span></td> 
+     <td colSpan="1"><span>需要额外引入字体库，影响页面性能</span></td> 
+     <td colSpan="1"><span>服务器预装字体</span></td> 
     </tr> 
     <tr> 
-     <td colspan="1"><span>资源加载</span></td> 
-     <td colspan="1"><span>用户实时加载静态资源</span></td> 
-     <td colspan="1"><span>服务器可以预加载静态资源</span></td> 
+     <td colSpan="1"><span>资源加载</span></td> 
+     <td colSpan="1"><span>用户实时加载静态资源</span></td> 
+     <td colSpan="1"><span>服务器可以预加载静态资源</span></td> 
     </tr> 
   </tbody> 
 </table>
@@ -178,11 +178,12 @@ this.launchArgs = {
 ## 已接入的案例
 目前C端已经有大部分业务已经接入使用。
 
-![案例](https://cdn.ugc.marryto.me/blog/laix/laix/641.png "案例1")
-![案例](https://cdn.ugc.marryto.me/blog/laix/laix/642.png "案例2")
-![案例](https://cdn.ugc.marryto.me/blog/laix/laix/643.png "案例3")
-![案例](https://cdn.ugc.marryto.me/blog/laix/laix/644.png "案例4")
-
+<div className="wysiwyg-image-figure">
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/641.png' title='案例1' alt='案例1'/>
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/642.png' title='案例2' alt='案例2'/>
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/643.png' title='案例3' alt='案例3'/>
+  <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/644.png' title='案例4' alt='案例4'/>
+</div>
 
 ## 性能数据展示
 为了定期监控不同团队接入的性能情况，我们做了一个简单的性能监控页面。

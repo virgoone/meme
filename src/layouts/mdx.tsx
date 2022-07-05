@@ -261,10 +261,10 @@ const Image = (props: ImageProps) => {
   const options = { title, ...other, ...formatOptions } as ImageProps
 
   return (
-    <div className='wysiwyg-image-figure'>
+    <>
       <CoolImage {...options} />
       {title && <p className='wysiwyg-figcaption'>{title}</p>}
-    </div>
+    </>
   )
 }
 
