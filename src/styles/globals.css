@@ -213,7 +213,8 @@ article .anchor-icon {
   transform: scale(1.0082);
 }
 
-.wysiwyg :where(a code):not(:where([class~=not-wysiwyg] *)) {
+.wysiwyg :where(a code):not(:where([class~=not-wysiwyg] *)),
+.wysiwyg :where(thead th):not(:where([class~=not-wysiwyg] *)) {
   color: var(--prism-decorator);
 }
 
