@@ -178,7 +178,7 @@ this.launchArgs = {
 ## 已接入的案例
 目前C端已经有大部分业务已经接入使用。
 
-<div className="wysiwyg-image-figure">
+<div className="wysiwyg-image-figure flex justify-items-stretch">
   <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/641.jpeg' title='案例1' alt='案例1'/>
   <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/642.png' title='案例2' alt='案例2'/>
   <Image className="wysiwyg-image inline" src='https://cdn.ugc.marryto.me/blog/laix/laix/643.png' title='案例3' alt='案例3'/>
