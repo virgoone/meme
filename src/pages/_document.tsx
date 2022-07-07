@@ -27,6 +27,10 @@ class MyDocument extends Document {
               style={{ display: 'none', visibility: 'hidden' }}
             />
           </noscript>
+          <meta
+            name="google-site-verification"
+            content="1oG2zzjYlvotiNvqILcn6NlqInOHK_Ncgr6RolwWSgI"
+          />
         </Head>
         <body>
           <Main />
