@@ -214,4 +214,10 @@ module.exports = {
 配置构建时使用的 `babel` 或者 `esbuild` 设置，其中 `babel` 的配置也可以通过使用 `babel.config.js` 方式来修改
 
 ## 结尾
-整体封装两个项目下来也是自己对 `webpack` 和 `react`、`babel`等的一次熟悉过程，如果没有尝试过，或者之前一直使用类似 cra、vue-cli-service的同学来说也算是一次深造的过程，建议大家都体验一下，这样能更好的读懂前端构建流程链路，对自己的成长也是一种比较大的帮助了，现在来看中大型公司的项目脚手架也是这样来的，如果成功体验过，也能更好的hold住一个比较大的前端项目架构的
+整体封装两个项目下来也是自己对 `webpack` 和 `react`、`babel`等的一次熟悉过程，如果没有尝试过，或者之前一直使用类似 cra、vue-cli-service的同学来说也算是一次深造的过程
+
+建议大家都体验一下，这样能更好的读懂前端构建流程链路，对自己的成长也是一种比较大的帮助了，现在来看中大型公司的项目脚手架也是这样来的，如果成功体验过，也能更好的hold住一个比较大的前端项目架构的
+
+项目Demo展示
+  - [https://react-cool-image.netlify.app/](https://react-cool-image.netlify.app/)
+  - [https://zz-house-lark.vercel.app/](https://zz-house-lark.vercel.app/)
