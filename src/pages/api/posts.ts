@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse<Data>,
 ) {
   const { limit, fields = 'title,date,description' } = req.query
-  const limitCount = parseInt(limit?.toString()) || 5
+  const limitCount = limit ? parseInt(limit?.toString()) : 5
   const posts = await getAllPosts(fields.toString().split(','))
   res.status(200).json({
     posts: (limitCount ? posts.splice(0, limitCount) : posts) as PostType[],
