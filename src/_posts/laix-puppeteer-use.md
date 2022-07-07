@@ -7,8 +7,9 @@ tags:
   - 内容生成
   - 渠道投放
 categories:
-  - 2017
-  - 数码
+  - 2020
+  - puppeteer
+  - Node
 keywords:
   - 流利说,puppeteer,内容生成,渠道投放
 description: 流利说是一家比较重内容的公司。围绕着整个英语学习，从渠道投放，商业转化，课程内容，分享等都充满了各种内容生成环节
