@@ -1,6 +1,6 @@
 ---
 title: 搭建自己的Git服务器-Gitea安装教程
-date: 2018-06-08 21:28:34
+date: 2018-06-08 21:28:34 +8
 tags:
   - git
   - gitea

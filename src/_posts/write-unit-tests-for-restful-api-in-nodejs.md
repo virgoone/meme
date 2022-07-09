@@ -1,6 +1,6 @@
 ---
 title: 在 Node.js 中为 Restful API 编写单元测试
-date: 2017-05-10 13:48:54
+date: 2017-05-10 13:48:54 +8
 tags:
   - Restful
   - API单元测试
@@ -211,7 +211,7 @@ describe('User API', function () {
 
 ## 参考资料
 
-[https://zh.wikipedia.org/zh-cn/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95](https://zh.wikipedia.org/zh-cn/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+[https://zh.wikipedia.org/zh-cn/单元测试](https://zh.wikipedia.org/zh-cn/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
 [http://blog.hubstaff.com/why-you-should-write-unit-tests/](http://blog.hubstaff.com/why-you-should-write-unit-tests/)
 [https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing)
 [https://www.zhihu.com/question/28729261/answer/94964928](https://www.zhihu.com/question/28729261/answer/94964928)

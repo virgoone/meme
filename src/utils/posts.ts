@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { join } from 'path'
 import matter from 'gray-matter'
+import dayjs from 'dayjs'
 import { getWordCount } from './words-count'
 import { getPostFileSource } from '.'
 
@@ -46,7 +47,8 @@ export async function getPostBySlug(slug: string, fields: string[] = []) {
   const fileContents = fs.readFileSync(fullPath, 'utf8')
   const { data, content } = matter(fileContents)
   if (data.date) {
-    data.date = new Date(data.date).toISOString()
+    data.date = dayjs(data.date).local().format()
+    // new Date(data.date).toISOString()
   }
 
   const mdxSource = await getPostFileSource(content, data)

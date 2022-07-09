@@ -1,6 +1,6 @@
 ---
 title: 深入研究Virtual DOM【转载】
-date: 2017-05-23 18:33:07
+date: 2017-05-23 18:33:07 +8
 tags:
   - preact
   - 前端

@@ -1,6 +1,6 @@
 ---
 title: 使用flvjs封装html5 video player
-date: 2017-04-13 14:20:20
+date: 2017-04-13 14:20:20 +8
 tags:
   - video
   - flvjs

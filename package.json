@@ -14,7 +14,7 @@
     "@mdx-js/mdx": "2.0.0",
     "@mdx-js/react": "2.0.0",
     "classnames": "^2.3.1",
-    "date-fns": "^2.28.0",
+    "dayjs": "^1.11.3",
     "github-slugger": "^1.4.0",
     "gray-matter": "^4.0.3",
     "next": "latest",

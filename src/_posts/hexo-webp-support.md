@@ -1,6 +1,6 @@
 ---
 title: 给hexo增加webp图片支持
-date: 2017-03-08 19:44:06
+date: 2017-03-08 19:44:06 +8
 tags:
   - hexo
   - webp

@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { MDXRemote } from 'next-mdx-remote'
 import Slugger from 'github-slugger'
-import format from 'date-fns/format'
+import dayjs from 'dayjs'
 import Highlight, { defaultProps, Language } from 'prism-react-renderer'
 import Link from 'next/link'
 import innerText from 'react-innertext'
@@ -263,7 +263,7 @@ const Image = (props: ImageProps) => {
   return (
     <>
       <CoolImage {...options} />
-      {title && <p className='wysiwyg-figcaption'>{title}</p>}
+      {title && <p className="wysiwyg-figcaption">{title}</p>}
     </>
   )
 }
@@ -330,7 +330,7 @@ export default function MDXLayout({
             {metadata.description}
           </p>
           <section className="article-byline-content text-sm text-gray-400 dark:text-gray-500">
-            <span>{format(new Date(metadata.date), 'yyyy-MM-dd')}</span>
+            <span>{dayjs(metadata.date).format('ll')}</span>
             {metadata.extra && (
               <>
                 <span>{`${metadata.extra.minutes || 1} 分钟`}</span>

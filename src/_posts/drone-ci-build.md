@@ -1,6 +1,6 @@
 ---
 title: 基于Gitea+Drone搭建自己的CI/CD平台
-date: 2018-06-09 21:48:52
+date: 2018-06-09 21:48:52 +8
 tags:
   - gitea
   - drone

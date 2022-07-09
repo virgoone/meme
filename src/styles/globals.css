@@ -46,6 +46,7 @@ article.wysiwyg p.wysiwyg-figcaption {
 article.wysiwyg a.wysiwyg-link {
   display: inline-block;
   position: relative;
+  word-break: break-all;
 }
 
 article.wysiwyg a.wysiwyg-link::before {

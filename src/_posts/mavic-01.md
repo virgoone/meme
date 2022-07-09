@@ -1,6 +1,6 @@
 ---
 title: 大疆DJI Mavic Pro 近期视频图片整理
-date: 2017-03-02 18:41:35
+date: 2017-03-02 18:41:35 +8
 plyr: true
 tags:
   - mavic

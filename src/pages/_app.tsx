@@ -5,7 +5,17 @@ import type { AppProps, NextWebVitalsMetric } from 'next/app'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Script from 'next/script'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import utc from 'dayjs/plugin/utc'
+import 'dayjs/locale/zh-cn'
 import 'react-cool-image/dist/style.css'
+
+dayjs.extend(utc)
+dayjs.extend(relativeTime)
+dayjs.extend(localizedFormat)
+dayjs.locale('zh-cn')
 
 if (typeof window !== 'undefined' && !('requestIdleCallback' in window)) {
   window.requestIdleCallback = (fn) => setTimeout(fn, 1)

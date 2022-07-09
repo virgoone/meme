@@ -1,6 +1,6 @@
 ---
 title: 个人的一些想法
-date: 2016-05-12 19:08:37
+date: 2016-05-12 19:08:37 +8
 categories:
   - Virgo
 tags:

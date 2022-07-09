@@ -1,11 +1,9 @@
 import Link from 'next/link'
-import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict'
+import dayjs from 'dayjs'
 import { PostType } from '../utils/posts'
 
-function distanceToNow(dateTime: Date) {
-  return formatDistanceToNowStrict(dateTime, {
-    addSuffix: true,
-  })
+function distanceToNow(dateTime: string) {
+  return dayjs(dateTime).fromNow()
 }
 const A = ({
   children,
@@ -57,7 +55,9 @@ export default function PostItem(props: { post: PostType }) {
         <div className="relative">
           <h3 className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-200 pt-8 lg:pt-0 post-item-title">
             {title}
-            <span className='block'><Tags tags={metadata.tags} /></span>
+            <span className="block">
+              <Tags tags={metadata.tags} />
+            </span>
           </h3>
           <div className="mt-2 mb-4 wysiwyg wysiwyg-slate wysiwyg-a:relative wysiwyg-a:z-10 dark:wysiwyg-dark line-clamp-3 max-w-none">
             {description}
@@ -68,7 +68,7 @@ export default function PostItem(props: { post: PostType }) {
           <dd className="whitespace-nowrap text-sm leading-6 dark:text-slate-400">
             <div className="flex items-center">
               <time className="mr-2" dateTime={date}>
-                {distanceToNow(new Date(date))}
+                {distanceToNow(date)}
               </time>
               {metadata.extra && (
                 <>

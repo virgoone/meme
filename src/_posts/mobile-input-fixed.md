@@ -1,6 +1,6 @@
 ---
 title: 解决移动端fixed输入框问题
-date: 2018-10-31 18:45:47
+date: 2018-10-31 18:45:47 +8
 tags:
   - mobile
   - input

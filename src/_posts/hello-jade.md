@@ -1,6 +1,6 @@
 ---
 title: jade模版引擎学习
-date: 2016-05-16 21:15:35
+date: 2016-05-16 21:15:35 +8
 categories:
   - jade
 tags:

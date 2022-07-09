@@ -1,6 +1,6 @@
 ---
 title: 安装discourse遇到的各种坑
-date: 2016-05-25 16:09:21
+date: 2016-05-25 16:09:21 +8
 categories:
   - discourse
 tags:
