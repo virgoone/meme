@@ -237,10 +237,11 @@ const A = ({ children, ...props }: IElementProps) => {
   )
 }
 
-const loader = (src: string) => {
+const loader = (src: string, format = true) => {
   if (
-    src.startsWith('https://cdn.ugc.marryto.me') ||
-    src.startsWith('//cdn.ugc.marryto.me')
+    (src.startsWith('https://cdn.ugc.marryto.me') ||
+      src.startsWith('//cdn.ugc.marryto.me')) &&
+    format
   ) {
     return {
       format: true,
@@ -256,8 +257,8 @@ const loader = (src: string) => {
 }
 
 const Image = (props: ImageProps) => {
-  const { src: url, title, ...other } = props
-  const formatOptions = loader(url)
+  const { src: url, title, format, ...other } = props
+  const formatOptions = loader(url, !!format)
   const options = { title, ...other, ...formatOptions } as ImageProps
 
   return (
