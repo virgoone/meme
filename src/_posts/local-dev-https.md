@@ -32,7 +32,7 @@ cover_index: https://cdn.ugc.marryto.me//blog/poster/5b1a7ecd88810.jpg
 > - mkcert 已被列为受信任的颁发机构，所以浏览器会信任该证书并创建 HTTPS 连接。
 
 
-<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me/blog/3kdjci7NORnOw54fMia9.avif' title='mkcert 工作原理图' alt='mkcert 工作原理图'/>
+<Image className="wysiwyg-image" src='https://cdn.ugc.marryto.me/blog/3kdjci7NORnOw54fMia9.avif' format={false} title='mkcert 工作原理图' alt='mkcert 工作原理图'/>
 
 上述描述摘抄自 [https://web.dev/how-to-use-local-https/](https://web.dev/how-to-use-local-https/)，本次开发主要也是基于此文章，使用的工具是：`mkcert`
 
