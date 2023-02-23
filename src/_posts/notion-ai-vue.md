@@ -10,9 +10,9 @@ categories:
   - Notion AI
 keywords:
   - Notion,VUE,编程,程序员,开发者,Hacker News,ECMAScript,开源,Github
-description: 如何使用Notion AI生成一些关于VUE的面试问题和答案
-cover_detail: https://dogefs.s3.ladydaily.com/~/source/unsplash/photo-1677034897383-d7dffb7615f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzMXx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80
-cover_index: https://dogefs.s3.ladydaily.com/~/source/unsplash/photo-1677034897383-d7dffb7615f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzMXx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80
+description: Notion AI的一些体验，生成技术面试问题和答案，先测试了下一些关于VUE的问题和回答
+cover_detail: https://dogefs.s3.ladydaily.com/~/source/unsplash/photo-1676999208002-ebebd2469592?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4N3x8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80
+cover_index: https://dogefs.s3.ladydaily.com/~/source/unsplash/photo-1676999208002-ebebd2469592?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw4N3x8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80
 ---
 
 前一段时间加入等待列表很久的Notion AI突然发邮件说可以体验了，迫不及待的体现了下效果，据传也是用的open AI的chatgpt生成的，不知道是不是真的，但体验效果是真的不错，下面是生成的一些关于vue的面试问题和答案:
