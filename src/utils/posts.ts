@@ -36,7 +36,7 @@ export function getPostSlugs() {
     .readdirSync(postsDirectory, {
       withFileTypes: true,
     })
-    .filter((path) => /\.mdx?$/.test(path.name))
+    .filter((path) => /\.mdx?$/.test(path.name));
 }
 
 export async function getPostBySlug(slug: string, fields: string[] = []) {

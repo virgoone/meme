@@ -9,7 +9,7 @@ export default function ThemeSwitch() {
   const toggleTheme = () => {
     window?.gtag?.('event', 'toggle_theme')
     //@ts-ignore
-    window?.dounione?.trackEvent('toggle_theme', 'click')
+    // window?.dounione?.trackEvent('toggle_theme', 'click')
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 

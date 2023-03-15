@@ -22,10 +22,10 @@ const A = ({
     )
   }
   return (
-    <Link href={props.href || ''}>
-      <a {...props}>{children}</a>
+    <Link href={props.href || ''} {...props}>
+      {children}
     </Link>
-  )
+  );
 }
 
 const Tags = ({ tags }: { tags?: string[] | string | undefined }) => {

@@ -229,12 +229,12 @@ const A = ({ children, ...props }: IElementProps) => {
     )
   }
   return (
-    <Link href={props.href || ''}>
-      <a className="wysiwyg-link" {...props}>
-        {children}
-      </a>
-    </Link>
-  )
+    (<Link href={props.href || ''} className="wysiwyg-link" {...props}>
+
+      {children}
+
+    </Link>)
+  );
 }
 
 const loader = (src: string, format = true) => {
