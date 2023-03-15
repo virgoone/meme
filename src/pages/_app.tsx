@@ -67,7 +67,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           window?.gtag?.('config', 'G-0Z128XH378')
         }}
       />
-      <Script
+      {/* <Script
         async
         defer
         data-website-id="62ebd1d8-92c8-46a0-bcc3-af94aab78fcd"
@@ -76,7 +76,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           // @ts-ignore
           window.dounione = window.dounione || window.umami || {}
         }}
-      />
+      /> */}
       <Script
         id="hotjar-base"
         strategy="afterInteractive"
