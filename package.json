@@ -13,6 +13,7 @@
     "@giscus/react": "^2.2.8",
     "@mdx-js/mdx": "2.0.0",
     "@mdx-js/react": "2.0.0",
+    "@vercel/analytics": "^0.1.11",
     "classnames": "^2.3.1",
     "dayjs": "^1.11.3",
     "github-slugger": "^1.4.0",

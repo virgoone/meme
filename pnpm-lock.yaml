@@ -14,6 +14,7 @@ specifiers:
   '@types/nprogress': ^0.2.0
   '@types/react': 17.0.39
   '@types/react-dom': ^18.0.4
+  '@vercel/analytics': ^0.1.11
   autoprefixer: ^10.4.7
   classnames: ^2.3.1
   cssnano: ^5.1.8
@@ -43,6 +44,7 @@ dependencies:
   '@giscus/react': 2.2.8_biqbaboplfbrettd7655fr4n2y
   '@mdx-js/mdx': 2.0.0
   '@mdx-js/react': 2.0.0_react@18.2.0
+  '@vercel/analytics': 0.1.11_react@18.2.0
   classnames: 2.3.1
   dayjs: 1.11.3
   github-slugger: 1.4.0
@@ -1901,6 +1903,14 @@ packages:
 
   /@types/unist/2.0.6:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
+
+  /@vercel/analytics/0.1.11_react@18.2.0:
+    resolution: {integrity: sha512-mj5CPR02y0BRs1tN3oZcBNAX9a8NxsIUl9vElDPcqxnMfP0RbRc9fI9Ud7+QDg/1Izvt5uMumsr+6YsmVHcyuw==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /@webassemblyjs/ast/1.11.1:
     resolution: {integrity: sha512-ukBh14qFLjxTQNTXocdyksN5QdM28S1CxHt2rdskFyL+xFV7VremuBLVbmCePj+URalXBENx/9Lm7lnhihtCSw==}

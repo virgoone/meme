@@ -11,6 +11,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
 import 'dayjs/locale/zh-cn'
 import 'react-cool-image/dist/style.css'
+import { Analytics } from '@vercel/analytics/react'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -94,6 +95,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       />
       <Component {...pageProps} />
+      <Analytics />
     </>
   )
 }
