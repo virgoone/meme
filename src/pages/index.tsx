@@ -1,4 +1,4 @@
-import PageLayout from '../layouts/page'
+import PageLayout from '../components/layouts/page'
 import { getAllPosts, PostType } from '../utils/posts'
 import PostItem from '../components/post-item'
 import { useMemo } from 'react'

@@ -13,8 +13,8 @@ import Link from 'next/link'
 import innerText from 'react-innertext'
 import CoolImage, { ImageProps } from 'react-cool-image'
 import Page from './page'
-import Comment from '../components/comment'
-import { useActiveAnchorSet } from '../misc/active-anchor'
+import Comment from '../comment'
+import { useActiveAnchorSet } from '../../misc/active-anchor'
 export interface IElementProps {
   children: React.ReactNode | string
   language?: Language

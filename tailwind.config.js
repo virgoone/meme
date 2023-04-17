@@ -2,6 +2,12 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx,md,mdx}'],
+  variants: {
+    extend: {
+      backgroundColor: ['active'],
+      borderColor: ['active'],
+    },
+  },
   theme: {
     extend: {
       fontFamily: {

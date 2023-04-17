@@ -1,0 +1,269 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String         @id @default(cuid())
+  name              String?
+  email             String?        @unique
+  emailVerified     DateTime?
+  image             String?
+  stripeId          String?        @unique // Stripe customer ID
+  role              String         @default("member") // 新增 role 字段
+  usageProjectLimit Int            @default(1)
+  billingCycleStart Int? // day of the month when the billing cycle starts
+  accounts          Account[]
+  sessions          Session[]
+  posts             Post[]
+  createdAt         DateTime       @default(now())
+  usageUpdatedAt    DateTime       @default(now())
+  files             File[]
+  S3                S3[]
+  ProjectUsers      ProjectUsers[]
+  SentEmail         SentEmail[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum PostStatus {
+  draft
+  published
+}
+
+model Tag {
+  id        String  @id @default(cuid())
+  name      String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  posts     Post[]  @relation("PostTag")
+
+  @@index([projectId])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  @@id([postId, tagId])
+  @@map(name: "PostTag")
+}
+
+model Category {
+  id        String  @id @default(cuid())
+  name      String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  posts     Post[]  @relation("PostCategory")
+
+  @@index([projectId])
+}
+
+model PostCategory {
+  postId     String
+  categoryId String
+
+  @@id([postId, categoryId])
+  @@map(name: "PostCategory")
+}
+
+model ProjectUsers {
+  id        String   @id @default(cuid())
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  @@unique([userId, projectId])
+  @@index([projectId])
+}
+
+enum EmailType {
+  firstDomainInvalidEmail
+  secondDomainInvalidEmail
+  firstUsageLimitEmail
+  secondUsageLimitEmail
+}
+
+model SentEmail {
+  id        String    @id @default(cuid())
+  type      EmailType
+  createdAt DateTime  @default(now())
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  project   Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+
+  @@index([userId])
+  @@index([projectId])
+}
+
+model Project {
+  id                  String          @id @default(cuid())
+  name                String
+  slug                String          @unique
+  logo                String?
+  domain              String          @unique
+  domainVerified      Boolean         @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  users               ProjectUsers[]
+  invites             ProjectInvite[]
+  domainLastChecked   DateTime        @default(now())
+  statsUsage          Int             @default(0)
+  statsUsageLimit     Int             @default(1000)
+  statsExceededUsage  Boolean         @default(false)
+  staticUsage         Int             @default(0)
+  staticUsageLimit    Int             @default(1048576) // 1024 * 1024kb
+  staticExceededUsage Boolean         @default(false)
+  tokenUsage          Int             @default(0)
+  tokenUsageLimit     Int             @default(1000) // 1000token
+  tokenExceededUsage  Boolean         @default(false)
+  sentEmails          SentEmail[]
+  S3                  S3[]
+  File                File[]
+  Post                Post[]
+  Category            Category[]
+  Tag                 Tag[]
+}
+
+model ProjectInvite {
+  email     String
+  expires   DateTime
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  createdAt DateTime @default(now())
+
+  @@unique([email, projectId])
+  @@index([projectId])
+}
+
+model Post {
+  id                 String  @id @default(cuid())
+  domain             String // domain of the link (e.g. dub.sh) – also stored on Redis
+  title              String
+  slug               String // key of the link (e.g. /github) – also stored on Redis
+  subtitle           String? @db.VarChar(280)
+  content            String  @db.Text
+  langauge           String  @default("zh-CN")
+  views              Int     @default(0) // number of views
+  views_public_stats Boolean @default(false) // whether to show public stats or not
+
+  cover_index  String? // UTM source for the link (e.g. youtube.com)
+  cover_detail String? // UTM medium for the link (e.g. social)
+  // 博客文章和标签是多对多的关系
+  tags         Tag[]      @relation("PostTag")
+  // 博客文章和分类是多对多的关系
+  categories   Category[] @relation("PostCategory")
+
+  // User who created the link
+  user    User?       @relation(fields: [userId], references: [id])
+  userId  String?
+  project Project?    @relation(fields: [domain], references: [domain], onUpdate: Cascade, onDelete: Cascade)
+  status  PostStatus? @default(draft)
+
+  type Int @default(0) // 0:Markdown,1:html
+
+  // Project that the link belongs to
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([domain, slug, langauge])
+  // indices for links per domain/project
+  // indices for links per domain/project specific to a user
+  @@index([domain, slug, langauge, status, userId, createdAt(sort: Desc)])
+  @@index([domain, slug, langauge, status, userId, views(sort: Desc)])
+  @@index([userId])
+}
+
+model S3 {
+  id       String @id @default(cuid())
+  provider String
+  key      String
+  secret   String
+  region   String
+  endpoint String
+  bucket   String
+  cdn      String
+
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+
+  // Project that the link belongs to
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@unique([provider])
+  @@index([projectId])
+}
+
+model File {
+  id        String  @id @default(cuid())
+  cdn_url   String?
+  url       String
+  size      Int
+  md5       String
+  width     Int?
+  height    Int?
+  type      Int     @default(0) // 0博客类型 1摄影网站
+  file_type String // 文件类型
+  extra     String? @db.Text
+  is_del    Int     @default(0)
+
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([projectId])
+}

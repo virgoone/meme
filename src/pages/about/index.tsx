@@ -1,7 +1,7 @@
 import fs from 'fs'
 import {join} from 'path'
 import matter from 'gray-matter'
-import Layout from '../../layouts/mdx'
+import Layout from '../../components/layouts/mdx'
 import { getPostFileSource } from '../../utils'
 
 interface AboutProps {

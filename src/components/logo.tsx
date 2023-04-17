@@ -1,14 +1,19 @@
 import React from 'react'
 interface LogoProps {
-  className: string
+  className?: string
+  svgClassName?: string
 }
 
 export default function Logo(props: LogoProps) {
+  const { className, svgClassName } = props
   return (
-    <div className={`logo ${props.className}`}>
-      <svg viewBox="0 0 300 79">
+    <div className={`logo ${className}`}>
+      <svg
+        viewBox="0 0 300 79"
+        className={`${svgClassName || 'fill-[#000] dark:fill-white'}`}
+      >
         <defs></defs>
-        <g fill="#9329f6"></g>
+        <g></g>
         <g transform="matrix(0.777775470128254,0,0,0.777775470128254,6.110997294539955,0.48666258636554893)">
           <g>
             <path
