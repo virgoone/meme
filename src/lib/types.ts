@@ -113,3 +113,12 @@ export type DomainVerificationStatusProps =
   | 'Pending Verification'
   | 'Domain Not Found'
   | 'Unknown Error'
+
+export interface UsageProps {
+  usage: number
+  usageLimit: number
+  projectCount?: number
+  billingCycleStart?: number
+  ownerUsageLimit?: number
+  ownerExceededUsage?: boolean
+}

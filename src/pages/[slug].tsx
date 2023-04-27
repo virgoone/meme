@@ -1,7 +1,7 @@
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import Layout from '../components/layouts/mdx'
-import { postFilePaths } from '../utils'
+import { postFilePaths } from '../utils/post'
 import { getPostBySlug, PostType } from '../utils/posts'
 
 type Params = {

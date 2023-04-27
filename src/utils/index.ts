@@ -1,10 +1,8 @@
-import fs from 'fs'
-import path from 'path'
 import { serialize } from 'next-mdx-remote/serialize'
 import images from 'remark-images'
 import { customAlphabet } from 'nanoid'
-import { createClient } from '@vercel/edge-config'
-import { HOME_HOSTNAMES } from '@/lib/constants'
+import { HOME_HOSTNAMES, ccTLDs } from '@/lib/constants'
+import { get } from "@vercel/edge-config";
 
 export function capitalize(str: string) {
   if (!str || typeof str !== 'string') return str
@@ -40,15 +38,6 @@ export async function fetcher<JSON = any>(
   return res.json()
 }
 
-// POSTS_PATH is useful when you want to get the path to a specific file
-export const POSTS_PATH = path.join(process.cwd(), 'src', '_posts')
-
-// postFilePaths is the list of all mdx files inside the POSTS_PATH directory
-export const postFilePaths = fs
-  .readdirSync(POSTS_PATH)
-  // Only include md(x) files
-  .filter((path) => /\.mdx?$/.test(path))
-
 export const getPostFileSource = async (
   content: string,
   data: { [key: string]: any },
@@ -64,8 +53,6 @@ export const getPostFileSource = async (
 
   return mdxSource
 }
-
-export const edgeConfig = createClient(process.env.EDGE_CONFIG)
 
 export const isValidUrl = (url: string) => {
   try {
@@ -92,7 +79,7 @@ export const getDomainWithoutWWW = (url: string) => {
 export const isBlacklistedDomain = async (domain: string) => {
   let blacklistedDomains: string[] | undefined
   try {
-    blacklistedDomains = await edgeConfig.get('domains')
+    blacklistedDomains = await get('domains')
   } catch (e) {
     blacklistedDomains = []
   }
@@ -104,7 +91,7 @@ export const isBlacklistedDomain = async (domain: string) => {
 export const isBlacklistedKey = async (key: string) => {
   let blacklistedKeys: string[] | undefined
   try {
-    blacklistedKeys = await edgeConfig.get('keys')
+    blacklistedKeys = await get('keys')
   } catch (e) {
     blacklistedKeys = []
   }
@@ -114,7 +101,7 @@ export const isBlacklistedKey = async (key: string) => {
 export const isBlacklistedEmail = async (email: string) => {
   let blacklistedEmails: string[] | undefined
   try {
-    blacklistedEmails = await edgeConfig.get('emails')
+    blacklistedEmails = await get('emails')
   } catch (e) {
     blacklistedEmails = []
   }
@@ -124,7 +111,7 @@ export const isBlacklistedEmail = async (email: string) => {
 export const isReservedKey = async (key: string) => {
   let reservedKey: any[] | undefined
   try {
-    reservedKey = await edgeConfig.get('reserved')
+    reservedKey = await get('reserved')
   } catch (e) {
     reservedKey = []
   }
@@ -180,4 +167,51 @@ export function replaceMiddleChars(str: string) {
   const middleChars = '*'.repeat(Math.max(0, str.length - 2))
 
   return `${firstChar}${middleChars}${lastChar}`
+}
+
+export function nFormatter(num: number, digits?: number) {
+  if (!num) return '0'
+  const lookup = [
+    { value: 1, symbol: '' },
+    { value: 1e3, symbol: 'K' },
+    { value: 1e6, symbol: 'M' },
+    { value: 1e9, symbol: 'G' },
+    { value: 1e12, symbol: 'T' },
+    { value: 1e15, symbol: 'P' },
+    { value: 1e18, symbol: 'E' },
+  ]
+  const rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+  var item = lookup
+    .slice()
+    .reverse()
+    .find(function (item) {
+      return num >= item.value
+    })
+  return item
+    ? (num / item.value).toFixed(digits || 1).replace(rx, '$1') + item.symbol
+    : '0'
+}
+
+export const generateDomainFromName = (name: string) => {
+  const normalizedName = name
+    .toLowerCase()
+    .trim()
+    .replace(/[\W_]+/g, '')
+  if (normalizedName.length < 3) {
+    return ''
+  }
+  if (ccTLDs.has(normalizedName.slice(-2))) {
+    return `${normalizedName.slice(0, -2)}.${normalizedName.slice(-2)}`
+  }
+  // remove vowels
+  const devowel = normalizedName.replace(/[aeiou]/g, '')
+  if (devowel.length >= 3 && ccTLDs.has(devowel.slice(-2))) {
+    return `${devowel.slice(0, -2)}.${devowel.slice(-2)}`
+  }
+
+  const shortestString = [normalizedName, devowel].reduce((a, b) =>
+    a.length < b.length ? a : b,
+  )
+
+  return `${shortestString}.to`
 }

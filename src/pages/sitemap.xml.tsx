@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next'
 import { SitemapStream, streamToPromise } from 'sitemap'
 import { Readable } from 'stream'
-import { postFilePaths } from '../utils'
+import { postFilePaths } from '../utils/post'
 
 type SiteMapProps = {}
 

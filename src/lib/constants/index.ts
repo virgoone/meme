@@ -79,6 +79,7 @@ export { default as COUNTRIES } from './countries'
 export { default as ccTLDs } from './cctlds'
 
 export const FREE_PLAN = {
+  ProjectLimit: 1,
   StatsUsageLimit: 1000,
   StaticUsageLimit: 1048576,
   TokenUsageLimit: 1000,

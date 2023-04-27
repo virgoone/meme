@@ -54,7 +54,7 @@ model User {
   usageUpdatedAt    DateTime       @default(now())
   files             File[]
   S3                S3[]
-  ProjectUsers      ProjectUsers[]
+  projects          ProjectUsers[]
   SentEmail         SentEmail[]
 }
 
