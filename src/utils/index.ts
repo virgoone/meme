@@ -1,5 +1,3 @@
-import { serialize } from 'next-mdx-remote/serialize'
-import images from 'remark-images'
 import { customAlphabet } from 'nanoid'
 import { HOME_HOSTNAMES, ccTLDs } from '@/lib/constants'
 import { get } from "@vercel/edge-config";
@@ -36,22 +34,6 @@ export async function fetcher<JSON = any>(
   }
 
   return res.json()
-}
-
-export const getPostFileSource = async (
-  content: string,
-  data: { [key: string]: any },
-) => {
-  const mdxSource = await serialize(content, {
-    // Optionally pass remark/rehype plugins
-    mdxOptions: {
-      remarkPlugins: [images],
-      rehypePlugins: [],
-    },
-    scope: data,
-  })
-
-  return mdxSource
 }
 
 export const isValidUrl = (url: string) => {

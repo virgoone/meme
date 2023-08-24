@@ -98,6 +98,5 @@ module.exports = {
     require('@tailwindcss/typography')({
       className: 'wysiwyg',
     }),
-    require('@tailwindcss/line-clamp'),
   ],
 }

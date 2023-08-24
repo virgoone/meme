@@ -3,7 +3,7 @@ import { join } from 'path'
 import matter from 'gray-matter'
 import dayjs from 'dayjs'
 import { getWordCount } from './words-count'
-import { getPostFileSource } from '.'
+import { getPostFileSource } from './post'
 
 const postsDirectory = join(process.cwd(), 'src', '_posts')
 
