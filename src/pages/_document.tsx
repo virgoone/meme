@@ -33,7 +33,7 @@ class MyDocument extends Document {
           />
            <Script async id="Adsense-id"
              strategy="beforeInteractive"
-             crossorigin="anonymous"
+             crossOrigin="anonymous"
              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801577709600181"></Script>
         </Head>
         <body>
