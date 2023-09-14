@@ -31,6 +31,10 @@ class MyDocument extends Document {
             name="google-site-verification"
             content="1oG2zzjYlvotiNvqILcn6NlqInOHK_Ncgr6RolwWSgI"
           />
+           <Script async id="Adsense-id"
+             strategy="beforeInteractive"
+             crossorigin="anonymous"
+             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801577709600181"></Script>
         </Head>
         <body>
           <Main />
