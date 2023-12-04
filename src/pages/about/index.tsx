@@ -2,6 +2,7 @@ import fs from 'fs'
 import {join} from 'path'
 import matter from 'gray-matter'
 import { useRouter } from "next/router";
+import { useEffect, useState } from 'react'
 import Layout from '../../layouts/mdx'
 import { getPostFileSource } from '../../utils'
 
@@ -14,12 +15,18 @@ interface AboutProps {
 
 const About = (props: AboutProps) => {
   const { source, ...meta } = props
-const router = useRouter();
-//路由格式为'/projects/:id'
-const pwd= router.query.pwd 
-  if (!pwd || pwd !== '951C16718528C40A6C757B089660D28D') {
+  const router = useRouter();
+  const [verifyState, setVerifyState] = useState(false)
+  //路由格式为'/projects/:id'
+  const pwd= router.query.pwd 
+  if (!pwd || pwd !== '951C16718528C40A6C757B089660D28D'||!verifyState) {
     return <div className="text-center p-5">无访问权限</div>
   }
+
+  useEffect(()=>{
+    window.location.replace('about')
+    setVerifyState(true)
+  }, [pwd])
   return <Layout source={source} frontMatter={meta} />
 }
 
