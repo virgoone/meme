@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+:root {
+  --color-primary-50: 240 249 255;
+  --color-primary-100: 224 242 254;
+  --color-primary-200: 186 230 253;
+  --color-primary-300: 125 211 252;
+  --color-primary-400: 56 189 248;
+  --color-primary-500: 14 165 233;
+  --color-primary-600: 2 132 199;
+  --color-primary-700: 3 105 161;
+  --color-primary-800: 7 89 133;
+  --color-primary-900: 12 74 110;
+  --color-primary-950: 8 47 73;
+  --color-primary-DEFAULT: var(--color-primary-500);
+  --color-gray-50: 249 250 251;
+  --color-gray-100: 243 244 246;
+  --color-gray-200: 229 231 235;
+  --color-gray-300: 209 213 219;
+  --color-gray-400: 156 163 175;
+  --color-gray-500: 107 114 128;
+  --color-gray-600: 75 85 99;
+  --color-gray-700: 55 65 81;
+  --color-gray-800: 31 41 55;
+  --color-gray-900: 17 24 39;
+  --color-gray-950: 3 7 18;
+}
+
+.dark {
+  --color-primary-DEFAULT: var(--color-primary-400);
+}
+
+:root {
+  --header-height: 4rem;
+  --ui-background: 255 255 255;
+  --ui-foreground: var(--color-gray-700);
+}
+
+.dark {
+  --ui-background: var(--color-gray-900);
+  --ui-foreground: var(--color-gray-200);
+}
+
+html,
+body {
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  scroll-padding-top: 3rem;
+}
+
+body {
+  --tw-bg-opacity: 1;
+  background-color: rgb(var(--ui-background) / 1);
+  background-color: rgb(var(--ui-background) / var(--tw-bg-opacity));
+  font-family:
+    DM Sans,
+    'DM Sans Fallback: Arial',
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol,
+    Noto Color Emoji;
+  --tw-text-opacity: 1;
+  color: rgb(var(--ui-foreground) / 1);
+  color: rgb(var(--ui-foreground) / var(--tw-text-opacity));
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+}
+
+[data-floating-ui-portal] {
+  z-index: 100000;
+}
+
+::selection {
+  background-color: theme('colors.lime.500');
+  color: theme('colors.lime.950');
+}
+
+@keyframes typing-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.sidebar-menu-item {
+  --tw-text-opacity: 1;
+  color: rgba(108, 108, 137, var(--tw-text-opacity));
+}
+
+.sidebar-menu-item::before {
+  content: '';
+  --tw-bg-opacity: 1;
+  background-color: rgba(232, 232, 237, var(--tw-bg-opacity));
+  --tw-translate-y: -50%;
+  border-radius: 100%;
+  transform: var(--tw-transform);
+  width: 5px;
+  height: 5px;
+  top: 50%;
+  left: 21px;
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+}
+.sidebar-menu-item-active {
+  --tw-text-opacity: 1;
+  color: rgba(112, 71, 235, var(--tw-text-opacity));
+}
+.sidebar-menu-item-active::before {
+  --tw-bg-opacity: 1;
+  background-color: rgba(112, 71, 235, var(--tw-bg-opacity));
+}
+.sidebar-menu-item::after {
+  content: '';
+  top: 0px;
+  --tw-bg-opacity: 1;
+  background-color: rgba(232, 232, 237, var(--tw-bg-opacity));
+  bottom: 0px;
+  width: 1px;
+  left: 23px;
+  position: absolute;
+}
+
+.sidebar-menu-item:first-child::after {
+  top: 20px;
+}
+
+.sidebar-menu-item:last-child::after {
+  bottom: 20px;
+}

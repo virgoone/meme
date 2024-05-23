@@ -1,0 +1,14 @@
+node_modules
+.next
+*.log
+.dev
+public
+dist
+build
+coverage
+.github
+.git
+public
+.size-snapshot.json
+ald-stat-conf.js
+ald-stat.js

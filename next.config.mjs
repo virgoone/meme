@@ -1,37 +1,87 @@
+/**
+ * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
+ * This is especially useful for Docker builds.
+ */
+!process.env.SKIP_ENV_VALIDATION && (await import('./env.mjs'))
+
 /** @type {import('next').NextConfig} */
-export default {
-  headers: async () => {
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+        port: '',
+        pathname: `/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/**`,
+      }
+    ],
+  },
+
+  experimental: {
+    taint: true,
+  },
+
+  redirects() {
     return [
       {
-        // matching all API routes
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value:
-              'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-          },
-        ],
+        "source": "/twitter",
+        "destination": "https://x.com/thecalicastle",
+        "permanent": true
+      },
+      {
+        "source": "/tool",
+        "destination": "https://douni.one",
+        "permanent": true
+      },
+      {
+        "source": "/x",
+        "destination": "https://x.com/thecalicastle",
+        "permanent": true
+      },
+      {
+        "source": "/youtube",
+        "destination": "https://youtube.com/@calicastle",
+        "permanent": true
+      },
+      {
+        "source": "/tg",
+        "destination": "https://t.me/cali_so",
+        "permanent": true
+      },
+      {
+        "source": "/linkedin",
+        "destination": "https://www.linkedin.com/in/calicastle/",
+        "permanent": true
+      },
+      {
+        "source": "/github",
+        "destination": "https://github.com/CaliCastle",
+        "permanent": true
+      },
+      {
+        "source": "/bilibili",
+        "destination": "https://space.bilibili.com/8350251",
+        "permanent": true
+      }
+    ]
+  },
+
+  rewrites() {
+    return [
+      {
+        source: '/feed',
+        destination: '/feed.xml',
+      },
+      {
+        source: '/rss',
+        destination: '/feed.xml',
+      },
+      {
+        source: '/rss.xml',
+        destination: '/feed.xml',
       },
     ]
   },
-  reactStrictMode: true,
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  webpack: (config, { dev, isServer, ...options }) => {
-    // Add our custom markdown loader in order to support frontmatter
-    // and layout
-    config.resolve.fallback = {
-      ...config.resolve.fallback, // if you miss it, all the other options in fallback, specified
-      // by next.js will be dropped. Doesn't make much sense, but how it is
-      fs: false, // the solution
-    }
-
-    return config
-  },
 }
+
+export default nextConfig

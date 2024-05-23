@@ -1,0 +1,25 @@
+{
+  "singleQuote": true,
+  "printWidth": 80,
+  "semi": false,
+  "trailingComma": "all",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss", "prettier-plugin-packagejson"],
+  "importOrder": [
+    "^react$",
+    "^next/(.*)$",
+    "",
+    "<BUILTIN_MODULES>",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@tanstack/(.*)$",
+    "",
+    "^[~/]",
+    "",
+    "^[./]",
+    "^(?!.*[.]css$)[./].*$",
+    ".css$",
+    ""
+  ]
+}
+
+
