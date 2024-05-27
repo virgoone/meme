@@ -54,9 +54,7 @@ const NewGuestbookEmail = ({
       <Section className="mb-[32px] mt-[32px] text-center">
         {link && (
           <Button
-            pX={20}
-            pY={12}
-            className="rounded-xl bg-zinc-900 text-center text-[12px] font-semibold text-white no-underline"
+            className="px-4 py-3 rounded-xl bg-zinc-900 text-center text-[12px] font-semibold text-white no-underline"
             href={link}
           >
             查看留言

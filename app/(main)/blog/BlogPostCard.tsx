@@ -48,7 +48,7 @@ export function BlogPostCard({ post, views }: { post: Post; views: number }) {
             <span className="inline-flex items-center space-x-1 text-[12px] font-medium text-[--post-image-fg] md:text-sm">
               <CalendarIcon />
               <span>
-                {formatUTCDate({ date: new Date(publishedAt) })}
+                {formatUTCDate(new Date(publishedAt))}
               </span>
             </span>
 

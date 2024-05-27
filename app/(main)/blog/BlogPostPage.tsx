@@ -106,11 +106,7 @@ export function BlogPostPage({
                   className="flex items-center space-x-1.5"
                 >
                   <CalendarIcon />
-                  <span>
-                    {formatUTCDate({
-                      date: new Date(post.publishedAt),
-                    })}
-                  </span>
+                  <span>{formatUTCDate(new Date(post.publishedAt))}</span>
                 </time>
                 <span className="inline-flex items-center space-x-1.5">
                   <ScriptIcon />

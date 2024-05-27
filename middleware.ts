@@ -9,34 +9,15 @@ export const config = {
 }
 const isProtectedRoute = createRouteMatcher(['/admin(.*)'])
 
-export default clerkMiddleware(
-  async (auth, req) => {
-    const { userId, redirectToSignIn } = auth()
-    console.log('isProtectedRoute', auth())
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, redirectToSignIn } = auth()
 
-    if (isProtectedRoute(req)) {
-      if (!userId) {
-        return redirectToSignIn()
-      }
-      auth().protect()
+  if (isProtectedRoute(req)) {
+    if (!userId) {
+      return redirectToSignIn()
     }
+    auth().protect()
+  }
 
-    return GeoMiddleware(req)
-  },
-  {
-    publicRoutes: [
-      '/',
-      '/studio(.*)',
-      '/blog(.*)',
-      '/confirm(.*)',
-      '/projects',
-      '/guestbook',
-      '/newsletters(.*)',
-      '/about',
-      '/rss',
-      '/feed',
-      '/ama',
-    ],
-    debug: true,
-  },
-)
+  return GeoMiddleware(req)
+})

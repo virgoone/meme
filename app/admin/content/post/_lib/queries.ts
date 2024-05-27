@@ -64,7 +64,7 @@ export async function getBySearch(input: GetSchema) {
             !!status
               ? filterColumn({
                   column: post.status,
-                  value: status,
+                  value: status + '',
                   isSelectable: true,
                 })
               : undefined,
@@ -90,7 +90,7 @@ export async function getBySearch(input: GetSchema) {
             !!status
               ? filterColumn({
                   column: post.status,
-                  value: status,
+                  value: status + '',
                   isSelectable: true,
                 })
               : undefined,

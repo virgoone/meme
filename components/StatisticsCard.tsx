@@ -1,3 +1,5 @@
+'use client'
+
 import type { StatisticProps } from 'antd'
 import { Card, Statistic } from 'antd'
 import { Loader2 } from 'lucide-react'

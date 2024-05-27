@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link, { type LinkProps } from 'next/link'
+import { ComponentProps } from 'react'
 
 import portraitImage from '~/assets/Portrait.png'
 import portraitAltImage from '~/assets/PortraitAlt.jpg'
@@ -17,7 +18,7 @@ function AvatarContainer({ className, ...props }) {
   )
 }
 
-type AvatarImageProps = ComponentProps &
+type AvatarImageProps = ComponentProps<any> &
   Omit<LinkProps, 'href'> & {
     large?: boolean
     href?: string

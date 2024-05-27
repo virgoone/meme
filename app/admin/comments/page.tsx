@@ -3,6 +3,7 @@ import React from 'react'
 import { desc, inArray, sql } from 'drizzle-orm'
 
 import { db } from '~/db'
+import { CommentDto } from '~/db/dto/comment.dto'
 import { comments, post } from '~/db/schema'
 
 import CommentCard from './_mods/card'
@@ -44,7 +45,7 @@ export default async function AdminCommentsPage() {
     <CommentCard
       commentsCount={commentsCount}
       postMap={postMap}
-      dataSource={latestComments}
+      dataSource={latestComments as unknown as CommentDto[]}
     />
   )
 }

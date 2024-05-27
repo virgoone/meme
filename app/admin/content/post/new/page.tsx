@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 
 import {
@@ -16,7 +17,6 @@ import {
 import { FormListFieldData } from 'antd/lib/form'
 import { toast } from 'sonner'
 
-import Editor from '~/components/editor'
 import useForm from '~/hooks/use-form'
 import { getErrorMessage } from '~/lib/handle-error'
 
@@ -31,6 +31,8 @@ import {
 import CategorySelect from '../_mods/category-select'
 import PosterModal from '../_mods/poster-modal'
 import TagsSelect from '../_mods/tags-select'
+
+const Editor = dynamic(() => import('~/components/editor'))
 
 const FormItem = Form.Item
 const { Option } = Select

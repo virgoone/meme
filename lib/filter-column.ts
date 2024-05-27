@@ -19,7 +19,7 @@ export function filterColumn({
   isSelectable,
 }: {
   column: Column<ColumnBaseConfig<ColumnDataType, string>, object, object>
-  value: string | number
+  value: string
   isSelectable?: boolean
 }) {
   const [filterValue, filterOperator] = (value?.split('~').filter(Boolean) ??

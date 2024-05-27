@@ -207,7 +207,7 @@ export function Header() {
                         transform: avatarBorderTransform,
                       }}
                     >
-                      <Avatar />
+                      <Avatar className="relative"/>
                     </motion.div>
 
                     <motion.div
@@ -261,7 +261,7 @@ export function Header() {
                       layout
                       onContextMenu={onAvatarContextMenu}
                     >
-                      <Avatar>
+                      <Avatar className="relative">
                         <Avatar.Image alt={isShowingAltAvatar} />
                       </Avatar>
                     </motion.div>
@@ -362,7 +362,7 @@ export function UserInfo() {
         >
           <Tooltip.Provider disableHoverableContent>
             <Tooltip.Root open={tooltipOpen} onOpenChange={setTooltipOpen}>
-              <SignInButton mode="modal" redirectUrl={url(pathname).href}>
+              <SignInButton mode="modal" forceRedirectUrl={url(pathname).href}>
                 <Tooltip.Trigger asChild>
                   <button
                     type="button"

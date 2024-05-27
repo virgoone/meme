@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -198,7 +198,7 @@ export function Sidebar() {
   return (
     <div
       className="relative hidden w-full flex-shrink-0 flex-col items-stretch border-b border-gray-200 dark:border-gray-800 lg:flex lg:w-[--width] lg:border-b-0 lg:border-r"
-      style={{ '--width': '250px' }}
+      style={{ '--width': '250px' } as React.CSSProperties}
     >
       <div className="flex h-[--header-height] min-w-0 flex-shrink-0 items-center gap-x-4 border-b !border-transparent border-gray-200 px-4 dark:border-gray-800">
         <div className="flex min-w-0 flex-1 items-center justify-between gap-x-1.5">

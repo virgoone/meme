@@ -22,17 +22,17 @@ const ratelimit = new Ratelimit({
   analytics: true,
 })
 
-export const getSchema = z.object({
+const getSchema = z.object({
   page: z.coerce.number().default(1),
   pageSize: z.coerce.number().default(10),
   name: z.string().nullish().optional(),
 })
 
-export const deleteSchema = z.object({
+const deleteSchema = z.object({
   id: z.string(),
 })
 
-export type GetSchema = z.infer<typeof getSchema>
+type GetSchema = z.infer<typeof getSchema>
 
 export async function GET(req: NextRequest) {
   try {

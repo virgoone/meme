@@ -16,28 +16,28 @@ function getKey(id: string) {
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, '10 s'),
+  limiter: Ratelimit.slidingWindow(5, '1 s'),
   analytics: true,
 })
 
-export const getSchema = z.object({
+const getSchema = z.object({
   page: z.coerce.number().default(1),
   pageSize: z.coerce.number().default(10),
   title: z.string().optional(),
 })
 
-export type GetSchema = z.infer<typeof getSchema>
+type GetSchema = z.infer<typeof getSchema>
 
 export async function GET(req: NextRequest) {
   try {
-    const { success } = await ratelimit.limit(
-      getKey(req.ip) + `_${req.ip ?? ''}`,
-    )
-    if (!success) {
-      return new Response('Too Many Requests', {
-        status: 429,
-      })
-    }
+    // const { success } = await ratelimit.limit(
+    //   getKey(req.ip) + `_${req.ip ?? ''}`,
+    // )
+    // if (!success) {
+    //   return new Response('Too Many Requests', {
+    //     status: 429,
+    //   })
+    // }
     const { searchParams } = new URL(req.url)
 
     const { page, pageSize, title } = getSchema.parse({

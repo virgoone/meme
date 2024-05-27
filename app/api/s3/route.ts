@@ -15,7 +15,6 @@ function getKey(id?: string) {
 const CreateMediaDtoSchema = MediaDtoSchema.omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 })
 
 export async function POST(req: NextRequest) {

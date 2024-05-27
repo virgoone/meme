@@ -36,7 +36,6 @@ export function deleteClientAction({
 export function updateClientAction({
   rows,
   title,
-  icon,
   onSuccess,
 }: {
   rows: Row<TagsDto>[]
