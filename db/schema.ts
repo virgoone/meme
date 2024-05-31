@@ -106,3 +106,11 @@ export const postTags = sqliteTable('post_tags', {
   postId: integer('post_id').references(() => post.id),
   tagId: integer('tag_id').references(() => tags.id),
 })
+
+export const photos = sqliteTable('photos', {
+  id: integer('id').primaryKey(),
+  description: text('description'),
+  url: text('url').notNull(),
+  createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at').default(sql`(CURRENT_TIMESTAMP)`),
+})

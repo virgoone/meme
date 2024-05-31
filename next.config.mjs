@@ -25,7 +25,7 @@ const nextConfig = {
     return [
       {
         "source": "/twitter",
-        "destination": "https://x.com/thecalicastle",
+        "destination": "https://x.com/koyaguo",
         "permanent": true
       },
       {
@@ -35,7 +35,7 @@ const nextConfig = {
       },
       {
         "source": "/x",
-        "destination": "https://x.com/thecalicastle",
+        "destination": "https://x.com/koyaguo",
         "permanent": true
       },
       {
@@ -44,25 +44,10 @@ const nextConfig = {
         "permanent": true
       },
       {
-        "source": "/tg",
-        "destination": "https://t.me/cali_so",
-        "permanent": true
-      },
-      {
-        "source": "/linkedin",
-        "destination": "https://www.linkedin.com/in/calicastle/",
-        "permanent": true
-      },
-      {
         "source": "/github",
-        "destination": "https://github.com/CaliCastle",
+        "destination": "https://github.com/virgoone",
         "permanent": true
       },
-      {
-        "source": "/bilibili",
-        "destination": "https://space.bilibili.com/8350251",
-        "permanent": true
-      }
     ]
   },
 

@@ -68,6 +68,10 @@ export const menus = [
         name: '文章管理',
         href: '/admin/content/post',
       },
+      {
+        name: '项目列表',
+        href: '/admin/content/project',
+      },
     ],
   },
   { name: '评论', href: '/admin/comments', icon: NewCommentIcon },

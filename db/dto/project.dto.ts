@@ -7,6 +7,7 @@ export const ProjectDtoSchema = z.object({
   name: z.string().min(1).max(600),
   url: z.string().url(),
   icon: z.string(),
+  description: z.string(),
   createdAt: z.date().or(z.string()),
 })
 

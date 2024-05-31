@@ -12,7 +12,7 @@ function Developer() {
     <span className="group">
       <span className="font-mono">&lt;</span>小前端
       <span className="font-mono">/&gt;</span>
-      <span className="invisible inline-flex text-zinc-300 before:content-['|'] group-hover:visible group-hover:animate-typing dark:text-zinc-500" />
+      <span className="group-hover:animate-typing invisible inline-flex text-zinc-300 before:content-['|'] group-hover:visible dark:text-zinc-500" />
     </span>
   )
 }
@@ -81,10 +81,9 @@ export function Headline() {
         }}
       >
         <Balancer>
-          我是 Cali，
-          <PeekabooLink href="https://zolplay.com">佐玩</PeekabooLink>
-          创始人，目前带领着佐玩致力于创造一个充满创造力的工作环境，同时鼓励团队创造影响世界的产品。
-          我热爱开发，设计，创新，享受生活，以及在未知领域中探索。
+          欢迎来到我的博客。前端搬砖，啥都会一些，有些精有些只是会，喜欢开发。
+          在用的一些开源的
+          <PeekabooLink href="https://douni.one/tool">工具</PeekabooLink>
         </Balancer>
       </motion.p>
       <motion.div
@@ -99,34 +98,10 @@ export function Headline() {
           delay: 0.25,
         }}
       >
+        <SocialLink href="/twitter" aria-label="我的推特" platform="twitter" />
+        <SocialLink href="/github" aria-label="我的 GitHub" platform="github" />
         <SocialLink
-          href="https://cali.so/twitter"
-          aria-label="我的推特"
-          platform="twitter"
-        />
-        <SocialLink
-          href="https://cali.so/youtube"
-          aria-label="我的 YouTube"
-          platform="youtube"
-        />
-        <SocialLink
-          href="https://cali.so/bilibili"
-          aria-label="我的 Bilibili"
-          platform="bilibili"
-        />
-        <SocialLink
-          href="https://cali.so/github"
-          aria-label="我的 GitHub"
-          platform="github"
-        />
-        <SocialLink
-          href="https://cali.so/tg"
-          aria-label="我的 Telegram"
-          platform="telegram"
-        />
-        <SocialLink href="/feed.xml" platform="rss" aria-label="RSS 订阅" />
-        <SocialLink
-          href="mailto:hi@cali.so"
+          href="mailto:w2008second@gmail.com"
           aria-label="我的邮箱"
           platform="mail"
         />

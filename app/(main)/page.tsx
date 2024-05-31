@@ -31,7 +31,7 @@ export default async function BlogHomePage() {
           </div>
           <aside className="space-y-10 lg:sticky lg:top-8 lg:h-fit lg:pl-16 xl:pl-20">
             <Newsletter />
-            {settings?.resume && <Resume resume={settings.resume} />}
+            {/* {settings?.resume && <Resume resume={settings.resume} />} */}
           </aside>
         </div>
       </Container>

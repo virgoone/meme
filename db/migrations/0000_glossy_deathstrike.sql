@@ -50,6 +50,14 @@ CREATE TABLE `newsletters` (
 	`updated_at` text DEFAULT (CURRENT_TIMESTAMP)
 );
 --> statement-breakpoint
+CREATE TABLE `photos` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`description` text,
+	`url` text NOT NULL,
+	`created_at` text DEFAULT (CURRENT_TIMESTAMP),
+	`updated_at` text DEFAULT (CURRENT_TIMESTAMP)
+);
+--> statement-breakpoint
 CREATE TABLE `post` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`name` text(60) NOT NULL,
