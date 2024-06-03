@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
         imageUrl: user.imageUrl,
       },
     }
-
     if (env.NODE_ENV === 'production' && env.SITE_NOTIFICATION_EMAIL_TO) {
       await resend.emails.send({
         from: emailConfig.from,

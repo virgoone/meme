@@ -19,7 +19,7 @@ const ConfirmSubscriptionEmail = ({ link = 'link.com/confirm?fake-token' }) => {
         />
       </Section>
       <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-bold text-black">
-        订阅 Cali 的动态
+        订阅 Koya 的动态
       </Heading>
       <Text className="text-[14px] leading-[24px] text-black">Hello!</Text>
       <Text className="text-[14px] leading-[24px] text-black">
