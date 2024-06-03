@@ -34,6 +34,7 @@ export async function GeoMiddleware(req: NextRequest) {
   }
 
   if (geo && !isApi && env.VERCEL_ENV !== 'development') {
+    console.log('geo-->', geo)
     const country = geo.country
     const city = geo.city
 
