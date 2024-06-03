@@ -44,42 +44,42 @@ export default function Layout({
               />
               <Text className="text-center">
                 <Link
-                  href="https://cali.so"
+                  href="https://blog.douni.one"
                   className="text-zinc-700 underline"
                 >
-                  <strong>Cali Castle</strong>
+                  <strong>Koya</strong>
                 </Link>
                 <br />
-                开发者、设计师、细节控、创始人
+                开发者、一个小前端
               </Text>
               <Text className="text-center">
                 <Link
-                  href="https://cali.so/twitter"
+                  href="https://blog.douni.one/twitter"
                   className="text-xs text-zinc-600 underline"
                 >
                   Twitter
                 </Link>{' '}
                 |&nbsp;
-                <Link
-                  href="https://cali.so/youtube"
+                {/* <Link
+                  href="https://blog.douni.one/youtube"
                   className="text-xs text-zinc-600 underline"
                 >
                   YouTube
                 </Link>{' '}
-                |&nbsp;
+                |&nbsp; */}
                 <Link
-                  href="https://cali.so/github"
+                  href="https://blog.douni.one/github"
                   className="text-xs text-zinc-600 underline"
                 >
                   GitHub
                 </Link>{' '}
-                |&nbsp;
+                {/* |&nbsp;
                 <Link
-                  href="https://cali.so/bilibili"
+                  href="https://blog.douni.one/bilibili"
                   className="text-xs text-zinc-600 underline"
                 >
                   哔哩哔哩
-                </Link>
+                </Link> */}
               </Text>
             </Section>
           </Container>
