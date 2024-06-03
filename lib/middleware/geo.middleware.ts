@@ -33,7 +33,7 @@ export async function GeoMiddleware(req: NextRequest) {
     }
   }
 
-  if (geo && !isApi && env.VERCEL_ENV === 'production') {
+  if (geo && !isApi && env.VERCEL_ENV !== 'development') {
     const country = geo.country
     const city = geo.city
 
