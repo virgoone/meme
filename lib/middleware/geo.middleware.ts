@@ -14,6 +14,7 @@ export async function GeoMiddleware(req: NextRequest) {
   if (process.env.EDGE_CONFIG) {
     const blockedIPs = await get<string[]>('blocked_ips')
     const ip = getIP(req)
+    console.log('ip-->', ip)
 
     if (blockedIPs?.includes(ip)) {
       if (isApi) {
