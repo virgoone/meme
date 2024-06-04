@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { BlogPosts } from '~/app/(main)/blog/BlogPosts'
+import { BlogPosts } from '~/app/(main)/(blog)/BlogPosts'
 import { Headline } from '~/app/(main)/Headline'
 import { Newsletter } from '~/app/(main)/Newsletter'
 import { Photos } from '~/app/(main)/Photos'

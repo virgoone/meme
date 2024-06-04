@@ -7,33 +7,40 @@ import {
   HourglassIcon,
   ScriptIcon,
 } from '~/assets'
+import type { PostDto } from '~/db/dto/post.dto'
 import { formatUTCDate } from '~/lib/date'
 import { prettifyNumber } from '~/lib/math'
-import { type Post } from '~/sanity/schemas/post'
 
-export function BlogPostCard({ post, views }: { post: Post; views: number }) {
-  const { title, slug, mainImage, publishedAt, categories, readingTime } = post
+export function BlogPostCard({
+  post,
+  views,
+}: {
+  post: PostDto
+  views: number
+}) {
+  const { title, slug, mainImage, category, publishedAt, readingTime, tags } =
+    post
 
   return (
     <Link
-      href={`/blog/${slug}`}
+      href={`/${slug}`}
       prefetch={false}
       className="group relative flex w-full transform-gpu flex-col rounded-3xl bg-transparent ring-2 ring-[--post-image-bg] transition-transform hover:-translate-y-0.5"
       style={
         {
-          '--post-image-fg': mainImage.asset.dominant?.foreground,
-          '--post-image-bg': mainImage.asset.dominant?.background,
-          '--post-image': `url(${mainImage.asset.url}`,
+          '--post-image-fg': '#FFF',
+          '--post-image-bg': mainImage?.color,
+          '--post-image': `url(${mainImage?.url}`,
         } as React.CSSProperties
       }
     >
       <div className="relative aspect-[240/135] w-full">
         <Image
-          src={mainImage.asset.url}
+          src={mainImage.url}
           alt=""
           className="rounded-t-3xl object-cover"
           placeholder="blur"
-          blurDataURL={mainImage.asset.lqip}
+          blurDataURL={mainImage?.blurhash}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw"
         />
@@ -47,17 +54,13 @@ export function BlogPostCard({ post, views }: { post: Post; views: number }) {
           <span className="inline-flex items-center space-x-3">
             <span className="inline-flex items-center space-x-1 text-[12px] font-medium text-[--post-image-fg] md:text-sm">
               <CalendarIcon />
-              <span>
-                {formatUTCDate(new Date(publishedAt))}
-              </span>
+              <span>{formatUTCDate(new Date(publishedAt))}</span>
             </span>
 
-            {Array.isArray(categories) && (
-              <span className="inline-flex items-center space-x-1 text-[12px] font-medium text-[--post-image-fg] md:text-sm">
-                <ScriptIcon />
-                <span>{categories.join(', ')}</span>
-              </span>
-            )}
+            <span className="inline-flex items-center space-x-1 text-[12px] font-medium text-[--post-image-fg] md:text-sm">
+              <ScriptIcon />
+              <span>{category?.title}</span>
+            </span>
           </span>
           <span className="inline-flex items-center space-x-3 text-[12px] font-medium text-[--post-image-fg] md:text-xs">
             <span className="inline-flex items-center space-x-1">

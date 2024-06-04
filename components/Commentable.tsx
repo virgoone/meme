@@ -23,7 +23,7 @@ import {
   clearReply,
   focusBlock,
   replyTo,
-} from '~/app/(main)/blog/blog-post.state'
+} from '~/app/(main)/(blog)/blog-post.state'
 import {
   EyeCloseIcon,
   EyeOpenIcon,

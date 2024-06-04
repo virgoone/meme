@@ -1,4 +1,4 @@
-import './blog/[slug]/blog.css'
+import './(blog)/[slug]/blog.css'
 
 import { Suspense } from 'react'
 

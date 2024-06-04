@@ -14,6 +14,7 @@ import {
   lte,
   or,
 } from 'drizzle-orm'
+import * as z from 'zod'
 
 import { db } from '~/db'
 import { CategoriesDto, CategoriesHashids } from '~/db/dto/categories.dto'
@@ -24,12 +25,18 @@ import { categories, media, post, postTags, tags } from '~/db/schema'
 import { filterColumn } from '~/lib/filter-column'
 import type { DrizzleWhere } from '~/lib/types'
 
-import { type GetSchema } from './validations'
+const searchParamsSchema = z.object({
+  page: z.coerce.number().default(1),
+  pageSize: z.coerce.number().default(10),
+  sort: z.string().optional(),
+  status: z.number(),
+})
+
+type GetSchema = z.infer<typeof searchParamsSchema>
 
 export async function getBySearch(input: GetSchema) {
   noStore()
-  const { page, pageSize, sort, status, slug, title, from, to, operator } =
-    input
+  const { page, pageSize, sort, status } = input
 
   try {
     // Offset to paginate the results
@@ -43,80 +50,18 @@ export async function getBySearch(input: GetSchema) {
     ]) as [keyof PostDto | undefined, 'asc' | 'desc' | undefined]
 
     // Convert the date strings to Date objects
-    const fromDay = from ? from : undefined
-    const toDay = to ? to : undefined
-    const where: DrizzleWhere<PostDto> =
-      !operator || operator === 'and'
-        ? and(
-            // Filter tasks by title
-            title
-              ? filterColumn({
-                  column: post.title,
-                  value: title,
-                })
-              : undefined,
-            slug
-              ? filterColumn({
-                  column: post.slug,
-                  value: slug,
-                })
-              : undefined,
-            !!status
-              ? filterColumn({
-                  column: post.status,
-                  value: status + '',
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter by createdAt
-            fromDay && toDay
-              ? and(gte(post.createdAt, fromDay), lte(post.createdAt, toDay))
-              : undefined,
-          )
-        : or(
-            // Filter tasks by title
-            title
-              ? filterColumn({
-                  column: post.title,
-                  value: title,
-                })
-              : undefined,
-            slug
-              ? filterColumn({
-                  column: post.slug,
-                  value: slug,
-                })
-              : undefined,
-            !!status
-              ? filterColumn({
-                  column: post.status,
-                  value: status + '',
-                  isSelectable: true,
-                })
-              : undefined,
-            // Filter by createdAt
-            fromDay && toDay
-              ? and(gte(post.createdAt, fromDay), lte(post.createdAt, toDay))
-              : undefined,
-          )
+    const where: DrizzleWhere<PostDto> = and(
+      !!status
+        ? filterColumn({
+            column: post.status,
+            value: status + '',
+            isSelectable: true,
+          })
+        : undefined,
+    )
 
     // Transaction is used to ensure both queries are executed in a single transaction
     const { data, total } = await db.transaction(async (tx) => {
-      // const data = await tx.query.post.findMany({
-      //   with: {
-      //     category: true,
-      //     tags: true,
-      //   },
-      //   where,
-      //   limit: pageSize,
-      //   offset: offset,
-      //   orderBy:
-      //     column && column in post
-      //       ? order === 'asc'
-      //         ? asc(post[column])
-      //         : desc(post[column])
-      //       : desc(post.id),
-      // })
       const rows = await tx
         .select()
         .from(post)

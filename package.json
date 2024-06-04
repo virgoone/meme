@@ -84,6 +84,7 @@
     "drizzle-orm": "^0.31.0",
     "edge-cors": "^0.2.1",
     "framer-motion": "^11.2.10",
+    "gray-matter": "^4.0.3",
     "hashids": "^2.3.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.383.0",

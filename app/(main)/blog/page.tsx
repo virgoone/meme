@@ -3,10 +3,10 @@ import Balancer from 'react-wrap-balancer'
 import { SocialLink } from '~/components/links/SocialLink'
 import { Container } from '~/components/oui/Container'
 
-import { BlogPosts } from './BlogPosts'
+import { BlogPosts } from '../(blog)/BlogPosts'
 
 const description =
-  '写博客文章是我比较喜欢的沉淀分享方式，我希望能够把好用的技术知识传递给更多的人。我比较喜欢围绕着技术为主的话题，但是也会写一些非技术的话题，比如设计、创业、企业管理、生活随笔等等。'
+  '博客内容基本为日常一些技术整理和总结，也可能会有其他类型内容'
 export const metadata = {
   title: '我的博客',
   description,

@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: 'cdn.sanity.io',
         port: '',
         pathname: `/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/**`,
+      },
+      {
+        protocol: 'https',
+        hostname: 'meme-static.douni.one',
+        port: '',
       }
     ],
   },
