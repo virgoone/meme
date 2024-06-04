@@ -2,7 +2,6 @@ import { kvKeys } from '~/config/kv'
 import { getBySearch } from '~/db/queries/post'
 import { env } from '~/env.mjs'
 import { redis } from '~/lib/redis'
-import { getLatestBlogPosts } from '~/sanity/queries'
 
 import { BlogPostCard } from './BlogPostCard'
 
