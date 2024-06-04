@@ -35,7 +35,7 @@ function OCD() {
   return (
     <span className="group inline-flex items-center">
       <SparkleIcon className="mr-1 inline-flex transform-gpu transition-transform duration-500 group-hover:rotate-180" />
-      <span>啥都能干</span>
+      <span>啥都能写</span>
     </span>
   )
 }

@@ -11,7 +11,7 @@ import { redis } from '~/lib/redis'
 export async function GeoMiddleware(req: NextRequest) {
   const { geo, nextUrl } = req
   const isApi = nextUrl.pathname.startsWith('/api/')
-  if (process.env.EDGE_CONFIG) {
+  if (process.env.EDGE_CONFIG && env.VERCEL_ENV !== 'development') {
     const blockedIPs = await get<string[]>('blocked_ips')
     const ip = getIP(req)
     console.log('ip-->', ip)
