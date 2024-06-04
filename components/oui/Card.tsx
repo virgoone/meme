@@ -113,7 +113,7 @@ Card.Eyebrow = function CardEyebrow({
   decorate?: boolean
   className?: string
   children: React.ReactNode
-} & React.HTMLAttributes<unknown>) {
+} & React.HTMLAttributes<HTMLElement>) {
   return (
     <Component
       className={cn(
@@ -121,7 +121,7 @@ Card.Eyebrow = function CardEyebrow({
         'relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500',
         decorate && 'pl-3.5',
       )}
-      {...props}
+      {...(props as any)}
     >
       {decorate && (
         <span
