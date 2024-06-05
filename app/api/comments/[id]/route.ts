@@ -143,7 +143,7 @@ export async function POST(req: NextRequest, { params }: Params) {
             subject: '👋 有人回复了你的评论',
             react: NewReplyCommentEmail({
               postTitle: post.title,
-              postLink: url(`/blog/${post.slug}`).href,
+              postLink: url(`/${post.slug}`).href,
               postImageUrl: post.imageUrl,
               userFirstName: user.firstName,
               userLastName: user.lastName,

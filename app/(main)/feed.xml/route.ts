@@ -25,7 +25,7 @@ export async function GET() {
     feed.item({
       title: post.title,
       guid: post._id,
-      url: `${seo.url.href}blog/${post.slug}`,
+      url: `${seo.url.href}/${post.slug}`,
       description: post.description,
       date: new Date(post.publishedAt),
       enclosure: {
