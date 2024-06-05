@@ -5,10 +5,12 @@ import './prism.css'
 
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ClerkProvider } from '@clerk/nextjs'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import type { Metadata, Viewport } from 'next'
 
 import { ThemeProvider } from '~/app/(main)/ThemeProvider'
 import { QueryProvider } from '~/app/QueryProvider'
+import HotjarSnippet from '~/components/HotjarSnippet'
 import AntdThemeProvider from '~/components/theme/theme-provider'
 import { Toaster } from '~/components/ui/toaster'
 import { url } from '~/lib'
@@ -97,7 +99,9 @@ export default function RootLayout({
 
             <Toaster />
           </ThemeProvider>
+          <HotjarSnippet />
         </body>
+        <GoogleAnalytics gaId="G-0Z128XH378" />
       </html>
     </ClerkProvider>
   )

@@ -6,7 +6,6 @@ import { Analytics } from '@vercel/analytics/react'
 
 import { Footer } from '~/app/(main)/Footer'
 import { Header } from '~/app/(main)/Header'
-import Script from 'next/script'
 
 export default function BlogLayout({
   children,
@@ -31,38 +30,6 @@ export default function BlogLayout({
           <Footer />
         </Suspense>
       </div>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-0Z128XH378"
-        onLoad={() => {
-          //  @ts-ignore
-          window.dataLayer = window.dataLayer || []
-          function gtag() {
-            // @ts-ignore
-            window.dataLayer.push(arguments)
-          }
-          window.gtag = window.gtag || gtag
-          window?.gtag?.('js', new Date())
-
-          window?.gtag?.('config', 'G-0Z128XH378')
-        }}
-      />
-      <Script
-        id="hotjar-base"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-              (function(h,o,t,j,a,r){
-                h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                h._hjSettings={hjid:2982392,hjsv:6};
-                a=o.getElementsByTagName('head')[0];
-                r=o.createElement('script');r.async=1;
-                r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                a.appendChild(r);
-            })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-          `,
-        }}
-      />
       <Analytics />
     </>
   )
