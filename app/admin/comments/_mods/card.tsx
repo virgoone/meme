@@ -15,7 +15,7 @@ export default function CommentCard(props: {
     this_month_count?: number
   }
   dataSource: CommentDto[]
-  postMap: Map<number, any>
+  postMap: Map<string, any>
 }) {
   const { dataSource, commentsCount, postMap } = props
   const columns = [
