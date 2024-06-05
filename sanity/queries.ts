@@ -7,7 +7,7 @@ import { type Post, type PostDetail } from '~/sanity/schemas/post'
 export const getAllLatestBlogPostSlugsQuery = () =>
   groq`
   *[_type == "post" && !(_id in path("drafts.**"))
-  && publishedAt <="${getDate()}"
+  && publishedAt <="${getDate().toISOString()}"
   && defined(slug.current)] | order(publishedAt desc).slug.current
   `
 
@@ -25,7 +25,7 @@ export const getLatestBlogPostsQuery = ({
   forDisplay = true,
 }: GetBlogPostsOptions) =>
   groq`
-  *[_type == "post" && !(_id in path("drafts.**")) && publishedAt <= "${getDate()}"
+  *[_type == "post" && !(_id in path("drafts.**")) && publishedAt <= "${getDate().toISOString()}"
   && defined(slug.current)] | order(publishedAt desc)[0...${limit}] {
     _id,
     title,
