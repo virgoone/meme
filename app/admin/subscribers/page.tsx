@@ -14,8 +14,8 @@ export default async function AdminSubscribersPage() {
     this_month_count: number
   }>(
     sql`SELECT
-  (SELECT COUNT(*) FROM subscribers WHERE subscribed_at = CURRENT_DATE) AS today_count,
-  (SELECT COUNT(*) FROM subscribers WHERE strftime('%Y', subscribed_at) = strftime('%Y', 'now') AND strftime('%m', subscribed_at) = strftime('%m', 'now')) AS this_month_count,
+  (SELECT COUNT(*) FROM subscribers WHERE strftime('%Y-%m-%d', subscribed_at) = strftime('%Y-%m-%d', 'now')) AS today_count,
+  (SELECT COUNT(*) FROM subscribers WHERE strftime('%Y-%m', subscribed_at) = strftime('%Y-%m', 'now')) AS this_month_count,
   (SELECT COUNT(*) FROM subscribers WHERE subscribed_at IS NOT NULL) AS total`,
   )
   const subs = await db

@@ -24,7 +24,7 @@ export default function CommentCard(props: {
       dataIndex: 'title',
       render: (title, row) => {
         return (
-          <Link href={url(`/blog/${postMap.get(row.postId)?.slug ?? ''}`).href}>
+          <Link href={url(`/${postMap.get(row.postId)?.slug ?? ''}`).href}>
             {postMap.get(row.postId)?.title}
           </Link>
         )
