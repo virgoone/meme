@@ -5,6 +5,7 @@ import './prism.css'
 
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ClerkProvider } from '@clerk/nextjs'
+import { dark } from '@clerk/themes'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import type { Metadata, Viewport } from 'next'
 
@@ -77,20 +78,26 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
-    <ClerkProvider localization={zhCN as any}>
-      <html
-        lang="zh-CN"
-        className={`${sansFont.variable} m-0 h-full p-0 font-sans antialiased`}
-        suppressHydrationWarning
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <ClerkProvider
+        appearance={{
+          baseTheme: [dark],
+        }}
+        localization={zhCN as any}
       >
-        <body className="flex h-full flex-col">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <html
+          lang="zh-CN"
+          className={`${sansFont.variable} m-0 h-full p-0 font-sans antialiased`}
+          suppressHydrationWarning
+        >
+          <body className="flex h-full flex-col">
             <QueryProvider>
               <AntdRegistry>
                 <AntdThemeProvider>{children}</AntdThemeProvider>
@@ -98,11 +105,11 @@ export default function RootLayout({
             </QueryProvider>
 
             <Toaster />
-          </ThemeProvider>
-          <HotjarSnippet />
-        </body>
-        <GoogleAnalytics gaId="G-0Z128XH378" />
-      </html>
-    </ClerkProvider>
+            <HotjarSnippet />
+          </body>
+          <GoogleAnalytics gaId="G-0Z128XH378" />
+        </html>
+      </ClerkProvider>
+    </ThemeProvider>
   )
 }
