@@ -83,7 +83,7 @@ export function Headline() {
         <Balancer>
           欢迎来到我的博客。前端搬砖，啥都会一些，有些精有些只是会，喜欢开发。
           在用的一些开源的
-          <PeekabooLink href="https://douni.one/tool">工具</PeekabooLink>
+          <PeekabooLink href="https://douni.one">工具</PeekabooLink>
         </Balancer>
       </motion.p>
       <motion.div
