@@ -1,6 +1,6 @@
 export const seo = {
-  title: '前端开发',
-  description: 'Koya的个人博客',
+  title: `Koya's 个人博客`,
+  description: `Koya's 个人博客，一些个人随笔，技术总结，生活感悟`,
   url: new URL(
     process.env.NODE_ENV === 'production'
       ? 'https://blog.douni.one'
