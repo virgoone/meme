@@ -11,7 +11,7 @@ import { truncate } from '~/lib/string'
 export default function CommentCard(props: {
   commentsCount: {
     today_count?: number
-    this_week_count?: number
+    total_count?: number
     this_month_count?: number
   }
   dataSource: CommentDto[]
@@ -46,16 +46,7 @@ export default function CommentCard(props: {
             )}
           </Card>
         </Col>
-        <Col span={8}>
-          <Card>
-            {commentsCount && 'this_week_count' in commentsCount && (
-              <Statistic
-                title="本周评论数"
-                value={commentsCount.this_week_count}
-              />
-            )}
-          </Card>
-        </Col>
+
         <Col span={8}>
           <Card>
             {commentsCount && 'this_month_count' in commentsCount && (
@@ -63,6 +54,13 @@ export default function CommentCard(props: {
                 title="本月评论数"
                 value={commentsCount.this_month_count}
               />
+            )}
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            {commentsCount && 'total_count' in commentsCount && (
+              <Statistic title="总评论数" value={commentsCount.total_count} />
             )}
           </Card>
         </Col>
