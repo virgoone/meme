@@ -26,7 +26,7 @@ export default async function sitemap() {
   const slugs = await getAllLatestBlogPostSlugs()
 
   const dynamicMap = slugs.map((slug) => ({
-    url: url(`/blog/${slug}`).href,
+    url: url(`/${slug}`).href,
     lastModified: new Date(),
   })) satisfies MetadataRoute.Sitemap
 
