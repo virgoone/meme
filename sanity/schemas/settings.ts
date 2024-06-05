@@ -9,14 +9,6 @@ export default defineType({
   icon: FilterHorizontalIcon,
   fields: [
     defineField({
-      name: 'projects',
-      title: '项目展示列表',
-      description: '在 `/projects` 页面展示的项目列表',
-      type: 'array',
-      of: [{ type: 'reference', to: { type: 'project' } }],
-    }),
-
-    defineField({
       name: 'heroPhotos',
       title: '首页图片',
       description: '首页顶部的几张图片（推荐设置 6 张）',
