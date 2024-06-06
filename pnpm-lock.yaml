@@ -113,6 +113,9 @@ dependencies:
   '@sanity/image-url':
     specifier: ^1.0.2
     version: 1.0.2
+  '@sanity/table':
+    specifier: ^1.1.2
+    version: 1.1.2(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@3.44.0)(styled-components@6.1.11)
   '@sanity/ui':
     specifier: ^2.1.14
     version: 2.1.14(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
@@ -5881,6 +5884,25 @@ packages:
     transitivePeerDependencies:
       - debug
       - supports-color
+    dev: false
+
+  /@sanity/table@1.1.2(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@3.44.0)(styled-components@6.1.11):
+    resolution: {integrity: sha512-VTQQYtuYXRYnrwPeQDDYQ0/MExroV4FDeJStpxW3JcYWj+dKvfMfXG5PebzqgbolhAIzgYwcmkOBMXwmwEAN7w==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: ^18
+      react-dom: ^18
+      sanity: ^3.0.0
+    dependencies:
+      '@sanity/icons': 2.11.8(react@18.3.1)
+      '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
+      '@sanity/ui': 1.9.3(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      sanity: 3.44.0(@types/node@20.14.1)(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+    transitivePeerDependencies:
+      - react-is
+      - styled-components
     dev: false
 
   /@sanity/telemetry@0.7.7:

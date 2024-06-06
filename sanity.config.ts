@@ -6,6 +6,7 @@ import { codeInput } from '@sanity/code-input'
 import { visionTool } from '@sanity/vision'
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
+import { table } from '@sanity/table'
 import { media } from 'sanity-plugin-media'
 
 import { settingsPlugin, settingsStructure } from '~/sanity/plugins/settings'
@@ -33,5 +34,6 @@ export default defineConfig({
     }),
     media(),
     codeInput(),
+    table(),
   ],
 })

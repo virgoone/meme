@@ -120,5 +120,10 @@ export default defineType({
         withFilename: true,
       },
     }),
+    defineArrayMember({
+      name: 'table',
+      title: '表格',
+      type: 'table',
+    }),
   ],
 })
