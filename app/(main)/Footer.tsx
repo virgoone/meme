@@ -120,6 +120,10 @@ export async function Footer() {
                 <PeekabooLink href="https://github.com/virgoone/meme">
                   GitHub
                 </PeekabooLink>
+                &nbsp;&nbsp;
+                Fork <PeekabooLink href="https://github.com/CaliCastle/cali.so">
+                  CaliCastle
+                </PeekabooLink>
               </p>
               <Links />
             </div>
