@@ -35,7 +35,7 @@ function OCD() {
   return (
     <span className="group inline-flex items-center">
       <SparkleIcon className="mr-1 inline-flex transform-gpu transition-transform duration-500 group-hover:rotate-180" />
-      <span>啥都能写</span>
+      <span>啥都写点</span>
     </span>
   )
 }
@@ -81,8 +81,8 @@ export function Headline() {
         }}
       >
         <Balancer>
-          欢迎来到我的博客。前端搬砖，啥都会一些，有些精有些只是会，喜欢开发。
-          在用的一些开源的
+          欢迎来到我的博客。前端搬砖，喜欢开发。
+          在用的一些自己添加了部分基于开源的
           <PeekabooLink href="https://douni.one">工具</PeekabooLink>
         </Balancer>
       </motion.p>
