@@ -3,6 +3,8 @@ import './globals.css'
 import './clerk.css'
 import './prism.css'
 
+import Script from 'next/script'
+
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ClerkProvider } from '@clerk/nextjs'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -100,6 +102,11 @@ export default function RootLayout({
             <Toaster />
           </ThemeProvider>
           <HotjarSnippet />
+          <Script
+            async
+            src="https://sa.douni.one/st.js"
+            data-website-id="2043ce8a-d2ff-4cca-bf86-c6937300c5c9"
+          />
         </body>
         <GoogleAnalytics gaId="G-0Z128XH378" />
       </html>
