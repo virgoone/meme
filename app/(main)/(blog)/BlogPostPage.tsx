@@ -168,6 +168,13 @@ export function BlogPostPage({
                 </span>
               </motion.div>
             </header>
+            <AdBanner
+              className="w-full my-4"
+              data-ad-slot="2131063994"
+              data-ad-format="auto"
+              data-id="456"
+              data-full-width-responsive="true"
+            />
             <Prose className="mt-8">
               <PostPortableText value={post.body} />
             </Prose>
