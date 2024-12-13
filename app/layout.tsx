@@ -107,6 +107,12 @@ export default function RootLayout({
             src="https://sa.douni.one/st.js"
             data-website-id="2043ce8a-d2ff-4cca-bf86-c6937300c5c9"
           />
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801577709600181`}
+            strategy="lazyOnload"
+            crossOrigin="anonymous"
+          />
         </body>
         <GoogleAnalytics gaId="G-0Z128XH378" />
       </html>

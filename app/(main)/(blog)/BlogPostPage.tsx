@@ -16,6 +16,7 @@ import {
   ScriptIcon,
   UTurnLeftIcon,
 } from '~/assets'
+import AdBanner from '~/components/AdBanner'
 import { ClientOnly } from '~/components/ClientOnly'
 import { Button } from '~/components/oui/Button'
 import { Container } from '~/components/oui/Container'
@@ -182,7 +183,12 @@ export function BlogPostPage({
           </div>
         </aside>
       </div>
-
+      <AdBanner
+        className="my-4 w-full"
+        data-ad-slot="5983520697"
+        data-ad-layout="in-article"
+        data-ad-format="fluid"
+      />
       {post.related && post.related.length > 0 ? (
         <section className="mb-12 mt-32">
           <h2 className="mb-6 flex items-center justify-center text-lg font-bold text-zinc-900 dark:text-zinc-100">
