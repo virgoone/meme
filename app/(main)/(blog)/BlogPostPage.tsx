@@ -184,10 +184,11 @@ export function BlogPostPage({
         </aside>
       </div>
       <AdBanner
-        className="my-4 w-full"
-        data-ad-slot="5983520697"
-        data-ad-layout="in-article"
-        data-ad-format="fluid"
+        className="my-6 w-full"
+        data-ad-slot="2503417325"
+        data-ad-format="autorelaxed"
+        data-id="789"
+        data-full-width-responsive="true"
       />
       {post.related && post.related.length > 0 ? (
         <section className="mb-12 mt-32">
