@@ -3,7 +3,6 @@ import './globals.css'
 import './clerk.css'
 import './prism.css'
 
-import Head from 'next/head'
 import Script from 'next/script'
 
 import { AntdRegistry } from '@ant-design/nextjs-registry'
@@ -87,14 +86,6 @@ export default function RootLayout({
         className={`${sansFont.variable} m-0 h-full p-0 font-sans antialiased`}
         suppressHydrationWarning
       >
-        <Head>
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801577709600181`}
-            strategy="lazyOnload"
-            crossOrigin="anonymous"
-          />
-        </Head>
         <body className="flex h-full flex-col">
           <ThemeProvider
             attribute="class"
@@ -118,6 +109,12 @@ export default function RootLayout({
           />
         </body>
         <GoogleAnalytics gaId="G-0Z128XH378" />
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801577709600181`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
       </html>
     </ClerkProvider>
   )
