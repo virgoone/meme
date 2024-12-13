@@ -6,6 +6,7 @@ import { Newsletter } from '~/app/(main)/Newsletter'
 import { Photos } from '~/app/(main)/Photos'
 import { Resume } from '~/app/(main)/Resume'
 import { PencilSwooshIcon } from '~/assets'
+import AdBanner from '~/components/AdBanner'
 import { Container } from '~/components/oui/Container'
 import { getSettings } from '~/sanity/queries'
 
@@ -34,6 +35,13 @@ export default async function BlogHomePage() {
             {/* {settings?.resume && <Resume resume={settings.resume} />} */}
           </aside>
         </div>
+        <AdBanner
+          className="w-full"
+          data-ad-slot="2131063994"
+          data-ad-format="auto"
+          data-id="456"
+          data-full-width-responsive="true"
+        />
       </Container>
     </>
   )
