@@ -36,7 +36,7 @@ export default async function BlogHomePage() {
           </aside>
         </div>
         <AdBanner
-          className="w-full"
+          className="w-full my-4"
           data-ad-slot="2131063994"
           data-ad-format="auto"
           data-id="456"
