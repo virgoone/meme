@@ -2,10 +2,10 @@ import { type Metadata } from 'next'
 
 import { Projects } from '~/app/(main)/projects/Projects'
 import { Container } from '~/components/oui/Container'
+import AdBanner from '~/components/AdBanner'
 
 const title = '我的项目'
-const description =
-  '我参与过或者开源的一些小项目，希望对你有所帮助。'
+const description = '我参与过或者开源的一些小项目，希望对你有所帮助。'
 export const metadata = {
   title,
   description,
@@ -36,6 +36,13 @@ export default function ProjectsPage() {
       <div className="mt-16 sm:mt-20">
         <Projects />
       </div>
+      <AdBanner
+        className="my-4 w-full"
+        data-ad-slot="2131063994"
+        data-ad-format="auto"
+        data-id="456"
+        data-full-width-responsive="true"
+      />
     </Container>
   )
 }

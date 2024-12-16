@@ -3,6 +3,7 @@ import Balancer from 'react-wrap-balancer'
 
 import { Container } from '~/components/oui/Container'
 import { fetchGuestbookMessages } from '~/db/queries/guestbook'
+import AdBanner from '~/components/AdBanner'
 
 import { Guestbook } from './Guestbook'
 
@@ -39,6 +40,13 @@ export default async function GuestBookPage() {
       <div className="mt-16 sm:mt-20">
         <Guestbook messages={messages} />
       </div>
+      <AdBanner
+        className="my-4 w-full"
+        data-ad-slot="2131063994"
+        data-ad-format="auto"
+        data-id="456"
+        data-full-width-responsive="true"
+      />
     </Container>
   )
 }

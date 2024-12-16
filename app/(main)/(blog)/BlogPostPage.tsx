@@ -16,7 +16,6 @@ import {
   ScriptIcon,
   UTurnLeftIcon,
 } from '~/assets'
-import AdBanner from '~/components/AdBanner'
 import { ClientOnly } from '~/components/ClientOnly'
 import { Button } from '~/components/oui/Button'
 import { Container } from '~/components/oui/Container'
@@ -168,13 +167,6 @@ export function BlogPostPage({
                 </span>
               </motion.div>
             </header>
-            <AdBanner
-              className="w-full my-4"
-              data-ad-slot="2131063994"
-              data-ad-format="auto"
-              data-id="456"
-              data-full-width-responsive="true"
-            />
             <Prose className="mt-8">
               <PostPortableText value={post.body} />
             </Prose>
@@ -190,13 +182,6 @@ export function BlogPostPage({
           </div>
         </aside>
       </div>
-      <AdBanner
-        className="my-6 w-full"
-        data-ad-slot="2503417325"
-        data-ad-format="autorelaxed"
-        data-id="789"
-        data-full-width-responsive="true"
-      />
       {post.related && post.related.length > 0 ? (
         <section className="mb-12 mt-32">
           <h2 className="mb-6 flex items-center justify-center text-lg font-bold text-zinc-900 dark:text-zinc-100">
