@@ -1,4 +1,4 @@
-import { createClient as createWebClient } from '@libsql/client/web'
+import { createClient as createWebClient } from '@libsql/client'
 import { drizzle, LibSQLDatabase } from 'drizzle-orm/libsql'
 
 import { env } from '~/env.mjs'
