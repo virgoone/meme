@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         fileType,
         md5,
         ext,
-      })
+      } as any)
       .returning({
         newId: media.id,
       })
