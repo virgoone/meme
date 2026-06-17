@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
+@config "../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -151,8 +152,8 @@ body {
 }
 
 ::selection {
-  background-color: theme('colors.lime.500');
-  color: theme('colors.lime.950');
+  background-color: var(--color-lime-500);
+  color: var(--color-lime-950);
 }
 
 @keyframes typing-pulse {

@@ -65,6 +65,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         id: MediaHashids.encode(newMedia.newId),
+        name,
+        url,
+        key,
+        fileSize,
+        fileType,
+        md5,
+        color,
+        blurhash,
+        ext,
         createdAt: new Date(),
       } satisfies MediaDto,
       {

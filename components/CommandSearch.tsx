@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 
+import { CommandPalette } from '@cloudflare/kumo/components/command-palette'
 import {
   Calculator,
   Calendar,
@@ -11,19 +12,38 @@ import {
   User,
 } from 'lucide-react'
 
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from '~/components/ui/command'
+type CommandAction = {
+  title: string
+  shortcut?: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
+type CommandGroup = {
+  label: string
+  items: CommandAction[]
+}
+
+const commandGroups: CommandGroup[] = [
+  {
+    label: 'Suggestions',
+    items: [
+      { title: 'Calendar', icon: Calendar },
+      { title: 'Search Emoji', icon: Smile },
+      { title: 'Calculator', icon: Calculator },
+    ],
+  },
+  {
+    label: 'Settings',
+    items: [
+      { title: 'Profile', shortcut: '⌘P', icon: User },
+      { title: 'Billing', shortcut: '⌘B', icon: CreditCard },
+      { title: 'Settings', shortcut: '⌘S', icon: Settings },
+    ],
+  },
+]
 
 export function CommandDialogSearch(props: {
-  children: React.ReactElement
+  children: React.ReactElement<{ onClick?: () => void }>
   onClose?: () => void
 }) {
   const [open, setOpen] = React.useState(false)
@@ -53,44 +73,51 @@ export function CommandDialogSearch(props: {
           setOpen(true)
         },
       })}
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem>
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>Calendar</span>
-            </CommandItem>
-            <CommandItem>
-              <Smile className="mr-2 h-4 w-4" />
-              <span>Search Emoji</span>
-            </CommandItem>
-            <CommandItem>
-              <Calculator className="mr-2 h-4 w-4" />
-              <span>Calculator</span>
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <CommandShortcut>⌘P</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-              <CommandShortcut>⌘B</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <CommandShortcut>⌘S</CommandShortcut>
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
+      <CommandPalette.Root<CommandGroup, CommandAction>
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen)
+          if (!nextOpen) {
+            props.onClose?.()
+          }
+        }}
+        items={commandGroups}
+        itemToStringValue={(group) => group.label}
+        getSelectableItems={(groups) => groups.flatMap((group) => group.items)}
+      >
+        <CommandPalette.Input placeholder="Type a command or search..." />
+        <CommandPalette.List>
+          <CommandPalette.Results>
+            {(group) => (
+              <CommandPalette.Group items={group.items}>
+                <CommandPalette.GroupLabel>
+                  {group.label}
+                </CommandPalette.GroupLabel>
+                <CommandPalette.Items>
+                  {(item) => {
+                    const Icon = item.icon
+                    return (
+                      <CommandPalette.Item
+                        value={item}
+                        onClick={() => onClose()}
+                      >
+                        <Icon className="mr-2 h-4 w-4" />
+                        <span>{item.title}</span>
+                        {item.shortcut ? (
+                          <span className="ml-auto text-xs tracking-widest text-kumo-subtle">
+                            {item.shortcut}
+                          </span>
+                        ) : null}
+                      </CommandPalette.Item>
+                    )
+                  }}
+                </CommandPalette.Items>
+              </CommandPalette.Group>
+            )}
+          </CommandPalette.Results>
+          <CommandPalette.Empty>No results found.</CommandPalette.Empty>
+        </CommandPalette.List>
+      </CommandPalette.Root>
     </>
   )
 }

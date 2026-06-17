@@ -8,6 +8,7 @@ import { db } from '~/db'
 import { TagsHashids, type TagsDto } from '~/db/dto/tags.dto'
 import { tags } from '~/db/schema'
 import { getErrorMessage } from '~/lib/handle-error'
+import { getIP } from '~/lib/ip'
 import { redis } from '~/lib/redis'
 
 function getKey(id: string) {
@@ -30,9 +31,8 @@ type GetSchema = z.infer<typeof getSchema>
 
 export async function GET(req: NextRequest) {
   try {
-    const { success } = await ratelimit.limit(
-      getKey(req.ip) + `_${req.ip ?? ''}`,
-    )
+    const ip = getIP(req)
+    const { success } = await ratelimit.limit(`${getKey(ip)}_${ip}`)
     if (!success) {
       return new Response('Too Many Requests', {
         status: 429,

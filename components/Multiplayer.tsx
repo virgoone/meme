@@ -9,7 +9,6 @@
 // import Balancer from 'react-wrap-balancer'
 //
 // import { CloudIcon, CursorClickIcon, CursorIcon, UFOIcon } from '~/assets'
-// import { Tooltip } from '~/components/ui/Tooltip'
 // import { usePresenceStore } from '~/lib/store'
 //
 // const enabledMultiplayerAtom = atomWithStorage(

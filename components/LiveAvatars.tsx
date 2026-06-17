@@ -3,7 +3,6 @@
 // import React from 'react'
 // import Balancer from 'react-wrap-balancer'
 //
-// import { Tooltip } from '~/components/ui/Tooltip'
 // import { usePostStore } from '~/lib/store'
 //
 // const MAX_OTHERS = 7

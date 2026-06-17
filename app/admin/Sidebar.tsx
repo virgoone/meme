@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import { Button } from '@cloudflare/kumo/components/button'
 import { ChevronUp, SearchIcon } from 'lucide-react'
 
 import {
@@ -17,7 +18,6 @@ import {
   TiltedSendIcon,
 } from '~/assets'
 import { CommandDialogSearch } from '~/components/CommandSearch'
-import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 
 import logo from '../apple-icon.png'

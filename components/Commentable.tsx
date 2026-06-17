@@ -6,7 +6,7 @@ import React from 'react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -281,14 +281,14 @@ function Root({ className, blockId }: CommentableProps) {
                     ref={formRef}
                     onSubmit={onSubmit}
                   >
-                    <SignedIn>
+                    {me ? (
                       <CommentTextarea
                         isPending={isPending}
                         onSubmit={onSubmit}
                       />
-                    </SignedIn>
+                    ) : null}
 
-                    <SignedOut>
+                    {!me ? (
                       <div className="flex justify-center">
                         <SignInButton
                           mode="modal"
@@ -300,7 +300,7 @@ function Root({ className, blockId }: CommentableProps) {
                           </Button>
                         </SignInButton>
                       </div>
-                    </SignedOut>
+                    ) : null}
                   </form>
                 </main>
               </motion.div>

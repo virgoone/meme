@@ -1,4 +1,5 @@
 import Link, { type LinkProps } from 'next/link'
+import type React from 'react'
 
 import { type IconProps } from '~/assets'
 import { cn } from '~/lib/utils'
@@ -22,7 +23,7 @@ export function Card({
   children,
   ...props
 }: {
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
   className?: string
   children: React.ReactNode
   onMouseMove?: React.MouseEventHandler
@@ -60,7 +61,7 @@ Card.Title = function CardTitle({
   href,
   children,
 }: {
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
   href?: string
   children: React.ReactNode
 }) {
@@ -109,7 +110,7 @@ Card.Eyebrow = function CardEyebrow({
   children,
   ...props
 }: {
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
   decorate?: boolean
   className?: string
   children: React.ReactNode

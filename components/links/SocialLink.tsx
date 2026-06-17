@@ -16,7 +16,7 @@ import {
 } from '~/assets'
 import { Tooltip } from '~/components/oui/Tooltip'
 
-type IconType = (props: IconProps) => JSX.Element
+type IconType = (props: IconProps) => React.ReactElement
 type Platform =
   | 'github'
   | 'twitter'

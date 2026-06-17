@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, useEffect } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { redirect } from 'next/navigation'
 
 import { auth, currentUser } from '@clerk/nextjs/server'
@@ -7,6 +7,8 @@ import Loading from '~/components/loading/Loading'
 
 import Header from './Header'
 import { Sidebar } from './Sidebar'
+
+export const dynamic = 'force-dynamic'
 
 export default async function AdminLayout({
   children,

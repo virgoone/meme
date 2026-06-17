@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 import { Button, Popconfirm, Space, type TableColumnsType } from 'antd'
 
-import { CategoriesDto } from '~/db/dto/categories.dto'
+import { ProjectDto } from '~/db/dto/project.dto'
 import { formatUTCDate } from '~/lib/date'
 
 import { deleteAction } from '../_lib/actions'
@@ -41,7 +41,7 @@ const DeleteAction = (props: { id: string }) => {
   )
 }
 
-export function getColumns(): TableColumnsType<CategoriesDto> {
+export function getColumns(): TableColumnsType<ProjectDto> {
   return [
     {
       title: 'ID',
@@ -54,10 +54,10 @@ export function getColumns(): TableColumnsType<CategoriesDto> {
     {
       title: 'Icon',
       dataIndex: 'icon',
-      render: (icon: string, row: CategoriesDto) => {
+      render: (icon: string, row: ProjectDto) => {
         return (
           <div className="flex space-x-2">
-            <Image width={40} height={40} src={icon} alt={row.title} />
+            <Image width={40} height={40} src={icon} alt={row.name} />
           </div>
         )
       },
@@ -74,7 +74,7 @@ export function getColumns(): TableColumnsType<CategoriesDto> {
     {
       title: 'Action',
       dataIndex: 'actions',
-      render: (_date, row: CategoriesDto) => {
+      render: (_date, row: ProjectDto) => {
         return (
           <Space>
             <UpdateDialog detail={row} />

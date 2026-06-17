@@ -32,7 +32,7 @@ const mapErrorFromZodIssue = (issues) =>
     return obj
   }, {})
 
-const zodValidator = <T extends z.AnyZodObject>(
+const zodValidator = <T extends Record<string, any>>(
   schema: z.ZodSchema<T>,
   getFieldsValue: () => T,
 ) => ({

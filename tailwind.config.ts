@@ -1,12 +1,8 @@
-import type { Config } from "tailwindcss"
-import { fontFamily } from 'tailwindcss/defaultTheme'
-
 const config = {
-  darkMode: ["class"],
+  darkMode: 'class',
   content: [
     './app/**/*.tsx',
     './components/**/*.tsx',
-    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', // Tremor module
 	],
   prefix: "",
   theme: {
@@ -243,7 +239,7 @@ const config = {
             marginBottom: theme('spacing.20'),
             borderTopWidth: '1px',
             borderColor: 'var(--tw-prose-hr)',
-            '@screen lg': {
+            '@media (min-width: 64rem)': {
               marginLeft: `calc(${theme('spacing.12')} * -1)`,
               marginRight: `calc(${theme('spacing.12')} * -1)`,
             },
@@ -464,6 +460,6 @@ const config = {
     require('@tailwindcss/typography'),
     require("tailwindcss-animate")
   ],
-} satisfies Config
+}
 
 export default config

@@ -9,6 +9,7 @@ import { MediaDto, MediaHashids } from '~/db/dto/media.dto'
 import { media, post } from '~/db/schema'
 import { env } from '~/env.mjs'
 import { getErrorMessage } from '~/lib/handle-error'
+import { getIP } from '~/lib/ip'
 import { redis } from '~/lib/redis'
 import { S3Service } from '~/lib/s3'
 
@@ -37,9 +38,8 @@ type GetSchema = z.infer<typeof getSchema>
 export async function GET(req: NextRequest) {
   try {
     const start = Date.now()
-    const { success } = await ratelimit.limit(
-      getKey(req.ip) + `_${req.ip ?? ''}`,
-    )
+    const ip = getIP(req)
+    const { success } = await ratelimit.limit(`${getKey(ip)}_${ip}`)
     if (!success) {
       return new Response('Too Many Requests', {
         status: 429,
@@ -89,9 +89,8 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { success } = await ratelimit.limit(
-      getKey(req.ip) + `_${req.ip ?? ''}`,
-    )
+    const ip = getIP(req)
+    const { success } = await ratelimit.limit(`${getKey(ip)}_${ip}`)
     if (!success) {
       return new Response('Too Many Requests', {
         status: 429,

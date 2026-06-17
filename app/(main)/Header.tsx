@@ -3,13 +3,7 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  useUser,
-} from '@clerk/nextjs'
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 import {
   AnimatePresence,
   motion,
@@ -172,7 +166,7 @@ export function Header() {
             <>
               <div
                 ref={avatarRef}
-                className="order-last mt-[calc(theme(spacing.16)-theme(spacing.3))]"
+                className="order-last mt-[calc(--spacing(16)---spacing(3))]"
               />
               <Container
                 className="top-0 order-last -mb-3 pt-3"
@@ -182,7 +176,7 @@ export function Header() {
                 }}
               >
                 <motion.div
-                  className="top-[var(--avatar-top,theme(spacing.3))] w-full select-none"
+                  className="top-[var(--avatar-top,--spacing(3))] w-full select-none"
                   style={{
                     position:
                       'var(--header-inner-position)' as React.CSSProperties['position'],
@@ -237,7 +231,7 @@ export function Header() {
           }}
         >
           <Container
-            className="top-[var(--header-top,theme(spacing.6))] w-full"
+            className="top-[var(--header-top,--spacing(6))] w-full"
             style={{
               position:
                 'var(--header-inner-position)' as React.CSSProperties['position'],
@@ -319,9 +313,7 @@ export function UserInfo() {
 
     switch (strategy) {
       case 'from_oauth_github':
-        return GitHubBrandIcon as (
-          props: React.ComponentProps<'svg'>,
-        ) => JSX.Element
+        return GitHubBrandIcon as React.ComponentType<React.ComponentProps<'svg'>>
       case 'from_oauth_google':
         return GoogleBrandIcon
       default:
@@ -331,15 +323,15 @@ export function UserInfo() {
 
   return (
     <AnimatePresence>
-      <SignedIn key="user-info">
+      {user ? (
         <motion.div
+          key="user-info"
           className="pointer-events-auto relative flex h-10 items-center"
           initial={{ opacity: 0, x: 25 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 25 }}
         >
           <UserButton
-            afterSignOutUrl={url(pathname).href}
             appearance={{
               elements: {
                 avatarBox: 'w-9 h-9 ring-2 ring-white/20',
@@ -352,9 +344,9 @@ export function UserInfo() {
             </span>
           )}
         </motion.div>
-      </SignedIn>
-      <SignedOut key="sign-in">
+      ) : (
         <motion.div
+          key="sign-in"
           className="pointer-events-auto"
           initial={{ opacity: 0, x: 25 }}
           animate={{ opacity: 1, x: 0 }}
@@ -391,7 +383,7 @@ export function UserInfo() {
             </Tooltip.Root>
           </Tooltip.Provider>
         </motion.div>
-      </SignedOut>
+      )}
     </AnimatePresence>
   )
 }

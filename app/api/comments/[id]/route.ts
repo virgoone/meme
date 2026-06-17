@@ -14,6 +14,7 @@ import {
 import { comments } from '~/db/schema'
 import NewReplyCommentEmail from '~/emails/NewReplyComment'
 import { env } from '~/env.mjs'
+import { getIP } from '~/lib/ip'
 import { url } from '~/lib'
 import { resend } from '~/lib/mail'
 import { redis } from '~/lib/redis'
@@ -29,14 +30,13 @@ function getKey(id: string) {
   return `comments:${id}`
 }
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const postId = params.id
+    const { id: postId } = await params
+    const ip = getIP(req)
 
-    const { success } = await ratelimit.limit(
-      getKey(postId) + `_${req.ip ?? ''}`
-    )
+    const { success } = await ratelimit.limit(`${getKey(postId)}_${ip}`)
     if (!success) {
       return new Response('Too Many Requests', {
         status: 429,
@@ -85,9 +85,10 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const postId = params.id
+  const ip = getIP(req)
+  const { id: postId } = await params
 
-  const { success } = await ratelimit.limit(getKey(postId) + `_${req.ip ?? ''}`)
+  const { success } = await ratelimit.limit(`${getKey(postId)}_${ip}`)
   if (!success) {
     return new Response('Too Many Requests', {
       status: 429,
@@ -132,7 +133,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         .where(eq(comments.id, parentId as number))
       if (parentUserFromDb && parentUserFromDb.userId !== user.id) {
         const { primaryEmailAddressId, emailAddresses } =
-          await clerkClient.users.getUser(parentUserFromDb.userId)
+          await (await clerkClient()).users.getUser(parentUserFromDb.userId)
         const primaryEmailAddress = emailAddresses.find(
           (emailAddress) => emailAddress.id === primaryEmailAddressId
         )

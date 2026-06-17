@@ -5,6 +5,7 @@ import { Ratelimit } from '@upstash/ratelimit'
 import { z } from 'zod'
 
 import { env } from '~/env.mjs'
+import { getIP } from '~/lib/ip'
 import { redis } from '~/lib/redis'
 import { S3Service } from '~/lib/s3'
 
@@ -18,7 +19,7 @@ function getKey(id: string) {
   return `s3:${id}`
 }
 
-type Params = { params: { key: string } }
+type Params = { params: Promise<{ key: string }> }
 const CreateS3StsSchema = z.object({
   md5: z.string(),
   fileType: z.string(),
@@ -31,9 +32,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { success } = await ratelimit.limit(
-    getKey('s3-key') + `_${req.ip ?? ''}`,
-  )
+  const { success } = await ratelimit.limit(`${getKey('s3-key')}_${getIP(req)}`)
   if (!success) {
     return new Response('Too Many Requests', {
       status: 429,
@@ -41,7 +40,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   try {
-    const key = params.key
+    const { key } = await params
     const data = await req.json()
     const {
       md5,

@@ -9,7 +9,7 @@ import { getIP } from '~/lib/ip'
 import { redis } from '~/lib/redis'
 
 export async function GeoMiddleware(req: NextRequest) {
-  const { geo, nextUrl } = req
+  const { nextUrl } = req
   const isApi = nextUrl.pathname.startsWith('/api/')
   if (process.env.EDGE_CONFIG && env.VERCEL_ENV !== 'development') {
     const blockedIPs = await get<string[]>('blocked_ips')
@@ -34,10 +34,11 @@ export async function GeoMiddleware(req: NextRequest) {
     }
   }
 
-  if (geo && !isApi && env.VERCEL_ENV !== 'development') {
-    console.log('geo-->', geo)
-    const country = geo.country
-    const city = geo.city
+  const country = req.headers.get('x-vercel-ip-country')
+  const city = req.headers.get('x-vercel-ip-city')
+
+  if (country && !isApi && env.VERCEL_ENV !== 'development') {
+    console.log('geo-->', { country, city })
 
     const countryInfo = countries.find((x) => x.cca2 === country)
     if (countryInfo) {

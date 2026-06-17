@@ -1,0 +1,89 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.mjs",
+      "*.cjs",
+      "app/**/*.ts",
+      "app/**/*.tsx",
+      "app/**/*.js",
+      "app/**/*.mjs",
+      "app/**/*.cjs",
+      "assets/**/*.ts",
+      "assets/**/*.tsx",
+      "assets/**/*.js",
+      "assets/**/*.mjs",
+      "assets/**/*.cjs",
+      "components/**/*.ts",
+      "components/**/*.tsx",
+      "components/**/*.js",
+      "components/**/*.mjs",
+      "components/**/*.cjs",
+      "config/**/*.ts",
+      "config/**/*.tsx",
+      "config/**/*.js",
+      "config/**/*.mjs",
+      "config/**/*.cjs",
+      "db/**/*.ts",
+      "db/**/*.tsx",
+      "db/**/*.js",
+      "db/**/*.mjs",
+      "db/**/*.cjs",
+      "emails/**/*.ts",
+      "emails/**/*.tsx",
+      "emails/**/*.js",
+      "emails/**/*.mjs",
+      "emails/**/*.cjs",
+      "hooks/**/*.ts",
+      "hooks/**/*.tsx",
+      "hooks/**/*.js",
+      "hooks/**/*.mjs",
+      "hooks/**/*.cjs",
+      "lib/**/*.ts",
+      "lib/**/*.tsx",
+      "lib/**/*.js",
+      "lib/**/*.mjs",
+      "lib/**/*.cjs",
+      "sanity/**/*.ts",
+      "sanity/**/*.tsx",
+      "sanity/**/*.js",
+      "sanity/**/*.mjs",
+      "sanity/**/*.cjs",
+      "!**/*.d.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        "noRedundantRoles": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "style": {
+        "useImportType": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "trailingCommas": "all"
+    }
+  }
+}
