@@ -1,111 +1,175 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import * as React from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
-import { TrashIcon } from '@radix-ui/react-icons'
-import { Button, Table as DataTable, Modal, TableColumnsType } from 'antd'
+import { Button, Table as KumoTable } from '@cloudflare/kumo'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from 'lucide-react'
 
 import { PageProps } from '~/lib/types'
 
-interface TableProps<TData = any> {
-  searchPromise: ReturnType<() => Promise<PageProps<TData>>>
+export type DataTableColumn<TData> = {
+  id: string
+  header: React.ReactNode
+  className?: string
+  cell: (row: TData) => React.ReactNode
+}
+
+interface TableProps<TData extends { id?: string } = { id?: string }> {
+  searchPromise: Promise<PageProps<TData> & { pageCount?: number }>
   deleteAction?: (ids: string[]) => Promise<void>
   toolbarElement?: React.ReactNode
-  getColumns: () => TableColumnsType<TData>
+  getColumns: () => DataTableColumn<TData>[]
 }
-const { confirm } = Modal
-export function Table({
+
+export function SimpleTable<TData>({
+  columns,
+  data,
+  getRowId,
+  empty = 'No records found.',
+}: {
+  columns: DataTableColumn<TData>[]
+  data: TData[]
+  getRowId?: (row: TData, index: number) => string
+  empty?: React.ReactNode
+}) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-kumo-line bg-kumo-base">
+      <KumoTable className="min-w-full">
+        <KumoTable.Header sticky>
+          <KumoTable.Row>
+            {columns.map((column) => (
+              <KumoTable.Head key={column.id} className={column.className}>
+                {column.header}
+              </KumoTable.Head>
+            ))}
+          </KumoTable.Row>
+        </KumoTable.Header>
+        <KumoTable.Body>
+          {data.length > 0 ? (
+            data.map((row, index) => (
+              <KumoTable.Row key={getRowId?.(row, index) ?? index}>
+                {columns.map((column) => (
+                  <KumoTable.Cell key={column.id} className={column.className}>
+                    {column.cell(row)}
+                  </KumoTable.Cell>
+                ))}
+              </KumoTable.Row>
+            ))
+          ) : (
+            <KumoTable.Row>
+              <KumoTable.Cell colSpan={columns.length}>
+                <div className="py-10 text-center text-sm text-kumo-muted">
+                  {empty}
+                </div>
+              </KumoTable.Cell>
+            </KumoTable.Row>
+          )}
+        </KumoTable.Body>
+      </KumoTable>
+    </div>
+  )
+}
+
+export function Table<TData extends { id?: string }>({
   searchPromise,
-  deleteAction,
   toolbarElement,
   getColumns,
-}: TableProps) {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [isDeletePending, startDeleteTransition] = useTransition()
-
-  const { data, page, total, pageSize } = React.use(searchPromise)
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys)
-    setSelectedRowKeys(newSelectedRowKeys)
-  }
-  const columns = React.useMemo(() => getColumns(), [])
+}: TableProps<TData>) {
+  const result = React.use(searchPromise)
+  const data = result.data
+  const page = result.page ?? 1
+  const pageSize = result.pageSize ?? 10
+  const total = result.total ?? data.length
+  const pageCount = result.pageCount ?? Math.max(1, Math.ceil(total / pageSize))
+  const columns = React.useMemo(() => getColumns(), [getColumns])
 
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  }
-  const hasSelected = selectedRowKeys.length > 0
-  const deleteConfirmAction = () => {
-    console.log('selectedRowKeys', selectedRowKeys)
-    confirm({
-      title: 'Do you want to delete these items?',
-      icon: <TrashIcon />,
-      content: 'After deletion, it will not be recoverable',
-      onOk() {
-        startDeleteTransition(() => {
-          deleteAction?.(selectedRowKeys as string[])
-        })
-      },
-      onCancel() {
-        console.log('Cancel')
-      },
-    })
-  }
+  const pushPage = React.useCallback(
+    (nextPage: number, nextPageSize = pageSize) => {
+      const newSearchParams = new URLSearchParams(searchParams)
+      newSearchParams.set('page', String(Math.max(1, nextPage)))
+      newSearchParams.set('pageSize', String(nextPageSize))
+      router.push(`${pathname}?${newSearchParams.toString()}`, {
+        scroll: false,
+      })
+    },
+    [pageSize, pathname, router, searchParams],
+  )
 
   return (
-    <div className="w-full space-y-2.5 overflow-auto">
-      <div className="flex w-full items-center justify-between space-y-2.5 overflow-auto px-1 py-2">
-        <div className="flex-1">
-          {hasSelected && Boolean(deleteAction) && (
-            <Button
-              danger
-              type="default"
-              disabled={isDeletePending}
-              loading={isDeletePending}
-              icon={<TrashIcon className="mr-2 size-4" aria-hidden="true" />}
-              onClick={() => deleteConfirmAction()}
-            >
-              Delete ({selectedRowKeys.length})
-            </Button>
-          )}
+    <div className="w-full space-y-3">
+      {toolbarElement ? (
+        <div className="flex w-full items-center justify-end gap-2">
+          {toolbarElement}
         </div>
-        {toolbarElement}
-      </div>
+      ) : null}
 
-      <DataTable
-        rowSelection={rowSelection}
+      <SimpleTable
         columns={columns}
-        dataSource={data}
-        rowKey="id"
-        pagination={{
-          pageSize,
-          current: page,
-          total,
-          position: ['bottomRight'],
-          pageSizeOptions: [10, 20, 30, 40, 50],
-          onChange(page, pageSize) {
-            const newSearchParams = new URLSearchParams(searchParams)
-            newSearchParams.set('page', page + '')
-            newSearchParams.set('pageSize', pageSize + '')
-            router.push(`${pathname}?${newSearchParams.toString()}`, {
-              scroll: false,
-            })
-          },
-          onShowSizeChange(current, size) {
-            const newSearchParams = new URLSearchParams(searchParams)
-            newSearchParams.set('page', '1')
-            newSearchParams.set('pageSize', size + '')
-            router.push(`${pathname}?${newSearchParams.toString()}`, {
-              scroll: false,
-            })
-          },
-        }}
+        data={data}
+        getRowId={(row, index) => row.id ?? String(index)}
       />
+
+      <div className="flex flex-col gap-3 text-sm text-kumo-muted sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          {total} records · page {page} of {pageCount}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Button
+            aria-label="First page"
+            disabled={page <= 1}
+            onClick={() => pushPage(1)}
+            shape="square"
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
+            <ChevronsLeftIcon className="size-4" />
+          </Button>
+          <Button
+            aria-label="Previous page"
+            disabled={page <= 1}
+            onClick={() => pushPage(page - 1)}
+            shape="square"
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
+            <ChevronLeftIcon className="size-4" />
+          </Button>
+          <Button
+            aria-label="Next page"
+            disabled={page >= pageCount}
+            onClick={() => pushPage(page + 1)}
+            shape="square"
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
+            <ChevronRightIcon className="size-4" />
+          </Button>
+          <Button
+            aria-label="Last page"
+            disabled={page >= pageCount}
+            onClick={() => pushPage(pageCount)}
+            shape="square"
+            size="sm"
+            type="button"
+            variant="secondary"
+          >
+            <ChevronsRightIcon className="size-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

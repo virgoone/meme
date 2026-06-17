@@ -1,4 +1,3 @@
-import { Box, Button, Flex } from '@sanity/ui'
 import React from 'react'
 import ReadingTime from 'reading-time'
 import { type NumberInputProps, set, useFormValue } from 'sanity'
@@ -32,11 +31,23 @@ export default function ReadingTimeInput(props: NumberInputProps) {
   }, [body, props])
 
   return (
-    <Flex gap={3} align="center">
-      <Box flex={1}>{props.renderDefault(props)}</Box>
-      <Button mode="ghost" onClick={generate}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ flex: 1 }}>{props.renderDefault(props)}</div>
+      <button
+        type="button"
+        onClick={generate}
+        style={{
+          border: '1px solid currentColor',
+          borderRadius: 4,
+          background: 'transparent',
+          color: 'inherit',
+          cursor: 'pointer',
+          font: 'inherit',
+          padding: '7px 11px',
+        }}
+      >
         Generate
-      </Button>
-    </Flex>
+      </button>
+    </div>
   )
 }

@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import { AiEditor } from 'aieditor'
 import axios from 'axios'
 import { nanoid } from 'nanoid'
-import { toast } from 'sonner'
+import { toast } from '~/lib/toast.client'
 
 import { cn } from '~/lib/utils'
 

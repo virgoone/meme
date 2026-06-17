@@ -1,8 +1,16 @@
 'use client'
 
-import { Button, Card, Col, Row, Statistic, Table } from 'antd'
+import { LinkButton } from '@cloudflare/kumo'
 
+import { StatCard, StatGrid } from '~/components/admin/StatCard'
+import { SimpleTable, type DataTableColumn } from '~/components/data-table'
 import { formatUTCDate } from '~/lib/date'
+
+type NewsletterRow = {
+  id?: string | number
+  subject?: string
+  sentAt?: Date | string | null
+}
 
 export default function NewsLatterCard(props: {
   count: {
@@ -10,56 +18,42 @@ export default function NewsLatterCard(props: {
     total?: number
     this_month_count?: number
   }
-  dataSource: any[]
+  dataSource: NewsletterRow[]
 }) {
   const { dataSource, count } = props
-  const columns = [
+  const columns: DataTableColumn<NewsletterRow>[] = [
     {
-      title: 'Subject',
-      dataIndex: 'subject',
+      id: 'subject',
+      header: 'Subject',
+      cell: (row) => row.subject,
     },
     {
-      title: 'Time',
-      dataIndex: 'sentAt',
-      render: (date) => formatUTCDate(date),
+      id: 'sentAt',
+      header: 'Time',
+      cell: (row) => (row.sentAt ? formatUTCDate(row.sentAt) : '-'),
     },
   ]
+
   return (
     <>
-      <Row className="mt-6" gutter={16}>
-        <Col span={8}>
-          <Card>
-            {count && 'today_count' in count && (
-              <Statistic title="Today Newsletters" value={count.today_count} />
-            )}
-          </Card>
-        </Col>
+      <StatGrid>
+        <StatCard title="Today Newsletters" value={count.today_count} />
+        <StatCard title="Month Newsletters" value={count.this_month_count} />
+        <StatCard title="Total Newsletters" value={count.total} />
+      </StatGrid>
 
-        <Col span={8}>
-          <Card>
-            {count && 'this_month_count' in count && (
-              <Statistic
-                title="Month Newsletters"
-                value={count.this_month_count}
-              />
-            )}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            {count && 'total' in count && (
-              <Statistic title="Total Newsletters" value={count.total} />
-            )}
-          </Card>
-        </Col>
-      </Row>
-
-      <Card bordered={false} className="!mt-6" classNames={{ body: '!p-0' }}>
-        <div className="flex justify-end mb-3 p-2">
-          <Button type="primary" className='w-[160px]' href="newsletters/new">New</Button>
+      <div className="mt-6 space-y-3">
+        <div className="flex justify-end">
+          <LinkButton href="newsletters/new" variant="primary">
+            New
+          </LinkButton>
         </div>
-        <Table dataSource={dataSource} columns={columns} />
-      </Card>
+        <SimpleTable
+          columns={columns}
+          data={dataSource}
+          getRowId={(row, index) => String(row.id ?? row.subject ?? index)}
+        />
+      </div>
     </>
   )
 }

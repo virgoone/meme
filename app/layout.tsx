@@ -5,16 +5,14 @@ import './prism.css'
 
 import Script from 'next/script'
 
-import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ClerkProvider } from '@clerk/nextjs'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import type { Metadata, Viewport } from 'next'
-import { Toaster } from 'sonner'
 
 import { ThemeProvider } from '~/app/(main)/ThemeProvider'
 import { QueryProvider } from '~/app/QueryProvider'
 import HotjarSnippet from '~/components/HotjarSnippet'
-import AntdThemeProvider from '~/components/theme/theme-provider'
+import { KumoToastProvider } from '~/components/KumoToastProvider'
 import { url } from '~/lib'
 import { zhCN } from '~/lib/clerkLocalizations'
 import { sansFont } from '~/lib/font'
@@ -93,13 +91,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <QueryProvider>
-              <AntdRegistry>
-                <AntdThemeProvider>{children}</AntdThemeProvider>
-              </AntdRegistry>
-            </QueryProvider>
-
-            <Toaster />
+            <KumoToastProvider>
+              <QueryProvider>{children}</QueryProvider>
+            </KumoToastProvider>
           </ThemeProvider>
           <HotjarSnippet />
           <Script

@@ -1,30 +1,9 @@
 'use client'
 
-import type { StatisticProps } from 'antd'
-import { Card, Statistic } from 'antd'
 import { Loader2 } from 'lucide-react'
-import CountUp from 'react-countup'
 
-const formatter: StatisticProps['formatter'] = (value) => (
-  <CountUp end={value as number} separator="," />
-)
+import { StatCard } from '~/components/admin/StatCard'
 
-const Icon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      className="h-4 w-4 text-muted-foreground"
-    >
-      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-    </svg>
-  )
-}
 export default function StatisticsCard(props: {
   title: string
   subtitle?: string
@@ -32,17 +11,15 @@ export default function StatisticsCard(props: {
   icon?: React.ReactNode
   loading?: boolean
 }) {
-  const { loading, title, count, subtitle, icon } = props
-  return (
-    <Card bordered={false} loading={loading}>
-      <Statistic
-        title={title}
-        value={count}
-        precision={2}
-        formatter={formatter}
-        // valueStyle={{ color: '#3f8600' }}
-        prefix={icon ? icon : <Icon />}
-      />
-    </Card>
-  )
+  const { loading, title, count, subtitle } = props
+
+  if (loading) {
+    return (
+      <section className="flex min-h-28 items-center justify-center rounded-lg border border-kumo-line bg-kumo-base p-4 text-kumo-muted">
+        <Loader2 className="size-5 animate-spin" />
+      </section>
+    )
+  }
+
+  return <StatCard title={title} value={count} subtitle={subtitle} />
 }

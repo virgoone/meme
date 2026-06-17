@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 import { SignInButton, useUser } from '@clerk/nextjs'
+import { Button } from '@cloudflare/kumo'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -36,7 +37,6 @@ import {
 } from '~/assets'
 import { CommentMarkdown } from '~/components/CommentMarkdown'
 import { RichLink } from '~/components/links/RichLink'
-import { Button } from '~/components/oui/Button'
 import { HoverCard } from '~/components/oui/HoverCard'
 import { ElegantTooltip } from '~/components/oui/Tooltip'
 import {

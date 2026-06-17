@@ -21,7 +21,7 @@ import {
 } from '~/assets'
 import { Avatar } from '~/components/Avatar'
 import { Container } from '~/components/oui/Container'
-import { Tooltip } from '~/components/oui/Tooltip'
+import { ElegantTooltip } from '~/components/oui/Tooltip'
 import { url } from '~/lib'
 import { clamp } from '~/lib/math'
 import { cn } from '~/lib/utils'
@@ -302,7 +302,6 @@ export function Header() {
 }
 
 export function UserInfo() {
-  const [tooltipOpen, setTooltipOpen] = React.useState(false)
   const pathname = usePathname()
   const { user } = useUser()
   const StrategyIcon = React.useMemo(() => {
@@ -352,36 +351,16 @@ export function UserInfo() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 25 }}
         >
-          <Tooltip.Provider disableHoverableContent>
-            <Tooltip.Root open={tooltipOpen} onOpenChange={setTooltipOpen}>
-              <SignInButton mode="modal" forceRedirectUrl={url(pathname).href}>
-                <Tooltip.Trigger asChild>
-                  <button
-                    type="button"
-                    className="group h-10 rounded-full bg-gradient-to-b from-zinc-50/50 to-white/90 px-3 text-sm shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:from-zinc-900/50 dark:to-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
-                  >
-                    <UserArrowLeftIcon className="h-5 w-5" />
-                  </button>
-                </Tooltip.Trigger>
-              </SignInButton>
-
-              <AnimatePresence>
-                {tooltipOpen && (
-                  <Tooltip.Portal forceMount>
-                    <Tooltip.Content asChild>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                      >
-                        登录
-                      </motion.div>
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                )}
-              </AnimatePresence>
-            </Tooltip.Root>
-          </Tooltip.Provider>
+          <SignInButton mode="modal" forceRedirectUrl={url(pathname).href}>
+            <ElegantTooltip content="登录">
+              <button
+                type="button"
+                className="group h-10 rounded-full bg-gradient-to-b from-zinc-50/50 to-white/90 px-3 text-sm shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:from-zinc-900/50 dark:to-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
+              >
+                <UserArrowLeftIcon className="h-5 w-5" />
+              </button>
+            </ElegantTooltip>
+          </SignInButton>
         </motion.div>
       )}
     </AnimatePresence>

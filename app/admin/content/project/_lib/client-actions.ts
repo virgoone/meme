@@ -1,4 +1,6 @@
-import { toast } from 'sonner'
+'use client'
+
+import { toast } from '~/lib/toast.client'
 
 import { type Row } from '@tanstack/react-table'
 

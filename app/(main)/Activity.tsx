@@ -1,13 +1,12 @@
 'use client'
 
-import React from 'react'
 import Image from 'next/image'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import { useQuery } from '@tanstack/react-query'
 
-import { Tooltip } from '~/components/oui/Tooltip'
+import { ElegantTooltip } from '~/components/oui/Tooltip'
 
 const appLabels: { [app: string]: string } = {
   slack: 'Slack',
@@ -38,8 +37,6 @@ export function Activity() {
         ? false
         : new URL(window.location.href).hostname === 'cali.so',
   })
-  const [open, setOpen] = React.useState(false)
-
   if (!data) {
     return null
   }
@@ -47,47 +44,27 @@ export function Activity() {
   const { app } = data
 
   return (
-    <Tooltip.Provider disableHoverableContent>
-      <Tooltip.Root open={open} onOpenChange={setOpen}>
-        <Tooltip.Trigger asChild>
-          <div className="pointer-events-auto relative flex items-center">
-            <motion.div
-              className="absolute left-1 top-1 h-6 w-6 select-none rounded-[6px] bg-zinc-500/10 dark:bg-zinc-200/10"
-              animate={{ opacity: [0, 0.65, 0], scale: [1, 1.4, 1] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-              }}
-            />
-            <Image
-              width={32}
-              height={32}
-              src={`/apps/${app}.png`}
-              alt={app}
-              priority
-              fetchPriority="high"
-              unoptimized
-              className="pointer-events-none select-none"
-            />
-          </div>
-        </Tooltip.Trigger>
-        <AnimatePresence>
-          {open && (
-            <Tooltip.Portal forceMount>
-              <Tooltip.Content asChild>
-                <motion.div
-                  className="mt-1"
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                >
-                  Cali 在使用 {appLabels[app] ?? app}
-                </motion.div>
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          )}
-        </AnimatePresence>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <ElegantTooltip content={`Cali 在使用 ${appLabels[app] ?? app}`}>
+      <div className="pointer-events-auto relative flex items-center">
+        <motion.div
+          className="absolute left-1 top-1 h-6 w-6 select-none rounded-[6px] bg-zinc-500/10 dark:bg-zinc-200/10"
+          animate={{ opacity: [0, 0.65, 0], scale: [1, 1.4, 1] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+          }}
+        />
+        <Image
+          width={32}
+          height={32}
+          src={`/apps/${app}.png`}
+          alt={app}
+          priority
+          fetchPriority="high"
+          unoptimized
+          className="pointer-events-none select-none"
+        />
+      </div>
+    </ElegantTooltip>
   )
 }

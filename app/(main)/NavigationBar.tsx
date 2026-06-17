@@ -1,7 +1,11 @@
 'use client'
 
-import { Popover, type PopoverProps, Transition } from '@headlessui/react'
-import { motion, useMotionTemplate, useMotionValue } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+} from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
@@ -93,25 +97,32 @@ function Desktop({
 function MobileNavItem({
   href,
   children,
+  onNavigate,
 }: {
   href: string
   children: React.ReactNode
+  onNavigate: () => void
 }) {
   return (
     <li>
-      <Popover.Button as={Link} href={href} className="block py-2">
+      <Link href={href} className="block py-2" onClick={onNavigate}>
         {children}
-      </Popover.Button>
+      </Link>
     </li>
   )
 }
 
-function Mobile(props: PopoverProps<'div'>) {
+function Mobile(props: React.HTMLAttributes<HTMLDivElement>) {
+  const [open, setOpen] = React.useState(false)
+
   return (
-    <Popover {...props}>
-      <Popover.Button className="group flex items-center rounded-full bg-gradient-to-b from-zinc-50/20 to-white/80 px-4 py-2 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur-md focus:outline-none focus-visible:ring-2 dark:from-zinc-900/30 dark:to-zinc-800/80 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 dark:focus-visible:ring-yellow-500/80">
+    <div {...props}>
+      <button
+        className="group flex items-center rounded-full bg-gradient-to-b from-zinc-50/20 to-white/80 px-4 py-2 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur-md focus:outline-none focus-visible:ring-2 dark:from-zinc-900/30 dark:to-zinc-800/80 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20 dark:focus-visible:ring-yellow-500/80"
+        onClick={() => setOpen(true)}
+        type="button"
+      >
         前往
-        {/* Chevron */}
         <svg
           viewBox="0 0 8 6"
           aria-hidden="true"
@@ -125,34 +136,33 @@ function Mobile(props: PopoverProps<'div'>) {
             strokeLinejoin="round"
           />
         </svg>
-      </Popover.Button>
-      <Transition.Root>
-        <Transition.Child
-          as={React.Fragment}
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <Popover.Overlay className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur dark:bg-black/80" />
-        </Transition.Child>
-        <Transition.Child
-          as={React.Fragment}
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <Popover.Panel
-            focus
-            className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-gradient-to-b from-zinc-100/75 to-white p-8 ring-1 ring-zinc-900/5 dark:from-zinc-900/50 dark:to-zinc-900 dark:ring-zinc-800"
-          >
+      </button>
+      <AnimatePresence>
+        {open ? (
+          <>
+            <motion.button
+              aria-label="关闭菜单"
+              className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur dark:bg-black/80"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              type="button"
+            />
+            <motion.div
+              className="fixed inset-x-4 top-8 z-50 origin-top rounded-2xl bg-gradient-to-b from-zinc-100/75 to-white p-8 ring-1 ring-zinc-900/5 dark:from-zinc-900/50 dark:to-zinc-900 dark:ring-zinc-800"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
             <div className="flex flex-row-reverse items-center justify-between">
-              <Popover.Button aria-label="关闭菜单" className="-m-1 p-1">
+              <button
+                aria-label="关闭菜单"
+                className="-m-1 p-1"
+                onClick={() => setOpen(false)}
+                type="button"
+              >
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
@@ -167,7 +177,7 @@ function Mobile(props: PopoverProps<'div'>) {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </Popover.Button>
+              </button>
               <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                 站内导航
               </h2>
@@ -175,16 +185,21 @@ function Mobile(props: PopoverProps<'div'>) {
             <nav className="mt-6">
               <ul className="-my-2 divide-y divide-zinc-500/20 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300">
                 {navigationItems.map(({ href, text }) => (
-                  <MobileNavItem key={href} href={href}>
+                  <MobileNavItem
+                    key={href}
+                    href={href}
+                    onNavigate={() => setOpen(false)}
+                  >
                     {text}
                   </MobileNavItem>
                 ))}
               </ul>
             </nav>
-          </Popover.Panel>
-        </Transition.Child>
-      </Transition.Root>
-    </Popover>
+            </motion.div>
+          </>
+        ) : null}
+      </AnimatePresence>
+    </div>
   )
 }
 

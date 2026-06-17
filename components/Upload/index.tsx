@@ -6,11 +6,11 @@ import axios from 'axios'
 import { FileIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { Accept } from 'react-dropzone'
-import { toast } from 'sonner'
 
 import { useMutation } from '@tanstack/react-query'
 
 import { formatSize } from '~/lib/format'
+import { toast } from '~/lib/toast.client'
 import { cn } from '~/lib/utils'
 
 import Upload from './BaseUpload'
@@ -19,7 +19,7 @@ import { RemoveAction } from '../Icon'
 
 let md5Worker: any
 
-interface UploadValue {
+export interface UploadValue {
   id?: string
   url: string
   completedUrl: string

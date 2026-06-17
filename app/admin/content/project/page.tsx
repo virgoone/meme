@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { Table } from '~/components/data-table'
 import { SearchParams } from '~/components/data-table/types'
 
@@ -18,12 +16,10 @@ export default async function AdminCatPage({ searchParams }: IndexPageProps) {
   const searchPromise = getBySearch(search)
 
   return (
-    <>
-      <Table
-        getColumns={getColumns}
-        toolbarElement={<TableToolbarActions />}
-        searchPromise={searchPromise}
-      />
-    </>
+    <Table
+      getColumns={getColumns}
+      toolbarElement={<TableToolbarActions />}
+      searchPromise={searchPromise}
+    />
   )
 }

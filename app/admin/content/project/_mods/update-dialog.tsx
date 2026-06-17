@@ -2,123 +2,185 @@
 
 import * as React from 'react'
 
-import { Button, Form, Input, Modal, Space } from 'antd'
-import { FormListFieldData } from 'antd/lib/form'
-import { toast } from 'sonner'
+import { Button, Dialog, Input, Textarea } from '@cloudflare/kumo'
 
 import Upload from '~/components/Upload'
+import type { UploadValue } from '~/components/Upload'
 import { ProjectDto } from '~/db/dto/project.dto'
-import useForm from '~/hooks/use-form'
 import { getErrorMessage } from '~/lib/handle-error'
+import { toast } from '~/lib/toast.client'
 
 import { updateAction } from '../_lib/actions'
 import { updateSchema, type UpdateSchema } from '../_lib/validations'
 
-const FormItem = Form.Item
+type ProjectFormState = {
+  name: string
+  url: string
+  description: string
+  icon: UploadValue[]
+}
+
+function firstIssueByField(error: unknown) {
+  const result: Record<string, string> = {}
+  if (
+    error &&
+    typeof error === 'object' &&
+    'issues' in error &&
+    Array.isArray(error.issues)
+  ) {
+    for (const issue of error.issues) {
+      const key = issue.path?.[0]
+      if (typeof key === 'string' && !result[key]) {
+        result[key] = issue.message
+      }
+    }
+  }
+  return result
+}
+
+function formFromProject(detail: ProjectDto): ProjectFormState {
+  return {
+    name: detail.name,
+    url: detail.url,
+    description: detail.description ?? '',
+    icon: [
+      {
+        url: detail.icon,
+        completedUrl: detail.icon,
+        fileType: 'image',
+      },
+    ],
+  }
+}
+
 export function UpdateDialog(props: { detail: ProjectDto }) {
   const { detail } = props
   const [open, setOpen] = React.useState(false)
-  const [isCreatePending, startCreateTransition] = React.useTransition()
+  const [form, setForm] = React.useState<ProjectFormState>(() =>
+    formFromProject(detail),
+  )
+  const [errors, setErrors] = React.useState<Record<string, string>>({})
+  const [isUpdatePending, startUpdateTransition] = React.useTransition()
 
-  function onSubmit(input: UpdateSchema, error: FormListFieldData | null) {
-    if (error) {
-      const err = getErrorMessage(error)
-      console.log('error-->', err)
-
-      return toast.error(err + '')
+  React.useEffect(() => {
+    if (open) {
+      setForm(formFromProject(detail))
+      setErrors({})
     }
-    startCreateTransition(() => {
-      const { name, icon = [], description, url } = input
-      const _icon = icon?.[0]?.completedUrl
+  }, [detail, open])
+
+  const updateField = (field: keyof ProjectFormState, value: unknown) => {
+    setForm((current) => ({ ...current, [field]: value }))
+    setErrors((current) => ({ ...current, [field]: '' }))
+  }
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const parsed = updateSchema.safeParse(form)
+    if (!parsed.success) {
+      const nextErrors = firstIssueByField(parsed.error)
+      setErrors(nextErrors)
+      return toast.error(getErrorMessage(parsed.error))
+    }
+
+    startUpdateTransition(() => {
+      const input = parsed.data as UpdateSchema
+      const icon = input.icon?.[0]?.completedUrl
+      if (!icon) {
+        setErrors((current) => ({ ...current, icon: 'Please upload an icon.' }))
+        toast.error('Please upload an icon.')
+        return
+      }
 
       toast.promise(
         updateAction({
           id: detail.id,
-          name,
-          icon: _icon,
-          description,
-          url,
+          name: input.name,
+          icon,
+          description: input.description,
+          url: input.url,
         }),
         {
-          loading: 'Update...',
+          loading: 'Updating...',
           success: () => {
-            formField.form.resetFields()
             setOpen(false)
             return 'Updated'
           },
-          error: (error) => {
-            setOpen(false)
-            return getErrorMessage(error)
-          },
+          error: (error) => getErrorMessage(error),
         },
       )
     })
   }
-  const { formField, inputField } = useForm<UpdateSchema>({
-    schema: updateSchema,
-    onSubmit,
-  })
-
-  React.useEffect(() => {
-    formField.form.setFieldsValue({
-      name: detail?.name,
-      url: detail?.url,
-      description: detail?.description,
-      icon: [
-        {
-          url: detail.icon,
-          fileType: 'image',
-        },
-      ],
-    })
-  }, [detail])
 
   return (
-    <>
-      <Button type="default" onClick={() => setOpen(true)}>
-        Edit
-      </Button>
-      <Modal
-        open={open}
-        onCancel={() => setOpen(false)}
-        title="Update Tag"
-        footer={
-          <Space className="flex w-full justify-end gap-2 pt-2 sm:space-x-0">
-            <Button type="default" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              disabled={isCreatePending}
-              onClick={formField.form.submit}
-            >
-              Submit
-            </Button>
-          </Space>
-        }
-      >
-        <Form layout="vertical" {...formField}>
-          <FormItem {...inputField} label="Name" name="name">
-            <Input placeholder="Please input..." />
-          </FormItem>
-          <FormItem {...inputField} label="Url" name="url">
-            <Input placeholder="Please input..." />
-          </FormItem>
-          <FormItem {...inputField} label="Icon" name="icon">
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger
+        render={(triggerProps) => (
+          <Button {...triggerProps} size="sm" type="button" variant="secondary">
+            Edit
+          </Button>
+        )}
+      />
+      <Dialog size="lg">
+        <Dialog.Title>Update project</Dialog.Title>
+        <Dialog.Description>
+          Edit the project metadata shown on the public projects page.
+        </Dialog.Description>
+
+        <form className="mt-5 space-y-4" onSubmit={onSubmit}>
+          <Input
+            error={errors.name}
+            label="Name"
+            onChange={(event) => updateField('name', event.target.value)}
+            placeholder="Project name"
+            value={form.name}
+          />
+          <Input
+            error={errors.url}
+            label="URL"
+            onChange={(event) => updateField('url', event.target.value)}
+            placeholder="https://example.com"
+            value={form.url}
+          />
+          <div className="space-y-1.5">
+            <div className="text-sm font-medium text-kumo-default">Icon</div>
             <Upload
+              accept={{ 'image/*': [] }}
               maxFiles={1}
               maxSize={102400 * 2}
+              onChange={(value) => updateField('icon', value)}
               previewClassName="h-[225px]"
-              accept={{
-                'image/*': [],
-              }}
+              value={form.icon}
             />
-          </FormItem>
-          <FormItem {...inputField} label="Description" name="description">
-            <Input.TextArea placeholder="Please input..." />
-          </FormItem>
-        </Form>
-      </Modal>
-    </>
+            {errors.icon ? (
+              <p className="text-sm text-kumo-danger">{errors.icon}</p>
+            ) : null}
+          </div>
+          <Textarea
+            error={errors.description}
+            label="Description"
+            onChange={(event) =>
+              updateField('description', event.target.value)
+            }
+            placeholder="Short description"
+            rows={4}
+            value={form.description}
+          />
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Dialog.Close
+              render={(closeProps) => (
+                <Button {...closeProps} type="button" variant="secondary">
+                  Cancel
+                </Button>
+              )}
+            />
+            <Button disabled={isUpdatePending} loading={isUpdatePending}>
+              Submit
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+    </Dialog.Root>
   )
 }

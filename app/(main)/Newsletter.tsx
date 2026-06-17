@@ -7,10 +7,10 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useReward } from 'react-rewards'
 import { z } from 'zod'
+import { Button } from '@cloudflare/kumo'
 import { cn } from '~/lib/utils'
 
 import { TiltedSendIcon } from '~/assets'
-import { Button } from '~/components/oui/Button'
 
 const formId = '5108903'
 

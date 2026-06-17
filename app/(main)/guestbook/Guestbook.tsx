@@ -1,10 +1,10 @@
 'use client'
 
 import { SignInButton, useUser } from '@clerk/nextjs'
+import { Button } from '@cloudflare/kumo'
 import { usePathname } from 'next/navigation'
 
 import { UserArrowLeftIcon } from '~/assets'
-import { Button } from '~/components/oui/Button'
 import { type GuestbookDto } from '~/db/dto/guestbook.dto'
 import { url } from '~/lib'
 

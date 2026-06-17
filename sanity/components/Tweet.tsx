@@ -1,4 +1,3 @@
-import { Card } from '@sanity/ui'
 import { Tweet as ReactTweet } from 'react-tweet'
 import { type PreviewProps } from 'sanity'
 
@@ -8,12 +7,12 @@ type TweetProps = PreviewProps & {
 
 export function Tweet(props: TweetProps) {
   if (!props.id) {
-    return <Card padding={4}>Missing tweet ID</Card>
+    return <div style={{ padding: 16 }}>Missing tweet ID</div>
   }
 
   return (
-    <Card>
+    <div>
       <ReactTweet apiUrl={`/api/tweet/${props.id}`} />
-    </Card>
+    </div>
   )
 }

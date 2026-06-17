@@ -1,4 +1,4 @@
-import { MixIcon, SquareIcon } from '@radix-ui/react-icons'
+import { SlidersHorizontalIcon } from 'lucide-react'
 
 export type DataTableConfig = typeof dataTableConfig
 
@@ -35,7 +35,7 @@ export const dataTableConfig = {
     {
       label: 'Advanced filter',
       value: 'advancedFilter' as const,
-      icon: MixIcon,
+      icon: SlidersHorizontalIcon,
       tooltipTitle: 'Toggle advanced filter',
       tooltipDescription: 'A notion like query builder to filter rows.',
     },

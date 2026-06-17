@@ -2,11 +2,16 @@
 
 import Link from 'next/link'
 
-import { Card, Col, Row, Statistic, Table } from 'antd'
-
+import { SimpleTable, type DataTableColumn } from '~/components/data-table'
+import { StatCard, StatGrid } from '~/components/admin/StatCard'
 import { CommentDto } from '~/db/dto/comment.dto'
 import { url } from '~/lib'
 import { truncate } from '~/lib/string'
+
+type PostSummary = {
+  title?: string
+  slug?: string
+}
 
 export default function CommentCard(props: {
   commentsCount: {
@@ -15,60 +20,47 @@ export default function CommentCard(props: {
     this_month_count?: number
   }
   dataSource: CommentDto[]
-  postMap: Map<string, any>
+  postMap: Map<string, PostSummary>
 }) {
   const { dataSource, commentsCount, postMap } = props
-  const columns = [
+  const columns: DataTableColumn<CommentDto>[] = [
     {
-      title: '文章',
-      dataIndex: 'title',
-      render: (title, row) => {
+      id: 'post',
+      header: '文章',
+      cell: (row) => {
+        const post = postMap.get(row.postId)
         return (
-          <Link href={url(`/${postMap.get(row.postId)?.slug ?? ''}`).href}>
-            {postMap.get(row.postId)?.title}
+          <Link
+            className="font-medium text-kumo-brand hover:underline"
+            href={url(`/${post?.slug ?? ''}`).href}
+          >
+            {post?.title ?? row.postId}
           </Link>
         )
       },
     },
     {
-      title: '评论内容',
-      dataIndex: 'body',
-      render: (body) => truncate((body as any).text as string),
+      id: 'body',
+      header: '评论内容',
+      cell: (row) => truncate(String(row.body?.text ?? '')),
     },
   ]
+
   return (
     <>
-      <Row className="mt-6" gutter={16}>
-        <Col span={8}>
-          <Card>
-            {commentsCount && 'today_count' in commentsCount && (
-              <Statistic title="今日评论数" value={commentsCount.today_count} />
-            )}
-          </Card>
-        </Col>
+      <StatGrid>
+        <StatCard title="今日评论数" value={commentsCount.today_count} />
+        <StatCard title="本月评论数" value={commentsCount.this_month_count} />
+        <StatCard title="总评论数" value={commentsCount.total_count} />
+      </StatGrid>
 
-        <Col span={8}>
-          <Card>
-            {commentsCount && 'this_month_count' in commentsCount && (
-              <Statistic
-                title="本月评论数"
-                value={commentsCount.this_month_count}
-              />
-            )}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            {commentsCount && 'total_count' in commentsCount && (
-              <Statistic title="总评论数" value={commentsCount.total_count} />
-            )}
-          </Card>
-        </Col>
-      </Row>
-
-      <Card className="!mt-6" classNames={{ body: '!p-0' }}>
-        <Table dataSource={dataSource} columns={columns} />
-      </Card>
+      <div className="mt-6">
+        <SimpleTable
+          columns={columns}
+          data={dataSource}
+          getRowId={(row) => row.id}
+        />
+      </div>
     </>
   )
 }

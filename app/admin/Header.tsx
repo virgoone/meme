@@ -1,54 +1,55 @@
 'use client'
 
-import { Fragment, useMemo, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { Breadcrumb, Button, Drawer } from 'antd'
+import { Button } from '@cloudflare/kumo'
 import { motion } from 'framer-motion'
-import { PanelLeftIcon, SearchIcon } from 'lucide-react'
+import { PanelLeftIcon, XIcon } from 'lucide-react'
 
 import { UserInfo } from '../(main)/Header'
 import { ThemeSwitcher } from '../(main)/ThemeSwitcher'
 import { menus, renderMenu, type MenuType } from './Sidebar'
 
-const buildMenuObject = (menus: MenuType[]) => {
-  const menuObject = {}
-  menus.forEach((item) => {
-    menuObject[item.href] = { ...item }
-    if (item.children) {
-      item.children.forEach((child) => {
-        // 动态路由不作为顶级菜单项添加
-        if (!child.href.includes(':')) {
-          menuObject[child.href] = { ...child, parent: item }
-        }
-      })
+type MenuWithParent = MenuType & {
+  parent?: MenuType | null
+}
+
+const buildMenuObject = (items: MenuType[]) => {
+  const menuObject: Record<string, MenuWithParent> = {}
+  items.forEach((item) => {
+    if (item.href) {
+      menuObject[item.href] = { ...item }
     }
+    item.children?.forEach((child) => {
+      if (child.href && !child.href.includes(':')) {
+        menuObject[child.href] = { ...child, parent: item }
+      }
+    })
   })
   return menuObject
 }
 
-// 修改 findMenu 以处理动态路由
-const findMenu = (menus: MenuType[], path: string) => {
-  const menuObject = buildMenuObject(menus)
-  const findBreadcrumb = (menu, currentPath) => {
+const findMenu = (items: MenuType[], path: string): MenuWithParent[] => {
+  const menuObject = buildMenuObject(items)
+  const findBreadcrumb = (
+    menu: Record<string, MenuWithParent>,
+    currentPath: string,
+  ): MenuWithParent[] => {
     const item = menu[currentPath]
 
     if (!item) {
-      return [] // 如果找不到菜单项，返回空数组
+      return []
     }
 
-    const breadcrumbs = [{ ...item, parent: null }]
-
-    // 如果当前项有 parent，并且不是动态路由，则递归查找父菜单项
-    if (item.parent && !item.isDynamic) {
+    if (item.parent?.href && !item.isDynamic) {
       return [
         ...findBreadcrumb(menu, item.parent.href),
         { ...item, parent: null },
       ]
     }
 
-    // 如果当前路由是动态路由，尝试找到匹配的静态路由作为父路由
     if (item.isDynamic) {
       const staticPath = currentPath.split('/').slice(0, -1).join('/')
       const parentItem = menu[staticPath] || item.parent
@@ -57,55 +58,73 @@ const findMenu = (menus: MenuType[], path: string) => {
       }
     }
 
-    return breadcrumbs
+    return [{ ...item, parent: null }]
   }
 
-  const breadcrumbs = findBreadcrumb(menuObject, path)
-
-  return breadcrumbs // 返回清理后的面包屑数组
+  return findBreadcrumb(menuObject, path)
 }
-export default function () {
+
+export default function Header() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const breadcrumbs = findMenu(menus, pathname)
 
   return (
-    <header className="flex h-[--header-height] min-w-0 flex-shrink-0 items-center gap-x-4 border-b border-gray-200 px-4 dark:border-gray-800">
+    <header className="flex h-[--header-height] min-w-0 flex-shrink-0 items-center gap-x-4 border-b border-kumo-line px-4">
       <Button
-        className="!hidden !sm:block"
-        shape="circle"
-        type="default"
+        aria-label="Toggle menu"
+        className="sm:hidden"
         onClick={() => setOpen(true)}
+        shape="square"
+        type="button"
+        variant="secondary"
       >
-        <span className="!flex h-full w-full items-center justify-center">
-          <PanelLeftIcon className="h-5 w-5" />
-          <span className="sr-only">Toggle Menu</span>
-        </span>
+        <PanelLeftIcon className="size-5" />
       </Button>
-      <Drawer open={open} placement="left" onClose={() => setOpen(false)}>
-        <div className="sm:max-w-xs">
-          <UserInfo />
-          <nav className="grid gap-6 text-lg font-medium">
-            <ul>{menus.map((menu) => renderMenu(menu))}</ul>
-          </nav>
+
+      {open ? (
+        <div className="fixed inset-0 z-50 bg-black/30 lg:hidden">
+          <aside className="h-full w-80 max-w-[85vw] overflow-y-auto border-r border-kumo-line bg-kumo-base p-4 shadow-lg">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <UserInfo />
+              <Button
+                aria-label="Close menu"
+                onClick={() => setOpen(false)}
+                shape="square"
+                type="button"
+                variant="ghost"
+              >
+                <XIcon className="size-5" />
+              </Button>
+            </div>
+            <nav className="grid gap-4 text-sm font-medium">
+              <ul>{menus.map((menu) => renderMenu(menu))}</ul>
+            </nav>
+          </aside>
         </div>
-      </Drawer>
-      <Breadcrumb
-        className="!sm:hidden"
-        items={findMenu(menus, pathname)?.map((item, index) => {
-          return {
-            title: item.href ? (
-              <Link href={item.href}>{item.name}</Link>
-            ) : (
-              item.name
-            ),
-          }
-        })}
-      />
+      ) : null}
+
+      <nav aria-label="Breadcrumb" className="hidden min-w-0 sm:block">
+        <ol className="flex items-center gap-1.5 text-sm text-kumo-muted">
+          {breadcrumbs.map((item, index) => (
+            <li className="flex items-center gap-1.5" key={item.href ?? item.name}>
+              {index > 0 ? <span>/</span> : null}
+              {item.href ? (
+                <Link className="hover:text-kumo-default" href={item.href}>
+                  {item.name}
+                </Link>
+              ) : (
+                <span>{item.name}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
 
       <motion.div
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         className="flex flex-1 items-center justify-end gap-3"
         initial={{ opacity: 0, y: -20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
       >
         <UserInfo />
         <div className="pointer-events-auto">

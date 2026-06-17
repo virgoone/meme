@@ -1,9 +1,14 @@
 'use client'
 
-import { Card, Col, Row, Statistic, Table } from 'antd'
-
+import { StatCard, StatGrid } from '~/components/admin/StatCard'
+import { SimpleTable, type DataTableColumn } from '~/components/data-table'
 import { formatUTCDate } from '~/lib/date'
 
+type SubscriberRow = {
+  id?: string | number
+  email?: string
+  subscribedAt?: Date | string | null
+}
 
 export default function SubscribersCard(props: {
   count: {
@@ -11,55 +16,37 @@ export default function SubscribersCard(props: {
     total?: number
     this_month_count?: number
   }
-  dataSource: any[]
+  dataSource: SubscriberRow[]
 }) {
   const { dataSource, count } = props
-  const columns = [
+  const columns: DataTableColumn<SubscriberRow>[] = [
     {
-      title: 'Email',
-      dataIndex: 'email',
+      id: 'email',
+      header: 'Email',
+      cell: (row) => row.email,
     },
     {
-      title: '订阅时间',
-      dataIndex: 'subscribedAt',
-      render: (date) => formatUTCDate(date),
+      id: 'subscribedAt',
+      header: '订阅时间',
+      cell: (row) => (row.subscribedAt ? formatUTCDate(row.subscribedAt) : '-'),
     },
   ]
+
   return (
     <>
-      <Row className="mt-6" gutter={16}>
-        <Col span={8}>
-          <Card>
-            {count && 'total' in count && (
-              <Statistic title="总订阅数" value={count.total} />
-            )}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            {count && 'today_count' in count && (
-              <Statistic
-                title="今日订阅数"
-                value={count.today_count}
-              />
-            )}
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            {count && 'this_month_count' in count && (
-              <Statistic
-                title="本月订阅数"
-                value={count.this_month_count}
-              />
-            )}
-          </Card>
-        </Col>
-      </Row>
+      <StatGrid>
+        <StatCard title="总订阅数" value={count.total} />
+        <StatCard title="今日订阅数" value={count.today_count} />
+        <StatCard title="本月订阅数" value={count.this_month_count} />
+      </StatGrid>
 
-      <Card className="!mt-6" classNames={{ body: '!p-0' }}>
-        <Table dataSource={dataSource} columns={columns} />
-      </Card>
+      <div className="mt-6">
+        <SimpleTable
+          columns={columns}
+          data={dataSource}
+          getRowId={(row, index) => String(row.id ?? row.email ?? index)}
+        />
+      </div>
     </>
   )
 }

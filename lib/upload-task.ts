@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import { nanoid } from 'nanoid'
-import { toast } from 'sonner'
+import { toast } from '~/lib/toast.client'
 
 import { getMime } from '~/components/Upload'
 import { getMd5Sign } from '~/components/Upload/worker'
