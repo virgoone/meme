@@ -1,0 +1,71 @@
+{
+	"noResults": "Sin resultados.",
+	"loading": "Cargando...",
+	"toolbar": {
+		"label": "Barra de herramientas de la tabla",
+		"reset": "Restablecer",
+		"resetFilters": "Restablecer filtros"
+	},
+	"pagination": {
+		"rowsPerPage": "Filas por página",
+		"page": "Página {page} de {total}",
+		"rowsSelected": "{count} de {total} fila(s) seleccionadas.",
+		"goToFirstPage": "Ir a la primera página",
+		"goToPreviousPage": "Ir a la página anterior",
+		"goToNextPage": "Ir a la página siguiente",
+		"goToLastPage": "Ir a la última página"
+	},
+	"viewOptions": {
+		"view": "Vista",
+		"toggleColumns": "Mostrar u ocultar columnas",
+		"searchColumns": "Buscar columnas...",
+		"noColumnsFound": "No se encontraron columnas."
+	},
+	"columnHeader": {
+		"asc": "Asc",
+		"desc": "Desc",
+		"hide": "Ocultar",
+		"reset": "Restablecer",
+		"sortAscending": "Orden ascendente",
+		"sortDescending": "Orden descendente",
+		"hideColumn": "Ocultar columna"
+	},
+	"filter": {
+		"search": "Buscar...",
+		"noResults": "No se encontraron resultados.",
+		"clear": "Limpiar",
+		"clearFilters": "Limpiar filtros",
+		"selectAll": "Seleccionar todo",
+		"deselectAll": "Deseleccionar todo",
+		"selected": "seleccionado"
+	},
+	"filterList": {
+		"title": "Filtros",
+		"clearAll": "Limpiar todo",
+		"noFilters": "No hay filtros aplicados"
+	},
+	"sortList": {
+		"title": "Ordenar por",
+		"clearAll": "Limpiar todo",
+		"noSorts": "No hay orden aplicado"
+	},
+	"actionBar": {
+		"selected": "seleccionado",
+		"rowsSelected": "{count} fila(s) seleccionadas",
+		"clearSelection": "Limpiar selección"
+	},
+	"dateFilter": {
+		"selectDate": "Seleccionar fecha",
+		"selectDateRange": "Seleccionar rango de fechas",
+		"clearFilter": "Limpiar filtro {title}",
+		"pickDate": "Elegir fecha",
+		"pickDateRange": "Elegir rango de fechas",
+		"from": "Desde",
+		"to": "Hasta"
+	},
+	"rangeFilter": {
+		"min": "Mín",
+		"max": "Máx",
+		"to": "a"
+	}
+}

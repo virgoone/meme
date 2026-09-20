@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "meme-api-dev",
+  "main": "apps/server/src/cloudflare/api-worker.ts",
+  "compatibility_date": "2026-06-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "meme-prod",
+      "database_id": "bbc33e62-7322-4513-8188-87699d95cd46",
+      "migrations_dir": "packages/db/drizzle"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "MEME_KV",
+      "id": "bd0e5bd95ea3410eb3c26910bd7ac799",
+      "preview_id": "0a9478ddb0a149408a11fc75159acb35"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA_BUCKET",
+      "bucket_name": "meme-assets",
+      "preview_bucket_name": "meme-assets-preview"
+    }
+  ],
+  "vars": {
+    "APP_ENV": "development",
+    "SITE_URL": "http://127.0.0.1:3000",
+    "TRUSTED_ORIGINS": "http://127.0.0.1:3000"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

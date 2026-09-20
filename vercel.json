@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm turbo build",
-  "github": {
-    "silent": true
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "node --version",
+  "buildCommand": "node scripts/build-vercel-proxy.mjs"
 }

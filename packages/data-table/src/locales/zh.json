@@ -1,0 +1,71 @@
+{
+	"noResults": "暂无数据",
+	"loading": "加载中...",
+	"toolbar": {
+		"label": "表格工具栏",
+		"reset": "重置",
+		"resetFilters": "重置过滤器"
+	},
+	"pagination": {
+		"rowsPerPage": "每页显示",
+		"page": "第 {page} 页, 共 {total} 页",
+		"rowsSelected": "已选择 {count} / {total} 行",
+		"goToFirstPage": "转到第一页",
+		"goToPreviousPage": "转到上一页",
+		"goToNextPage": "转到下一页",
+		"goToLastPage": "转到最后一页"
+	},
+	"viewOptions": {
+		"view": "查看",
+		"toggleColumns": "切换列",
+		"searchColumns": "搜索列...",
+		"noColumnsFound": "未找到列"
+	},
+	"columnHeader": {
+		"asc": "升序",
+		"desc": "降序",
+		"hide": "隐藏",
+		"reset": "重置",
+		"sortAscending": "升序排序",
+		"sortDescending": "降序排序",
+		"hideColumn": "隐藏列"
+	},
+	"filter": {
+		"search": "搜索...",
+		"noResults": "未找到结果",
+		"clear": "清除",
+		"clearFilters": "清除过滤器",
+		"selectAll": "全选",
+		"deselectAll": "取消全选",
+		"selected": "已选"
+	},
+	"filterList": {
+		"title": "过滤器",
+		"clearAll": "清除全部",
+		"noFilters": "未应用过滤器"
+	},
+	"sortList": {
+		"title": "排序方式",
+		"clearAll": "清除全部",
+		"noSorts": "未应用排序"
+	},
+	"actionBar": {
+		"selected": "已选",
+		"rowsSelected": "已选择 {count} 行",
+		"clearSelection": "清除选择"
+	},
+	"dateFilter": {
+		"selectDate": "选择日期",
+		"selectDateRange": "选择日期范围",
+		"clearFilter": "清除{title}过滤器",
+		"pickDate": "选择日期",
+		"pickDateRange": "选择日期范围",
+		"from": "从",
+		"to": "到"
+	},
+	"rangeFilter": {
+		"min": "最小值",
+		"max": "最大值",
+		"to": "到"
+	}
+}

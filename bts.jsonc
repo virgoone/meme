@@ -1,0 +1,18 @@
+{
+  "$schema": "https://r2.better-t-stack.dev/schema.json",
+  "version": "migration",
+  "createdAt": "2026-06-17T00:00:00.000Z",
+  "database": "sqlite",
+  "orm": "drizzle",
+  "backend": "elysia",
+  "runtime": "workers",
+  "frontend": ["tanstack-start"],
+  "addons": ["turborepo", "biome"],
+  "examples": ["none"],
+  "auth": "clerk",
+  "packageManager": "bun",
+  "dbSetup": "d1",
+  "api": "none",
+  "webDeploy": "cloudflare",
+  "serverDeploy": "cloudflare"
+}

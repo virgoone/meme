@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -42,8 +42,20 @@ next-env.d.ts
 # turbo
 .turbo
 
+# cloudflare / workspace build output
+.wrangler/
+.tanstack/
+apps/**/dist/
+
 static/
 
 .react-email/
 /.idea
 .env*
+
+.dev.vars
+
+# Production exports and generated migration payloads contain private data.
+/data/
+/scripts/clerk-users.sql
+*.local.tmp

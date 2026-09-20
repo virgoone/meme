@@ -1,0 +1,30 @@
+{
+  "name": "@meme/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/cloudflare/worker.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "check-types": "tsc --noEmit",
+    "db:migrate:prod": "wrangler d1 migrations apply meme-prod --remote --config ../../wrangler.jsonc",
+    "deploy": "wrangler deploy --config ../../wrangler.jsonc",
+    "dev": "wrangler dev --config ../../wrangler.dev.jsonc"
+  },
+  "dependencies": {
+    "@better-upload/server": "^3.0.4",
+    "@elysiajs/cors": "^1.4.2",
+    "@meme/auth": "workspace:*",
+    "@meme/db": "workspace:*",
+    "@meme/editor": "workspace:*",
+    "@meme/shared": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "elysia": "^1.4.29",
+    "nanoid": "^5.1.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251213.0",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.101.0"
+  }
+}

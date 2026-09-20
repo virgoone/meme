@@ -1,0 +1,71 @@
+{
+	"noResults": "結果がありません。",
+	"loading": "読み込み中...",
+	"toolbar": {
+		"label": "テーブルツールバー",
+		"reset": "リセット",
+		"resetFilters": "フィルターをリセット"
+	},
+	"pagination": {
+		"rowsPerPage": "1ページあたりの行数",
+		"page": "{total} ページ中 {page} ページ",
+		"rowsSelected": "{total} 行中 {count} 行を選択中。",
+		"goToFirstPage": "最初のページへ",
+		"goToPreviousPage": "前のページへ",
+		"goToNextPage": "次のページへ",
+		"goToLastPage": "最後のページへ"
+	},
+	"viewOptions": {
+		"view": "表示",
+		"toggleColumns": "列の表示切替",
+		"searchColumns": "列を検索...",
+		"noColumnsFound": "列が見つかりません。"
+	},
+	"columnHeader": {
+		"asc": "昇順",
+		"desc": "降順",
+		"hide": "非表示",
+		"reset": "リセット",
+		"sortAscending": "昇順に並び替え",
+		"sortDescending": "降順に並び替え",
+		"hideColumn": "列を非表示"
+	},
+	"filter": {
+		"search": "検索...",
+		"noResults": "結果が見つかりません。",
+		"clear": "クリア",
+		"clearFilters": "フィルターをクリア",
+		"selectAll": "すべて選択",
+		"deselectAll": "すべて解除",
+		"selected": "選択済み"
+	},
+	"filterList": {
+		"title": "フィルター",
+		"clearAll": "すべてクリア",
+		"noFilters": "適用中のフィルターはありません"
+	},
+	"sortList": {
+		"title": "並び替え",
+		"clearAll": "すべてクリア",
+		"noSorts": "適用中の並び替えはありません"
+	},
+	"actionBar": {
+		"selected": "選択済み",
+		"rowsSelected": "{count} 行を選択中",
+		"clearSelection": "選択を解除"
+	},
+	"dateFilter": {
+		"selectDate": "日付を選択",
+		"selectDateRange": "日付範囲を選択",
+		"clearFilter": "{title} フィルターをクリア",
+		"pickDate": "日付を選ぶ",
+		"pickDateRange": "日付範囲を選ぶ",
+		"from": "開始",
+		"to": "終了"
+	},
+	"rangeFilter": {
+		"min": "最小",
+		"max": "最大",
+		"to": "〜"
+	}
+}

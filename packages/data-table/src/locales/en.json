@@ -1,0 +1,71 @@
+{
+	"noResults": "No results.",
+	"loading": "Loading...",
+	"toolbar": {
+		"label": "Table toolbar",
+		"reset": "Reset",
+		"resetFilters": "Reset filters"
+	},
+	"pagination": {
+		"rowsPerPage": "Rows per page",
+		"page": "Page {page} of {total}",
+		"rowsSelected": "{count} of {total} row(s) selected.",
+		"goToFirstPage": "Go to first page",
+		"goToPreviousPage": "Go to previous page",
+		"goToNextPage": "Go to next page",
+		"goToLastPage": "Go to last page"
+	},
+	"viewOptions": {
+		"view": "View",
+		"toggleColumns": "Toggle columns",
+		"searchColumns": "Search columns...",
+		"noColumnsFound": "No columns found."
+	},
+	"columnHeader": {
+		"asc": "Asc",
+		"desc": "Desc",
+		"hide": "Hide",
+		"reset": "Reset",
+		"sortAscending": "Sort ascending",
+		"sortDescending": "Sort descending",
+		"hideColumn": "Hide column"
+	},
+	"filter": {
+		"search": "Search...",
+		"noResults": "No results found.",
+		"clear": "Clear",
+		"clearFilters": "Clear filters",
+		"selectAll": "Select all",
+		"deselectAll": "Deselect all",
+		"selected": "selected"
+	},
+	"filterList": {
+		"title": "Filters",
+		"clearAll": "Clear all",
+		"noFilters": "No filters applied"
+	},
+	"sortList": {
+		"title": "Sort by",
+		"clearAll": "Clear all",
+		"noSorts": "No sorting applied"
+	},
+	"actionBar": {
+		"selected": "selected",
+		"rowsSelected": "{count} row(s) selected",
+		"clearSelection": "Clear selection"
+	},
+	"dateFilter": {
+		"selectDate": "Select date",
+		"selectDateRange": "Select date range",
+		"clearFilter": "Clear {title} filter",
+		"pickDate": "Pick a date",
+		"pickDateRange": "Pick a date range",
+		"from": "From",
+		"to": "To"
+	},
+	"rangeFilter": {
+		"min": "Min",
+		"max": "Max",
+		"to": "to"
+	}
+}
