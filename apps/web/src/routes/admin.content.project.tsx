@@ -153,7 +153,7 @@ function AdminProjectsPage() {
         }
       />
 
-      {projects.isLoading ? (
+      {projects.isPending ? (
         <DataTableSkeleton columnCount={3} rowCount={10} />
       ) : projects.isError ? (
         <p className='admin-error'>

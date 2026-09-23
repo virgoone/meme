@@ -10,7 +10,8 @@ import {
   TwitterIcon,
 } from '../lib/icons';
 import { BlogPostCard, BlogPostCardSkeleton } from '../lib/post-card';
-import { BlogPostPageSkeleton, PostContent, type PostDetail } from './$slug';
+import { BlogPostPageSkeleton } from '../lib/page-skeletons';
+import { PostContent, type PostDetail } from './$slug';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -47,8 +48,8 @@ function HomePage() {
           <h2 className='legacy-section-heading'>
             <span aria-hidden='true'>✎</span><span>近期文章</span>
           </h2>
-          {posts.isLoading ? (
-            <div className='legacy-post-stack'>
+          {posts.isPending ? (
+            <div className='legacy-post-stack' role='status' aria-label='文章列表加载中'>
               {Array.from({ length: 3 }).map((_, i) => (<BlogPostCardSkeleton key={i} />))}
             </div>
           ) : posts.isError ? (
@@ -78,7 +79,7 @@ function InlineArticlePage({ slug }: { slug: string }) {
   const post = usePost(slug);
   return (
     <article className='article-page'>
-      {post.isLoading && <BlogPostPageSkeleton />}
+      {post.isPending && <BlogPostPageSkeleton />}
       {post.isError && <p className='state-text state-text--error'>{post.error instanceof Error ? post.error.message : String(post.error)}</p>}
       {post.data && <PostContent post={post.data as unknown as PostDetail} />}
     </article>

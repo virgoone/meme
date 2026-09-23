@@ -42,6 +42,7 @@ import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 
 import { useSiteStats } from '../lib/admin-queries';
 import { AuthDialogHost } from '../lib/auth-dialog';
 import { openAuthDialog } from '../lib/auth-dialog-store';
+import { AdminContentSkeleton } from '../lib/page-skeletons';
 import {
   CursorClickIcon,
   MoonIcon,
@@ -51,6 +52,7 @@ import {
   UsersIcon,
 } from '../lib/icons';
 import '../styles.css';
+import '../loading.css';
 
 const navItems = [
   { label: '首页', to: '/' },
@@ -195,13 +197,10 @@ function HeaderAuth({ pathname }: { pathname: string }) {
   );
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1 },
-  },
-});
-
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
+  }));
   return (
     <html lang='zh-CN' suppressHydrationWarning>
       <head>
@@ -339,11 +338,7 @@ function AdminShell({ pathname }: { pathname: string }) {
     return <AdminShellSkeleton />;
   }
   if (!user) {
-    return (
-      <section className='admin-page'>
-        <p className='admin-muted'>需要登录，正在跳转…</p>
-      </section>
-    );
+    return <AdminShellSkeleton />;
   }
   if (user.role !== 'admin') {
     return (
@@ -553,32 +548,7 @@ function AdminShellSkeleton() {
           <span className='admin-topbar-skeleton-button' aria-hidden='true' />
         </header>
         <main className='admin-main'>
-          <section
-            className='admin-page admin-page-loading'
-            role='status'
-            aria-label='后台加载中'
-          >
-            <div className='admin-skeleton-header'>
-              <span />
-              <span />
-            </div>
-            <div className='admin-stat-grid'>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  className='admin-stat-card admin-stat-card--skeleton'
-                  key={index}
-                >
-                  <span />
-                  <strong />
-                </div>
-              ))}
-            </div>
-            <div className='admin-skeleton-panel'>
-              {Array.from({ length: 6 }).map((_, index) => (
-                <span key={index} />
-              ))}
-            </div>
-          </section>
+          <AdminContentSkeleton />
         </main>
       </SidebarInset>
     </SidebarProvider>

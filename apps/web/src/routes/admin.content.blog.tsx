@@ -97,7 +97,7 @@ function AdminBlogContentPage() {
         description='迁移后的文章内容，使用站内编辑器维护正文和 blockID。'
       />
 
-      {posts.isLoading ? (
+      {posts.isPending ? (
         <DataTableSkeleton columnCount={5} rowCount={10} />
       ) : posts.isError ? (
         <p className='admin-error'>

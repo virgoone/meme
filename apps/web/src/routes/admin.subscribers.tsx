@@ -17,7 +17,7 @@ function AdminSubscribersPage() {
     <section className='admin-page'>
       <AdminPageHeader title='订阅' description='邮件订阅用户和确认状态。' />
 
-      {subscribers.isLoading ? (
+      {subscribers.isPending ? (
         <DataTableSkeleton columnCount={3} rowCount={10} />
       ) : subscribers.isError ? (
         <p className='admin-error'>

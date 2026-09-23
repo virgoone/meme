@@ -1,10 +1,7 @@
-import { createFileRoute, Navigate } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/blog/$slug')({
-  component: BlogSlugRedirect,
+  beforeLoad: ({ params }) => {
+    throw redirect({ to: '/$slug', params, replace: true });
+  },
 });
-
-function BlogSlugRedirect() {
-  const { slug } = Route.useParams();
-  return <Navigate to='/$slug' params={{ slug }} replace />;
-}

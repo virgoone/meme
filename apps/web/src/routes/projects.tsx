@@ -14,8 +14,8 @@ function ProjectsPage() {
         <h1>项目</h1>
         <p>一些在线小工具、实验项目和持续维护的作品。</p>
       </header>
-      {projects.isLoading && (
-        <div className='project-list'>
+      {projects.isPending && (
+        <div className='project-list' role='status' aria-label='项目加载中'>
           {Array.from({ length: 4 }).map((_, i) => (
             <div className='project-card' key={i}>
               <span className='project-icon'><Skeleton className='h-10 w-10 rounded-full' /></span>
