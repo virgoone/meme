@@ -1,0 +1,20 @@
+{
+	"$schema": "https://ui.shadcn.com/schema.json",
+	"style": "new-york",
+	"rsc": true,
+	"tsx": true,
+	"tailwind": {
+		"config": "",
+		"css": "src/styles/globals.css",
+		"baseColor": "neutral",
+		"cssVariables": true
+	},
+	"iconLibrary": "lucide",
+	"aliases": {
+		"components": "@bunship-ai/ui/components",
+		"utils": "@bunship-ai/ui/lib/utils",
+		"hooks": "@bunship-ai/ui/hooks",
+		"lib": "@bunship-ai/ui/lib",
+		"ui": "@bunship-ai/ui/components"
+	}
+}

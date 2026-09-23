@@ -1,0 +1,144 @@
+@reference "./styles.css";
+
+.comment-block-trigger {
+  right: -2.25rem;
+  transform: translateX(0.35rem);
+}
+
+.comment-block-trigger__icon {
+  border: 1px solid rgba(63, 63, 70, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #18181b;
+  box-shadow:
+    0 1px 2px rgba(24, 24, 27, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+}
+
+.comment-popover {
+  min-width: min(300px, calc(100vw - 32px));
+}
+
+.comment-popover-close__icon {
+  color: #3f3f46;
+}
+
+.comment-login-button {
+  border: 1px solid #18181b;
+  background: #18181b;
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.16);
+}
+
+.comment-login-button:hover {
+  background: #27272a;
+  color: #ffffff !important;
+}
+
+.comment-login-button svg {
+  color: currentColor;
+  stroke: currentColor;
+}
+
+.dark .comment-block-trigger__icon {
+  border-color: rgba(228, 228, 231, 0.18);
+  background: rgba(24, 24, 27, 0.94);
+  color: #f4f4f5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.dark .comment-popover-close__icon {
+  color: #e4e4e7;
+}
+
+.dark .comment-login-button {
+  border-color: #f4f4f5;
+  background: #f4f4f5;
+  color: #09090b !important;
+}
+
+.dark .comment-login-button:hover {
+  background: #ffffff;
+  color: #09090b !important;
+}
+
+@media (max-width: 760px) {
+  .comment-block-trigger {
+    right: -1.65rem;
+    transform: translateX(0);
+  }
+
+  .comment-block-trigger__icon {
+    width: 1.4rem;
+    height: 1.4rem;
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
+@media (max-width: 520px) {
+  .comment-block-trigger {
+    right: 0.15rem;
+  }
+}
+
+.comment__message * {
+  @apply leading-6;
+}
+.comment__message h1,
+.comment__message h2,
+.comment__message h3,
+.comment__message h4,
+.comment__message h5,
+.comment__message h6 {
+  @apply font-semibold tracking-tight;
+}
+.comment__message h1 {
+  @apply text-lg font-bold;
+}
+.comment__message h2 {
+  font-size: 1.065rem;
+  line-height: 1.75rem;
+  @apply font-bold;
+}
+.comment__message hr {
+  @apply my-1.5 border-zinc-400 opacity-20;
+}
+.comment__message ul {
+  @apply list-disc pl-4;
+}
+.comment__message ol {
+  @apply list-decimal pl-4;
+}
+.comment__message blockquote {
+  @apply my-1 border-l-4 border-zinc-400 pl-2;
+}
+.comment__message img,
+.comment__message video {
+  @apply rounded-md;
+  max-height: 350px;
+}
+.comment__message pre {
+  @apply my-1.5 whitespace-break-spaces;
+}
+.comment__message pre,
+.comment__message code:not([class^='language-']) {
+  @apply rounded bg-zinc-700/10 px-1 py-0.5 text-zinc-900;
+}
+.comment__message pre > code {
+  @apply bg-transparent px-0 py-0;
+  background-color: transparent !important;
+}
+
+.dark .comment__message hr {
+  @apply border-zinc-100 opacity-20;
+}
+.dark .comment__message blockquote {
+  @apply border-zinc-50/50;
+}
+.dark .comment__message pre,
+.dark .comment__message code:not([class^='language-']) {
+  @apply bg-zinc-200/20 text-zinc-50;
+}
+.dark .comment__message pre > code {
+  background-color: transparent !important;
+}

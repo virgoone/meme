@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /README.md
-Disallow: /LICENSE.md
-Sitemap: https://blog.douni.one/sitemap.xml

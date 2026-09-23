@@ -1,0 +1,23 @@
+{
+  "name": "@meme/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@meme/db": "workspace:*",
+    "@meme/shared": "workspace:*",
+    "better-auth": "^1.6.20",
+    "resend": "^6.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251213.0",
+    "typescript": "^6.0.3"
+  }
+}

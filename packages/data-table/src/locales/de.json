@@ -1,0 +1,71 @@
+{
+	"noResults": "Keine Ergebnisse.",
+	"loading": "Wird geladen...",
+	"toolbar": {
+		"label": "Tabellenwerkzeugleiste",
+		"reset": "Zurücksetzen",
+		"resetFilters": "Filter zurücksetzen"
+	},
+	"pagination": {
+		"rowsPerPage": "Zeilen pro Seite",
+		"page": "Seite {page} von {total}",
+		"rowsSelected": "{count} von {total} Zeile(n) ausgewählt.",
+		"goToFirstPage": "Zur ersten Seite",
+		"goToPreviousPage": "Zur vorherigen Seite",
+		"goToNextPage": "Zur nächsten Seite",
+		"goToLastPage": "Zur letzten Seite"
+	},
+	"viewOptions": {
+		"view": "Ansicht",
+		"toggleColumns": "Spalten umschalten",
+		"searchColumns": "Spalten suchen...",
+		"noColumnsFound": "Keine Spalten gefunden."
+	},
+	"columnHeader": {
+		"asc": "Aufsteigend",
+		"desc": "Absteigend",
+		"hide": "Ausblenden",
+		"reset": "Zurücksetzen",
+		"sortAscending": "Aufsteigend sortieren",
+		"sortDescending": "Absteigend sortieren",
+		"hideColumn": "Spalte ausblenden"
+	},
+	"filter": {
+		"search": "Suchen...",
+		"noResults": "Keine Ergebnisse gefunden.",
+		"clear": "Löschen",
+		"clearFilters": "Filter löschen",
+		"selectAll": "Alle auswählen",
+		"deselectAll": "Auswahl aufheben",
+		"selected": "ausgewählt"
+	},
+	"filterList": {
+		"title": "Filter",
+		"clearAll": "Alle löschen",
+		"noFilters": "Keine Filter angewendet"
+	},
+	"sortList": {
+		"title": "Sortieren nach",
+		"clearAll": "Alle löschen",
+		"noSorts": "Keine Sortierung angewendet"
+	},
+	"actionBar": {
+		"selected": "ausgewählt",
+		"rowsSelected": "{count} Zeile(n) ausgewählt",
+		"clearSelection": "Auswahl löschen"
+	},
+	"dateFilter": {
+		"selectDate": "Datum auswählen",
+		"selectDateRange": "Datumsbereich auswählen",
+		"clearFilter": "{title}-Filter löschen",
+		"pickDate": "Datum wählen",
+		"pickDateRange": "Datumsbereich wählen",
+		"from": "Von",
+		"to": "Bis"
+	},
+	"rangeFilter": {
+		"min": "Min",
+		"max": "Max",
+		"to": "bis"
+	}
+}
