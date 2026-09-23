@@ -35,7 +35,7 @@ jobs:
         run: bun run check-types:editor
 
       - name: Run tests
-        run: bun test packages/editor/src/block-id.test.ts packages/db/src/migration/sanity-content.test.ts apps/server/src/modules/projects/index.test.ts apps/server/src/modules/reactions/service.test.ts
+        run: bun test packages/editor/src/block-id.test.ts packages/db/src/migration/sanity-content.test.ts apps/server/src/modules/projects/index.test.ts apps/server/src/modules/reactions/service.test.ts apps/server/src/cloudflare/public-routes.test.ts
 
       - name: Build web
         run: bun run build:web
