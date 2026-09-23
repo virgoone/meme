@@ -43,7 +43,7 @@ function AdminNewslettersPage({
         }
       />
 
-      {newsletters.isLoading ? (
+      {newsletters.isPending ? (
         <DataTableSkeleton columnCount={3} rowCount={10} />
       ) : newsletters.isError ? (
         <p className='admin-error'>

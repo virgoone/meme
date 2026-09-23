@@ -5,6 +5,8 @@ import { addComment, blogPostState, type CommentDto } from '../lib/blog-post-sta
 import { Commentable } from '../lib/commentable';
 import { formatDate, moodEmoji, moodLabel } from '../lib/format';
 import { CalendarIcon, CursorClickIcon, HourglassIcon, UTurnLeftIcon } from '../lib/icons';
+import { LoadingImage } from '../lib/loading-image';
+import { BlogPostPageSkeleton } from '../lib/page-skeletons';
 
 export const Route = createFileRoute('/$slug')({ component: BlogPostPage });
 
@@ -15,44 +17,10 @@ function BlogPostPage() {
   const post = usePost(slug);
   return (
     <article className='article-page'>
-      {post.isLoading && <BlogPostPageSkeleton />}
+      {post.isPending && <BlogPostPageSkeleton />}
       {post.isError && <p className='state-text state-text--error'>{post.error instanceof Error ? post.error.message : String(post.error)}</p>}
       {post.data && <PostContent post={post.data} />}
     </article>
-  );
-}
-
-export function BlogPostPageSkeleton() {
-  return (
-    <div className='legacy-article-skeleton' role='status' aria-label='文章加载中'>
-      <aside className='legacy-article-skeleton__toc' aria-hidden='true'>
-        <span />
-        <span />
-        <span />
-        <span />
-      </aside>
-      <main className='legacy-article-skeleton__main' aria-hidden='true'>
-        <span className='legacy-article-skeleton__cover' />
-        <div className='legacy-article-skeleton__meta'>
-          <span />
-          <span />
-        </div>
-        <span className='legacy-article-skeleton__title' />
-        <span className='legacy-article-skeleton__title short' />
-        <span className='legacy-article-skeleton__lead' />
-        <div className='legacy-article-skeleton__body'>
-          {Array.from({ length: 8 }).map((_, index) => (
-            <span key={index} />
-          ))}
-        </div>
-      </main>
-      <aside className='legacy-article-skeleton__reactions' aria-hidden='true'>
-        <span />
-        <span />
-        <span />
-        <span />
-      </aside>
-    </div>
   );
 }
 
@@ -78,7 +46,7 @@ export function PostContent({ post }: { post: PostDetail }) {
         <Link to='/blog' className='legacy-back-button' aria-label='返回博客页面'><UTurnLeftIcon /></Link>
         <article data-postid={post.id}>
           <header className='legacy-article-header'>
-            {post.coverImageUrl && (<div className='legacy-article-cover'><div aria-hidden='true'><img src={post.coverImageUrl} alt='' /></div><img src={post.coverImageUrl} alt={post.title} /></div>)}
+            {post.coverImageUrl && (<div className='legacy-article-cover'><LoadingImage src={post.coverImageUrl} alt={post.title} loading='eager' fill /></div>)}
             <div className='legacy-article-meta'>
               <time dateTime={post.publishedAt ?? undefined}><CalendarIcon /><span>{formatDate(post.publishedAt)}</span></time>
               <span><span className='legacy-mood-emoji' aria-hidden='true'>{moodEmoji(post.mood)}</span><span>{moodLabel(post.mood)}</span></span>
@@ -165,7 +133,7 @@ function prettifyNumber(v: number) { return v>=1000?`${Number((v/1000).toFixed(1
 function PostBlockView({ block }: { block: PostBlock }) {
   const t = block.type ?? '';
   if (t==='code') return (<pre className='code-block' data-block-id={block.blockId}><code>{block.plainText ?? stringifyBlock(block.portableTextJson)}</code></pre>);
-  if (isImageBlock(block)) { const u = sanityImageUrl(block.portableTextJson); return (<figure className='image-block' data-block-id={block.blockId}>{u ? <img src={u} alt={block.plainText??''} loading='lazy' /> : <div>Image</div>}{block.plainText && <figcaption>{block.plainText}</figcaption>}</figure>); }
+  if (isImageBlock(block)) { const u = sanityImageUrl(block.portableTextJson); return (<figure className='image-block' data-block-id={block.blockId}>{u ? <LoadingImage src={u} alt={block.plainText??''} /> : <div>Image</div>}{block.plainText && <figcaption>{block.plainText}</figcaption>}</figure>); }
   const text = block.plainText ?? stringifyBlock(block.portableTextJson); if (!text.trim()) return null;
   const st = portableTextStyle(block.portableTextJson); const children = renderPortableTextChildren(block.portableTextJson);
   if (isHeadingStyle(st)) { const H = st; return (<H id={block.blockId} data-block-id={block.blockId}><a href={`#${block.blockId}`}>{text}</a></H>); }

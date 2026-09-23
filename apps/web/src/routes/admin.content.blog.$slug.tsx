@@ -87,7 +87,7 @@ function AdminBlogEditorPage() {
     },
   });
 
-  if (post.isLoading) {
+  if (post.isPending) {
     return (
       <section className='admin-page admin-editor-page'>
         <AdminPageHeader title='编辑博客' description='加载文章内容。' />

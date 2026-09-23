@@ -12,7 +12,7 @@ function ConfirmSubscriptionPage() {
     <section className='page'>
       <header className='page-header'><h1>Newsletter Confirmation</h1><p>Subscription confirmation status from the Cloudflare Worker API.</p></header>
       <div className='panel'>
-        {c.isLoading && (<div style={{ padding: 20, textAlign: 'center' }}><Skeleton className='h-4 w-48 mx-auto' /></div>)}
+        {c.isPending && (<div role='status' aria-label='确认订阅中' style={{ padding: 20, textAlign: 'center' }}><Skeleton className='h-4 w-48 mx-auto' /></div>)}
         {c.isError && <p className='error'>{c.error instanceof Error ? c.error.message : String(c.error)}</p>}
         {c.data && <p className='success-text'>Subscription confirmed.</p>}
       </div>

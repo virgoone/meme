@@ -8,6 +8,7 @@ import { openAuthDialog } from '../lib/auth-dialog-store';
 import { CommentMarkdown } from '../lib/comment-markdown';
 import { EyeCloseIcon, EyeOpenIcon } from '../lib/comment-icons';
 import { TiltedSendIcon } from '../lib/icons';
+import { Skeleton } from '@bunship-ai/ui/components/skeleton';
 
 export const Route = createFileRoute('/guestbook')({ component: GuestbookPage });
 
@@ -18,7 +19,7 @@ function GuestbookPage() {
       <header className='legacy-blog-header'><h1>留言墙</h1><p>随便写点什么，欢迎来打个招呼。</p></header>
       <div className='legacy-guestbook'>
         <GuestbookInput />
-        {entries.isLoading && <GuestbookSkeleton />}
+        {entries.isPending && <GuestbookSkeleton />}
         {entries.isError && <p className='state-text state-text--error'>{entries.error instanceof Error ? entries.error.message : String(entries.error)}</p>}
         {entries.data && entries.data.length === 0 && <p className='state-text'>还没有导入留言。</p>}
         {entries.data && entries.data.length > 0 && <GuestbookFeed messages={entries.data} />}
@@ -45,7 +46,13 @@ function GuestbookInput() {
       if (res.ok) { setMessage(''); setPreviewing(false); window.location.reload(); }
     } finally { setSending(false); }
   }
-  if (!isPending && !me) {
+  if (isPending) {
+    return <div className='legacy-guestbook-input' role='status' aria-label='留言表单加载中'>
+      <Skeleton className='size-10 shrink-0 rounded-full' />
+      <div className='legacy-guestbook-input__body'><Skeleton className='h-20 w-full' /></div>
+    </div>;
+  }
+  if (!me) {
     return (
       <div className='legacy-guestbook-input'>
         <div className='legacy-guestbook-input__grid' aria-hidden='true' />
@@ -110,7 +117,7 @@ function MessageItem({ message, idx, length }: { message: PublicGuestbookEntry; 
 }
 
 function GuestbookSkeleton() {
-  return (<div className='legacy-guestbook-feed'><ul>{Array.from({ length: 3 }).map((_, i) => (<li className='legacy-message loading' key={i}><div className='legacy-message__header'><span className='avatar-placeholder' /><div><span className='line-placeholder short' /><span className='line-placeholder' /></div></div></li>))}</ul></div>);
+  return (<div className='legacy-guestbook-feed' role='status' aria-label='留言加载中'><ul>{Array.from({ length: 3 }).map((_, i) => (<li className='legacy-message loading' key={i}><div className='legacy-message__header'><span className='avatar-placeholder' /><div><span className='line-placeholder short' /><span className='line-placeholder' /></div></div></li>))}</ul></div>);
 }
 
 function formatRelativeTime(value: string | null) {

@@ -22,8 +22,8 @@ function BlogPage() {
         <p>{description}</p>
         <p className='legacy-rss'><a href='/feed.xml'>RSS</a></p>
       </header>
-      {posts.isLoading && (
-        <div className='legacy-blog-grid'>
+      {posts.isPending && (
+        <div className='legacy-blog-grid' role='status' aria-label='文章列表加载中'>
           {Array.from({ length: 6 }).map((_, i) => (<BlogPostCardSkeleton key={i} />))}
         </div>
       )}
