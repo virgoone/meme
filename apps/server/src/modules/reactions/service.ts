@@ -1,3 +1,5 @@
+import { createD1Database, importedPosts } from '@meme/db';
+import { eq, or } from 'drizzle-orm';
 import type { WorkerEnv } from '../../env';
 
 const DEFAULT_REACTIONS = [0, 0, 0, 0] as const;
@@ -23,8 +25,23 @@ function parseReactions(value: string | null): number[] {
   return [...DEFAULT_REACTIONS];
 }
 
+async function readReactionState(env: WorkerEnv, id: string) {
+  const [post] = await createD1Database(env.DB)
+    .select({ id: importedPosts.id, sanityId: importedPosts.sanityId })
+    .from(importedPosts)
+    .where(or(eq(importedPosts.id, id), eq(importedPosts.sanityId, id)))
+    .limit(1);
+  const canonicalId = post?.id ?? id;
+  const current = parseReactions(await env.MEME_KV.get(reactionKey(canonicalId)));
+  const legacy = post && post.sanityId !== canonicalId
+    ? parseReactions(await env.MEME_KV.get(reactionKey(post.sanityId)))
+    : [...DEFAULT_REACTIONS];
+  return { canonicalId, current, legacy };
+}
+
 export async function getReactions(env: WorkerEnv, id: string) {
-  return parseReactions(await env.MEME_KV.get(reactionKey(id)));
+  const { current, legacy } = await readReactionState(env, id);
+  return current.map((count, index) => count + legacy[index]);
 }
 
 export async function incrementReaction(
@@ -40,8 +57,9 @@ export async function incrementReaction(
     throw new Error('index must be between 0 and 3');
   }
 
-  const current = await getReactions(env, id);
+  const { canonicalId, current, legacy } = await readReactionState(env, id);
   current[index] += 1;
-  await env.MEME_KV.put(reactionKey(id), JSON.stringify(current));
-  return current;
+  // Legacy counters stay immutable; only post-migration increments use the new ID.
+  await env.MEME_KV.put(reactionKey(canonicalId), JSON.stringify(current));
+  return current.map((count, reactionIndex) => count + legacy[reactionIndex]);
 }
