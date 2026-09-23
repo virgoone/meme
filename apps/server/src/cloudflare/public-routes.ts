@@ -2,6 +2,15 @@ import type { WorkerEnv } from '../env';
 import { listImportedPosts } from '../modules/posts/service';
 
 const feedLimit = 100;
+const redirects = new Map([
+  ['/twitter', 'https://x.com/koyaguo'],
+  ['/x', 'https://x.com/koyaguo'],
+  ['/github', 'https://github.com/virgoone'],
+  ['/tool', 'https://douni.one'],
+  ['/youtube', 'https://youtube.com/@calicastle'],
+]);
+const feedPaths = new Set(['/feed.xml', '/feed', '/rss', '/rss.xml']);
+
 type SitemapEntry = {
   loc: string;
   priority: string;
@@ -13,6 +22,15 @@ export async function handlePublicRoute(
   env: WorkerEnv,
 ): Promise<Response | null> {
   const url = new URL(request.url);
+  const pathname = url.pathname.replace(/\/$/, '').toLowerCase();
+  const redirect = redirects.get(pathname);
+
+  // Preserve the short links and query strings from the former Next.js config.
+  if (redirect) {
+    const destination = new URL(redirect);
+    destination.search = url.search;
+    return Response.redirect(destination.href, 308);
+  }
 
   if (url.pathname === '/robots.txt') {
     return textResponse(buildRobotsTxt(env), 'text/plain; charset=utf-8');
@@ -25,7 +43,7 @@ export async function handlePublicRoute(
     );
   }
 
-  if (url.pathname === '/feed.xml') {
+  if (feedPaths.has(pathname)) {
     return textResponse(
       await buildFeedXml(env),
       'application/rss+xml; charset=utf-8',
