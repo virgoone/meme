@@ -692,8 +692,12 @@
 
 .article-body {
   margin-top: 36px;
+  min-width: 0;
   font-size: 16.5px;
   line-height: 1.9;
+  /* Long unbroken runs (domain lists, URLs, inline code) must wrap instead of
+     widening the column and letting the whole page scroll sideways on phones. */
+  overflow-wrap: anywhere;
 }
 
 .article-body > * + * {
@@ -771,6 +775,8 @@
   margin: 0;
   padding: 16px 18px;
   overflow-x: auto;
+  white-space: pre;
+  overflow-wrap: normal;
   border: 1px solid var(--site-hair);
   border-radius: 6px;
   background: var(--site-wash);
