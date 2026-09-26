@@ -30,6 +30,7 @@ export const reactionsModule = new Elysia({ prefix: '/reactions' })
         getCloudflareRuntimeEnv(),
         query.id,
         Number(query.index),
+        query.count === undefined ? 1 : Number(query.count),
       ),
     };
   });

@@ -44,10 +44,14 @@ export async function getReactions(env: WorkerEnv, id: string) {
   return current.map((count, index) => count + legacy[index]);
 }
 
+/** Clients batch rapid taps into one request; cap what a single call can add. */
+export const MAX_REACTION_INCREMENT = 20;
+
 export async function incrementReaction(
   env: WorkerEnv,
   id: string,
   index: number,
+  count = 1,
 ) {
   if (
     !Number.isInteger(index) ||
@@ -56,9 +60,12 @@ export async function incrementReaction(
   ) {
     throw new Error('index must be between 0 and 3');
   }
+  if (!Number.isInteger(count) || count < 1 || count > MAX_REACTION_INCREMENT) {
+    throw new Error(`count must be between 1 and ${MAX_REACTION_INCREMENT}`);
+  }
 
   const { canonicalId, current, legacy } = await readReactionState(env, id);
-  current[index] += 1;
+  current[index] += count;
   // Legacy counters stay immutable; only post-migration increments use the new ID.
   await env.MEME_KV.put(reactionKey(canonicalId), JSON.stringify(current));
   return current.map((count, reactionIndex) => count + legacy[reactionIndex]);

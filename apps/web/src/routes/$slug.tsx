@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router';
 import { normalizePage } from '@meme/shared';
 import { ArrowLeft } from 'lucide-react';
-import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { postQueryOptions, usePost, usePostComments, usePostReactions, type PostDetail } from '../lib/admin-queries';
 import { AdBanner } from '../lib/adsense';
@@ -13,9 +13,11 @@ import { legacyCode, legacyListFormats, type LegacyListFormat } from '../lib/leg
 import { LoadingImage } from '../lib/loading-image';
 import { BlogPostPageSkeleton } from '../lib/page-skeletons';
 import { usePostViews } from '../lib/page-views';
+import { burstReaction } from '../lib/reaction-burst';
 import { loadPublicQuery } from '../lib/route-query';
 import { articleHead, privateHead } from '../lib/seo';
 import { SlatePostBlock } from '../lib/slate-post-block';
+import { useScrollHidden } from '../lib/use-scroll-direction';
 
 export const Route = createFileRoute('/$slug')({
   loader: async ({ context, params }) => {
@@ -128,7 +130,6 @@ export function PostContent({ post }: { post: PostDetail }) {
             <ArrowLeft aria-hidden='true' />
             <span>回到全部文章</span>
           </Link>
-          <ArticleReactions mood={post.mood} counts={reactions.counts} onReact={reactions.react} />
         </footer>
         {blocks.length > 0 && <AdBanner placement='article' />}
       </article>
@@ -138,6 +139,8 @@ export function PostContent({ post }: { post: PostDetail }) {
           <ArticleReactions mood={post.mood} counts={reactions.counts} onReact={reactions.react} />
         </div>
       </aside>
+
+      <ReactionDock mood={post.mood} counts={reactions.counts} onReact={reactions.react} />
     </div>
   );
 }
@@ -194,34 +197,108 @@ function ArticleTableOfContents({ outline }: { outline: OutlineNode[] }) {
   );
 }
 
+const FLUSH_DELAY = 700;
+
+/**
+ * Counts update instantly on every tap; the network call is debounced so a burst
+ * of taps becomes one request per reaction instead of one per tap.
+ */
 function useReactionCounter(postId: string) {
   const reactions = usePostReactions(postId);
   const [counts, setCounts] = useState<number[]>([0, 0, 0, 0]);
-  useEffect(() => { if (reactions.data) setCounts(reactions.data); }, [reactions.data]);
+  const pending = useRef<number[]>([0, 0, 0, 0]);
+  const timer = useRef<number>(0);
+  const flushing = useRef<Promise<void> | null>(null);
 
-  async function react(index: number) {
+  useEffect(() => {
+    if (reactions.data) setCounts(reactions.data.map((value, index) => value + (pending.current[index] ?? 0)));
+  }, [reactions.data]);
+
+  const flush = useCallback(() => {
+    window.clearTimeout(timer.current);
+    timer.current = 0;
+    const batch = pending.current;
+    if (batch.every((value) => value === 0)) return;
+    pending.current = [0, 0, 0, 0];
+    flushing.current = (async () => {
+      let latest: number[] | null = null;
+      for (let index = 0; index < batch.length; index += 1) {
+        const amount = batch[index] ?? 0;
+        if (amount <= 0) continue;
+        try {
+          const response = await fetch(
+            `/api/reactions?id=${encodeURIComponent(postId)}&index=${index}&count=${Math.min(amount, 20)}`,
+            { method: 'PATCH', keepalive: true },
+          );
+          const payload = (await response.json()) as { data?: number[] };
+          if (Array.isArray(payload.data)) latest = payload.data;
+        } catch { /* keep the optimistic count */ }
+      }
+      if (latest) {
+        const settled = latest;
+        setCounts(settled.map((value, index) => value + (pending.current[index] ?? 0)));
+      }
+    })().finally(() => { flushing.current = null; });
+  }, [postId]);
+
+  useEffect(() => {
+    function onHide() { if (document.visibilityState === 'hidden') flush(); }
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      flush();
+    };
+  }, [flush]);
+
+  const react = useCallback((index: number) => {
     setCounts((current) => { const next = [...current]; next[index] = (next[index] ?? 0) + 1; return next; });
-    try {
-      const response = await fetch(`/api/reactions?id=${encodeURIComponent(postId)}&index=${index}`, { method: 'PATCH' });
-      const payload = await response.json() as { data?: number[] };
-      if (Array.isArray(payload.data)) setCounts(payload.data);
-    } catch { /* keep the optimistic count */ }
-  }
+    pending.current[index] = (pending.current[index] ?? 0) + 1;
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(flush, FLUSH_DELAY);
+  }, [flush]);
 
   return { counts, react };
 }
 
-function ArticleReactions({ mood, counts, onReact }: { mood: PostDetail['mood']; counts: number[]; onReact: (index: number) => void }) {
+const reactionLabels: Record<string, string> = {
+  claps: '鼓掌', tada: '庆祝', confetti: '撒花', fire: '太棒了', pray: '祈祷', cry: '难过', heart: '喜欢', hugs: '抱抱', 'thumbs-up': '赞',
+};
+
+function ArticleReactions({ mood, counts, onReact, className }: { mood: PostDetail['mood']; counts: number[]; onReact: (index: number) => void; className?: string }) {
+  const [bumped, setBumped] = useState<number | null>(null);
   return (
-    <fieldset className='article-reactions'>
+    <fieldset className={`article-reactions${className ? ` ${className}` : ''}`}>
       <legend className='sr-only'>表达反应</legend>
       {moodToReactions(mood).map((reaction, index) => (
-        <button key={reaction} type='button' className='article-reaction' onClick={() => onReact(index)} aria-label={`reaction-${reaction}`}>
+        <button
+          key={reaction}
+          type='button'
+          className={`article-reaction${bumped === index ? ' is-bumped' : ''}`}
+          onClick={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect();
+            void burstReaction(`/reactions/${reaction}.png`, { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+            setBumped(index);
+            window.setTimeout(() => setBumped((current) => (current === index ? null : current)), 260);
+            onReact(index);
+          }}
+          aria-label={reactionLabels[reaction] ?? reaction}
+          title={reactionLabels[reaction] ?? reaction}
+        >
           <img src={`/reactions/${reaction}.png`} alt='' />
           <span>{prettifyCount(counts[index] ?? 0)}</span>
         </button>
       ))}
     </fieldset>
+  );
+}
+
+/** Phones: a floating dock at the bottom that hides while reading down and returns on scroll up. */
+function ReactionDock({ mood, counts, onReact }: { mood: PostDetail['mood']; counts: number[]; onReact: (index: number) => void }) {
+  const hidden = useScrollHidden();
+  return (
+    <div className={`article-reactions-dock${hidden ? ' is-hidden' : ''}`} aria-hidden={hidden || undefined}>
+      <ArticleReactions mood={mood} counts={counts} onReact={onReact} className='article-reactions--dock' />
+    </div>
   );
 }
 

@@ -98,3 +98,18 @@ describe('reaction increments', () => {
     expect(put).not.toHaveBeenCalled();
   });
 });
+
+describe('batched increments', () => {
+  test('adds the whole batch in one write', async () => {
+    const { env, put } = createEnv({ 'reactions:post': '[1,0,0,0]' }, ['post', 'post']);
+    expect(await incrementReaction(env, 'post', 0, 5)).toEqual([6, 0, 0, 0]);
+    expect(put).toHaveBeenCalledTimes(1);
+    expect(put).toHaveBeenCalledWith('reactions:post', '[6,0,0,0]');
+  });
+
+  test.each([0, -1, 21, 1.5, Number.NaN])('rejects a count of %s', async (count) => {
+    const { env, put } = createEnv({}, ['post', 'post']);
+    await expect(incrementReaction(env, 'post', 0, count)).rejects.toThrow('count must be between 1 and 20');
+    expect(put).not.toHaveBeenCalled();
+  });
+});
