@@ -8,7 +8,26 @@
 - `CLOUDFLARE_ORIGIN=https://meme.moss-dev.workers.dev` is the only Vercel-specific runtime routing configuration. Set it for Production and Preview. Keep the legacy environment variables until the rollback window closes.
 - Worker secrets remain on Cloudflare. Preserve `BETTER_AUTH_SECRET` so existing Worker sessions remain valid. Set `SITE_URL` and `BETTER_AUTH_URL` to the canonical public origin and include the public origins in `TRUSTED_ORIGINS` before switching traffic.
 
-## Release Gate
+## Automatic releases from main
+
+Every push to `main` triggers `.github/workflows/deploy-cloudflare.yml`:
+
+1. Install the locked dependencies, lint, check types, run all tracked regression suites in separate processes, and build the web app and server.
+2. Transfer that verified web build to the deployment job and deploy Worker `meme` with the Git commit recorded in the deployment message.
+3. Check health, server-rendered blog HTML, published posts, sitemap, and RSS on both the Worker origin and `blog.douni.one`. These checks only read data.
+
+Production releases are queued instead of cancelling an in-progress upload. A failed check prevents deployment. A failed post-deployment check reports a failed release; inspect and roll back the Worker if needed.
+
+Configure these repository **Actions secrets** in `virgoone/meme`:
+
+- `CLOUDFLARE_ACCOUNT_ID`: the existing account ID.
+- `CLOUDFLARE_API_TOKEN`: a dedicated account-owned token with Workers Editor permission scoped to `meme`. If Wrangler manages the configured route, grant Workers Routes Write and Zone Read scoped only to `douni.one`. Do not reuse the local Wrangler OAuth token or add database/storage administration permissions just to deploy existing bindings.
+
+Deployment is enabled by default. Set the repository variable `CF_DEPLOY_ENABLED=false` only to pause automatic releases during an incident; delete that variable or set it to `true` to resume. Missing secrets fail explicitly instead of silently skipping deployment. To retry, rerun the failed job or dispatch **Cloudflare Deploy** on `main`.
+
+Vercel may separately rebuild the proxy from Git. The Cloudflare workflow is what publishes the application code. Existing Worker secrets and D1/KV/R2 bindings are retained. Normal code releases do not run schema migrations or content imports.
+
+## Migration and cutover gate
 
 1. Export the live D1 database to a gitignored path using `wrangler d1 export meme-prod --remote --config wrangler.jsonc --output=data/release-backups/<timestamp>/d1.sql`.
 2. Compare live legacy Turso records and Sanity revisions with the imported snapshot. Check D1 row counts, post IDs, block IDs, comment anchors, and KV reaction totals. Stop if source data is missing at the destination.

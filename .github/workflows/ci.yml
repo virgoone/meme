@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     name: Verify
@@ -34,14 +37,8 @@ jobs:
       - name: Check editor types
         run: bun run check-types:editor
 
-      - name: Run tests
-        run: bun test packages/editor/src/block-id.test.ts packages/db/src/migration/sanity-content.test.ts apps/server/src/modules/projects/index.test.ts apps/server/src/modules/reactions/service.test.ts apps/server/src/cloudflare/public-routes.test.ts
-
-      - name: Test loading states
-        run: bun test apps/web/tests/loading.test.tsx
-
-      - name: Test article creation and draft access
-        run: bun test apps/server/src/modules/posts/index.test.ts apps/server/src/modules/system/views.test.ts apps/web/tests/slate-post-block.test.tsx
+      - name: Run regression tests
+        run: bash scripts/test-ci.sh
 
       - name: Build web
         run: bun run build:web
