@@ -1126,8 +1126,10 @@
     min-width: 36rem;
   }
 
-  .article-body .article-block:has(> .comment-block-trigger) {
-    padding-inline-end: 34px;
+  /* Keep the text column symmetric; the comment trigger and avatar stack overlay
+     the right margin instead of reserving a gutter inside every paragraph. */
+  .article-body .article-block > .comment-block-trigger {
+    right: -12px;
   }
 }
 
