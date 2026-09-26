@@ -9,11 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GuestbookRouteImport } from './routes/guestbook'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewslettersIdRouteImport } from './routes/newsletters.$id'
@@ -26,11 +30,22 @@ import { Route as AdminCommentsRouteImport } from './routes/admin.comments'
 import { Route as AdminNewslettersNewRouteImport } from './routes/admin.newsletters.new'
 import { Route as AdminContentProjectRouteImport } from './routes/admin.content.project'
 import { Route as AdminContentBlogRouteImport } from './routes/admin.content.blog'
+import { Route as AdminContentBlogNewRouteImport } from './routes/admin.content.blog.new'
 import { Route as AdminContentBlogSlugRouteImport } from './routes/admin.content.blog.$slug'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -43,6 +58,11 @@ const GuestbookRoute = GuestbookRouteImport.update({
   path: '/guestbook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -51,6 +71,11 @@ const BlogRoute = BlogRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlugRoute = SlugRouteImport.update({
@@ -113,6 +138,11 @@ const AdminContentBlogRoute = AdminContentBlogRouteImport.update({
   path: '/content/blog',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminContentBlogNewRoute = AdminContentBlogNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminContentBlogRoute,
+} as any)
 const AdminContentBlogSlugRoute = AdminContentBlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -122,11 +152,15 @@ const AdminContentBlogSlugRoute = AdminContentBlogSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
+  '/contact': typeof ContactRoute
   '/guestbook': typeof GuestbookRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
+  '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -138,15 +172,20 @@ export interface FileRoutesByFullPath {
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
   '/admin/content/blog/$slug': typeof AdminContentBlogSlugRoute
+  '/admin/content/blog/new': typeof AdminContentBlogNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
+  '/contact': typeof ContactRoute
   '/guestbook': typeof GuestbookRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
+  '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -158,16 +197,21 @@ export interface FileRoutesByTo {
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
   '/admin/content/blog/$slug': typeof AdminContentBlogSlugRoute
+  '/admin/content/blog/new': typeof AdminContentBlogNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
+  '/contact': typeof ContactRoute
   '/guestbook': typeof GuestbookRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRoute
+  '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -179,17 +223,22 @@ export interface FileRoutesById {
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
   '/admin/content/blog/$slug': typeof AdminContentBlogSlugRoute
+  '/admin/content/blog/new': typeof AdminContentBlogNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/$slug'
+    | '/about'
     | '/admin'
     | '/blog'
+    | '/contact'
     | '/guestbook'
     | '/login'
+    | '/privacy'
     | '/projects'
+    | '/terms'
     | '/admin/comments'
     | '/admin/newsletters'
     | '/admin/settings'
@@ -201,15 +250,20 @@ export interface FileRouteTypes {
     | '/admin/content/project'
     | '/admin/newsletters/new'
     | '/admin/content/blog/$slug'
+    | '/admin/content/blog/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$slug'
+    | '/about'
     | '/admin'
     | '/blog'
+    | '/contact'
     | '/guestbook'
     | '/login'
+    | '/privacy'
     | '/projects'
+    | '/terms'
     | '/admin/comments'
     | '/admin/newsletters'
     | '/admin/settings'
@@ -221,15 +275,20 @@ export interface FileRouteTypes {
     | '/admin/content/project'
     | '/admin/newsletters/new'
     | '/admin/content/blog/$slug'
+    | '/admin/content/blog/new'
   id:
     | '__root__'
     | '/'
     | '/$slug'
+    | '/about'
     | '/admin'
     | '/blog'
+    | '/contact'
     | '/guestbook'
     | '/login'
+    | '/privacy'
     | '/projects'
+    | '/terms'
     | '/admin/comments'
     | '/admin/newsletters'
     | '/admin/settings'
@@ -241,27 +300,46 @@ export interface FileRouteTypes {
     | '/admin/content/project'
     | '/admin/newsletters/new'
     | '/admin/content/blog/$slug'
+    | '/admin/content/blog/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SlugRoute: typeof SlugRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
+  ContactRoute: typeof ContactRoute
   GuestbookRoute: typeof GuestbookRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProjectsRoute: typeof ProjectsRoute
+  TermsRoute: typeof TermsRoute
   ConfirmTokenRoute: typeof ConfirmTokenRoute
   NewslettersIdRoute: typeof NewslettersIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -278,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuestbookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog': {
       id: '/blog'
       path: '/blog'
@@ -290,6 +375,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$slug': {
@@ -376,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentBlogRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/content/blog/new': {
+      id: '/admin/content/blog/new'
+      path: '/new'
+      fullPath: '/admin/content/blog/new'
+      preLoaderRoute: typeof AdminContentBlogNewRouteImport
+      parentRoute: typeof AdminContentBlogRoute
+    }
     '/admin/content/blog/$slug': {
       id: '/admin/content/blog/$slug'
       path: '/$slug'
@@ -399,10 +498,12 @@ const AdminNewslettersRouteWithChildren =
 
 interface AdminContentBlogRouteChildren {
   AdminContentBlogSlugRoute: typeof AdminContentBlogSlugRoute
+  AdminContentBlogNewRoute: typeof AdminContentBlogNewRoute
 }
 
 const AdminContentBlogRouteChildren: AdminContentBlogRouteChildren = {
   AdminContentBlogSlugRoute: AdminContentBlogSlugRoute,
+  AdminContentBlogNewRoute: AdminContentBlogNewRoute,
 }
 
 const AdminContentBlogRouteWithChildren =
@@ -441,14 +542,28 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SlugRoute: SlugRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
+  ContactRoute: ContactRoute,
   GuestbookRoute: GuestbookRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   ProjectsRoute: ProjectsRoute,
+  TermsRoute: TermsRoute,
   ConfirmTokenRoute: ConfirmTokenRoute,
   NewslettersIdRoute: NewslettersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

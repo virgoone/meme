@@ -37,6 +37,9 @@ jobs:
       - name: Test migration invariants
         run: bun test packages/editor/src/block-id.test.ts packages/db/src/migration/sanity-content.test.ts apps/server/src/modules/projects/index.test.ts apps/server/src/modules/reactions/service.test.ts
 
+      - name: Test article creation and draft access
+        run: bun test apps/server/src/modules/posts/index.test.ts apps/server/src/modules/system/views.test.ts apps/web/tests/slate-post-block.test.tsx
+
       - name: Build Cloudflare web app
         run: bun run build:web
 

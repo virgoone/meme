@@ -1,5 +1,5 @@
 import { createD1Database, newsletters, subscribers } from '@meme/db';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
 
@@ -24,6 +24,8 @@ export async function listNewsletters(env: WorkerEnv, limit = 100) {
 
   return db
     .select({
+      campaignId: sql<string | null>`(select c.id from newsletter_campaigns c where c.newsletter_id = newsletters.id)`,
+      campaignStatus: sql<string | null>`(select c.status from newsletter_campaigns c where c.newsletter_id = newsletters.id)`,
       id: newsletters.id,
       subject: newsletters.subject,
       body: newsletters.body,
@@ -140,5 +142,10 @@ export async function getNewsletterById(
     .where(eq(newsletters.id, id))
     .limit(1);
 
+  // Saved campaign drafts must never be exposed by the public newsletter URL.
+  if (newsletter && !newsletter.sentAt) {
+    const campaign = await env.DB.prepare('SELECT id FROM newsletter_campaigns WHERE newsletter_id = ?').bind(id).first();
+    if (campaign) return null;
+  }
   return newsletter ?? null;
 }

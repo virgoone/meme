@@ -8,7 +8,7 @@ import {
 import { DataTableSkeleton } from '@bunship-ai/data-table';
 
 import { useAdminNewsletters, type Newsletter } from '../lib/admin-queries';
-import { AdminPageHeader, AdminTable, StatCard } from '../lib/admin-ui';
+import { AdminPageHeader, SimpleDataTable, StatCard } from '../lib/admin-ui';
 import { formatDate } from '../lib/format';
 
 export const Route = createFileRoute('/admin/newsletters')({
@@ -34,16 +34,16 @@ function AdminNewslettersPage({
   return (
     <section className='admin-page'>
       <AdminPageHeader
-        title='Newsletters'
-        description='已创建和已发送的 newsletter。'
+        title='邮件记录'
+        description='保存的草稿、发送进度与历史邮件。'
         action={
           <Link to='/admin/newsletters/new' className='admin-button'>
-            New
+            发送最近更新
           </Link>
         }
       />
 
-      {newsletters.isLoading ? (
+      {newsletters.isPending ? (
         <DataTableSkeleton columnCount={3} rowCount={10} />
       ) : newsletters.isError ? (
         <p className='admin-error'>
@@ -55,22 +55,24 @@ function AdminNewslettersPage({
         <>
           <div className='admin-stat-grid'>
             <StatCard
-              title='Today Newsletters'
+              title='今日发送'
               value={countTodaySent(newsletters.data)}
             />
             <StatCard
-              title='Month Newsletters'
+              title='本月发送'
               value={countThisMonth(newsletters.data)}
             />
-            <StatCard title='Total Newsletters' value={newsletters.data.length} />
+            <StatCard title='全部邮件' value={newsletters.data.length} />
           </div>
-          <AdminTable
-            columns={['Subject', 'Time', 'Created']}
-            rows={newsletters.data.map((newsletter) => [
-              newsletter.subject ?? `Newsletter #${newsletter.id}`,
-              newsletter.sentAt ? formatDate(newsletter.sentAt) : '-',
-              formatDate(newsletter.createdAt),
-            ])}
+          <SimpleDataTable
+            data={newsletters.data}
+            getRowId={(row) => String(row.id)}
+            columns={[
+              { id: 'subject', header: '邮件主题', cell: row => row.subject ?? `邮件 #${row.id}` },
+              { id: 'status', header: '状态', cell: row => row.sentAt ? '已提交发送' : row.campaignStatus === 'sending' ? '待继续发送' : '草稿' },
+              { id: 'created', header: '创建时间', cell: row => formatDate(row.createdAt) },
+              { id: 'action', header: '操作', cell: row => row.campaignId ? <Link to='/admin/newsletters/new' search={{ campaign: row.campaignId }}>{row.sentAt ? '查看邮件' : row.campaignStatus === 'sending' ? '继续发送' : '继续编辑'}</Link> : row.sentAt ? <Link to='/newsletters/$id' params={{ id: String(row.id) }}>查看邮件</Link> : '历史草稿' },
+            ]}
           />
         </>
       ) : null}

@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "meme",
+  "workers_dev": true,
+  "routes": [{ "pattern": "blog.douni.one/api/page-views*", "zone_name": "douni.one" }],
   "main": "apps/server/src/cloudflare/worker.ts",
   "compatibility_date": "2026-06-17",
   "compatibility_flags": ["nodejs_compat"],

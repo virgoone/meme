@@ -2,9 +2,10 @@ import { Link } from '@tanstack/react-router';
 import type { CSSProperties } from 'react';
 
 import { formatDate, moodEmoji, moodLabel } from './format';
-import { CalendarIcon, HourglassIcon } from './icons';
+import { CalendarIcon, CursorClickIcon, HourglassIcon } from './icons';
 
 export type PostCardItem = {
+  views?: number;
   id: string;
   title: string;
   slug: string;
@@ -15,13 +16,14 @@ export type PostCardItem = {
   coverImageUrl: string | null;
 };
 
-export function BlogPostCard({ post }: { post: PostCardItem }) {
+export function BlogPostCard({ post, archivePage }: { post: PostCardItem; archivePage?: number }) {
   const coverImageUrl = post.coverImageUrl ?? fallbackCover(post.slug);
 
   return (
     <Link
       to='/$slug'
       params={{ slug: post.slug }}
+      state={previous => ({ ...previous, blogArchivePage: archivePage })}
       className='legacy-post-card'
       style={{ '--post-image': `url("${coverImageUrl}")` } as CSSProperties}
     >
@@ -44,6 +46,10 @@ export function BlogPostCard({ post }: { post: PostCardItem }) {
             <HourglassIcon aria-hidden='true' />
             {Math.round(post.readingTime ?? 0)}分钟阅读
           </span>
+          <span title={typeof post.views === 'number' ? `${post.views} 次浏览` : undefined}>
+            <CursorClickIcon aria-hidden='true' />
+            {typeof post.views === 'number' ? Intl.NumberFormat('zh-CN').format(post.views) : '—'} 次浏览
+          </span>
         </span>
         <span className='legacy-post-card__title-row'>
           <h2>{post.title}</h2>
@@ -65,12 +71,19 @@ export function BlogPostCardSkeleton() {
     >
       <div className='legacy-post-card__image' />
       <span className='legacy-post-card__body'>
-        <span className='skeleton-line skeleton-line--title' />
-        <span className='skeleton-line skeleton-line--text' />
         <span className='legacy-post-card__meta'>
           <span className='skeleton-line skeleton-line--meta' />
           <span className='skeleton-line skeleton-line--meta' />
           <span className='skeleton-line skeleton-line--meta' />
+          <span className='skeleton-line skeleton-line--meta' />
+        </span>
+        <span className='post-skeleton-title'>
+          <span className='skeleton-line skeleton-line--title' />
+          <span className='skeleton-line skeleton-line--title-short' />
+        </span>
+        <span className='post-skeleton-description'>
+          <span className='skeleton-line skeleton-line--text' />
+          <span className='skeleton-line skeleton-line--text-short' />
         </span>
       </span>
     </div>

@@ -38,11 +38,21 @@ export const blogPostState = proxy<{
   replyingTo: null,
 });
 
-export function setComments(comments: CommentDto[]) {
-  blogPostState.comments = comments;
+export function selectCommentPost(postId: string) {
+  if (blogPostState.postId === postId) return;
+  blogPostState.postId = postId;
+  blogPostState.comments = [];
+  blogPostState.currentBlockId = null;
+  blogPostState.replyingTo = null;
+}
+
+export function setPostComments(postId: string, comments: CommentDto[]) {
+  if (blogPostState.postId !== postId) return;
+  blogPostState.comments = comments.map(comment => ({ ...comment, postId }));
 }
 
 export function addComment(comment: CommentDto) {
+  if (comment.postId && comment.postId !== blogPostState.postId) return;
   if (blogPostState.comments.some((c) => String(c.id) === String(comment.id))) {
     return;
   }
@@ -65,16 +75,17 @@ export function clearBlockFocus() {
   blogPostState.currentBlockId = null;
 }
 
-export function parseDisplayName(info: CommentUserInfo): string {
+export function parseDisplayName(info: CommentUserInfo | null | undefined): string {
+  if (!info) return '已登录用户';
   if (info.name?.trim()) return info.name.trim();
   const firstName = info.firstName ?? '';
   const lastName = info.lastName ?? '';
   if (firstName && lastName) {
     return firstName === lastName ? firstName : `${firstName} ${lastName}`;
   }
-  return firstName || lastName || '匿名用户';
+  return firstName || lastName || '已登录用户';
 }
 
-export function avatarUrl(info: CommentUserInfo): string {
-  return info.imageUrl ?? info.image ?? '';
+export function avatarUrl(info: CommentUserInfo | null | undefined): string {
+  return info?.imageUrl || info?.image || '/avatars/avatar_1.png';
 }

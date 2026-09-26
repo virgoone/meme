@@ -1,51 +1,50 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
-
-import { AdminPageHeader } from '../lib/admin-ui';
+import { createFileRoute } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { AdminContentSkeleton } from '../lib/page-skeletons';
+import { useAdminBlogPosts } from '../lib/admin-queries';
+import {
+  newsletterRequest,
+  type NewsletterOptions,
+} from '../lib/newsletter-client';
+import { NewsletterComposer } from '../lib/newsletter-composer';
+import type { NewsletterCampaign } from '@meme/shared';
 
 export const Route = createFileRoute('/admin/newsletters/new')({
+  validateSearch: (search: Record<string, unknown>): { campaign?: string } => ({
+    campaign: typeof search.campaign === 'string' ? search.campaign : undefined,
+  }),
   component: NewNewsletterPage,
 });
 
 function NewNewsletterPage() {
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
-
+  const { campaign } = Route.useSearch();
+  const posts = useAdminBlogPosts();
+  const options = useQuery({
+    queryKey: ['admin', 'newsletter-options'],
+    queryFn: () => newsletterRequest<NewsletterOptions>('/options'),
+  });
+  const saved = useQuery({
+    queryKey: ['admin', 'newsletter-campaign', campaign],
+    queryFn: () =>
+      newsletterRequest<NewsletterCampaign>(`/campaign/${campaign}`),
+    enabled: Boolean(campaign),
+    retry: false,
+  });
+  const error = posts.error ?? options.error ?? (campaign ? saved.error : null);
+  if (error)
+    return (
+      <p className='admin-error' role='alert'>
+        {error.message}
+      </p>
+    );
+  if (!posts.data || !options.data || (campaign && !saved.data))
+    return <AdminContentSkeleton />;
   return (
-    <section className='admin-page'>
-      <AdminPageHeader title='New Newsletter' description='创建 newsletter 草稿。' />
-
-      <form className='admin-form' onSubmit={(event) => event.preventDefault()}>
-        <label htmlFor='newsletter-subject'>
-          <span>Title</span>
-          <input
-            id='newsletter-subject'
-            name='subject'
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
-            placeholder='Newsletter subject'
-          />
-        </label>
-        <label htmlFor='newsletter-body'>
-          <span>Subject</span>
-          <textarea
-            id='newsletter-body'
-            name='body'
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-            rows={18}
-            placeholder='Write newsletter body...'
-          />
-        </label>
-        <div className='admin-form__actions'>
-          <Link to='/admin/newsletters' className='admin-button secondary'>
-            Cancel
-          </Link>
-          <button className='admin-button' type='submit'>
-            Submit
-          </button>
-        </div>
-      </form>
-    </section>
+    <NewsletterComposer
+      key={campaign ?? 'new'}
+      posts={posts.data}
+      options={options.data}
+      saved={saved.data}
+    />
   );
 }

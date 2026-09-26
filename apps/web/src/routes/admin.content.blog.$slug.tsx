@@ -1,28 +1,32 @@
 import { withStableBlockIds, type EditorBlockNode } from '@meme/editor';
+import { createPostSlug, isValidPostSlug } from '@meme/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
-import { usePost, type PostDetail } from '../lib/admin-queries';
+import { useAdminPost, type PostDetail } from '../lib/admin-queries';
 import { AdminPageHeader } from '../lib/admin-ui';
 import { MainImageUploader } from '../lib/main-image-uploader';
+import { postToEditorValue } from '../lib/post-editor-value';
 import {
   RemoteEditorWidget,
   type RemoteEditorValue,
 } from '../lib/remote-editor-widget';
 import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+import '../lib/post-editor.css';
 
 export const Route = createFileRoute('/admin/content/blog/$slug')({
-  component: AdminBlogEditorPage,
+  component: () => <AdminBlogEditorPage slug={Route.useParams().slug} />,
 });
 
-function AdminBlogEditorPage() {
-  const { slug } = Route.useParams();
+export function AdminBlogEditorPage({ slug }: { slug?: string }) {
+  const isNew = !slug;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const post = usePost(slug);
+  const post = useAdminPost(slug ?? '');
   const [title, setTitle] = useState('');
   const [nextSlug, setNextSlug] = useState('');
+  const [slugEdited, setSlugEdited] = useState(false);
   const [description, setDescription] = useState('');
   const [mainImageUrl, setMainImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState('');
@@ -51,8 +55,10 @@ function AdminBlogEditorPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/posts/${encodeURIComponent(slug)}`, {
-        method: 'PUT',
+      if (!title.trim()) throw new Error('请输入文章标题');
+      if (!isValidPostSlug(nextSlug.trim())) throw new Error('请填写有效的 Slug：文字、数字和短横线');
+      const response = await fetch(isNew ? '/api/posts' : `/api/posts/${encodeURIComponent(slug)}`, {
+        method: isNew ? 'POST' : 'PUT',
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
@@ -69,25 +75,28 @@ function AdminBlogEditorPage() {
         }),
       });
 
-      const payload = (await response.json()) as PostDetail | { error?: string };
+      const payload = (await response.json()) as PostDetail & { message?: string; error?: string };
       if (!response.ok) {
-        throw new Error('error' in payload ? payload.error : response.statusText);
+        throw new Error(payload.message ?? payload.error ?? response.statusText);
       }
       return payload as PostDetail;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['public', 'post', slug] });
-      if (nextSlug !== slug) {
+    onSuccess: (saved) => {
+      queryClient.setQueryData(['admin', 'post', saved.slug], saved);
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'blog-posts'] });
+      void queryClient.invalidateQueries({ queryKey: ['public', 'posts'] });
+      void queryClient.invalidateQueries({ queryKey: ['public', 'post'] });
+      if (saved.slug !== slug) {
         void navigate({
           to: '/admin/content/blog/$slug',
-          params: { slug: nextSlug },
+          params: { slug: saved.slug },
           replace: true,
         });
       }
     },
   });
 
-  if (post.isLoading) {
+  if (!isNew && post.isPending) {
     return (
       <section className='admin-page admin-editor-page'>
         <AdminPageHeader title='编辑博客' description='加载文章内容。' />
@@ -117,7 +126,7 @@ function AdminBlogEditorPage() {
     );
   }
 
-  if (post.isError || !post.data) {
+  if (!isNew && (post.isError || !post.data)) {
     return (
       <section className='admin-page'>
         <AdminPageHeader title='编辑博客' description='加载文章内容。' />
@@ -131,8 +140,8 @@ function AdminBlogEditorPage() {
   return (
     <section className='admin-page admin-editor-page'>
       <AdminPageHeader
-        title={title || '编辑博客'}
-        description='维护文章内容、封面和发布信息，保存时保留 blockID。'
+        title={isNew ? '新增文章' : title || '编辑博客'}
+        description={isNew ? '填写标题并撰写正文。留空发布时间可保存为草稿。' : '维护文章内容、封面和发布信息。'}
         action={
           <div className='admin-editor-header-actions'>
             <Link
@@ -141,13 +150,13 @@ function AdminBlogEditorPage() {
             >
               返回列表
             </Link>
-            <Link
+            {!isNew && post.data?.publishedAt ? <Link
               className='admin-button secondary'
               to='/$slug'
-              params={{ slug: nextSlug || slug }}
+              params={{ slug: post.data.slug }}
             >
               预览
-            </Link>
+            </Link> : null}
             <button
               type='button'
               className='admin-button'
@@ -167,7 +176,10 @@ function AdminBlogEditorPage() {
               <span>标题</span>
               <input
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                  if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
+                }}
               />
             </label>
             <div className='admin-editor-title-grid'>
@@ -175,7 +187,7 @@ function AdminBlogEditorPage() {
                 <span>Slug</span>
                 <input
                   value={nextSlug}
-                  onChange={(event) => setNextSlug(event.target.value)}
+                  onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }}
                 />
               </label>
               <label className='admin-field'>
@@ -195,7 +207,7 @@ function AdminBlogEditorPage() {
                 <p>富文本内容会以稳定 blockID 保存，用于评论锚点。</p>
               </div>
             </div>
-            {contentReadySlug === post.data.slug ? (
+            {isNew || contentReadySlug === post.data?.slug ? (
               <RemoteEditorWidget
                 value={content}
                 onChange={setContent}
@@ -320,23 +332,6 @@ function AdminBlogEditorPage() {
       </div>
     </section>
   );
-}
-
-function postToEditorValue(post: PostDetail): RemoteEditorValue {
-  const blocks = post.blocks ?? [];
-  const fromPost = Array.isArray(post.slateJson) ? post.slateJson : null;
-  const fromBlocks = blocks
-    .map((block) =>
-      block.slateJson && typeof block.slateJson === 'object'
-        ? {
-            ...(block.slateJson as EditorBlockNode),
-            portableTextJson: block.portableTextJson,
-          }
-        : block.slateJson,
-    )
-    .filter((block): block is EditorBlockNode => Boolean(block));
-  const result = (fromBlocks.length > 0 ? fromBlocks : fromPost ?? []) as EditorBlockNode[];
-  return withStableBlockIds(result) as RemoteEditorValue;
 }
 
 function toDateTimeLocal(value: string | null) {

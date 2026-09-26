@@ -1,3 +1,5 @@
+import { ADSENSE_DEFAULTS } from './adsense';
+
 /**
  * Settings schema — single source of truth shared by server (API) and web (admin UI).
  *
@@ -53,7 +55,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     description: '站点名称、描述和 SEO 相关配置。',
     fields: [
       { key: 'SITE_NAME', label: '站点名称', type: 'text', placeholder: 'Koya的个人博客' },
-      { key: 'SITE_DESCRIPTION', label: '站点描述', type: 'textarea', placeholder: '小前端，正在搬砖，啥都写点。' },
+      { key: 'SITE_DESCRIPTION', label: '站点描述', type: 'textarea', placeholder: '小全栈，正在搬砖，啥都写点。' },
       { key: 'SITE_KEYWORDS', label: 'SEO 关键词', type: 'text', placeholder: 'blog,前端,技术' },
       { key: 'SITE_URL', label: '站点 URL', type: 'url', placeholder: 'https://example.com' },
       { key: 'SITE_LOGO_URL', label: 'Logo URL', type: 'url', placeholder: 'https://example.com/logo.png' },
@@ -112,6 +114,20 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    title: '广告与变现',
+    description: '保留 AdSense 认证，控制公开页面的广告展示。',
+    fields: [
+      { key: 'ADSENSE_ENABLED', label: '启用广告', type: 'switch', description: '关闭后不再加载广告；账号认证标签和 ads.txt 继续保留。保存后刷新公开页面生效。' },
+      { key: 'ADSENSE_CLIENT_ID', label: 'AdSense 发布商 ID', type: 'text', placeholder: 'ca-pub-3801577709600181', description: '用于账号认证、广告脚本与 ads.txt。' },
+      { key: 'ADSENSE_SLOT_ID', label: '展示广告位 ID', type: 'text', placeholder: '2131063994', description: '沿用旧站的自适应展示广告位。不同页面目前共用此广告位。' },
+      { key: 'ADSENSE_HOME_ENABLED', label: '首页', type: 'switch', description: '近期文章列表之后。' },
+      { key: 'ADSENSE_BLOG_ENABLED', label: '博客列表', type: 'switch', description: '每页第 5 篇文章之后；不足 5 篇时放在列表末尾。' },
+      { key: 'ADSENSE_ARTICLE_ENABLED', label: '文章详情', type: 'switch', description: '正文末尾，不插入段落、代码或表格之间。' },
+      { key: 'ADSENSE_PROJECTS_ENABLED', label: '项目页', type: 'switch', description: '项目列表之后。' },
+      { key: 'ADSENSE_GUESTBOOK_ENABLED', label: '留言墙', type: 'switch', description: '留言列表之后，与留言输入框分开。' },
+    ],
+  },
+  {
     title: '第三方 API',
     description: 'AI、分析等服务密钥。',
     fields: [
@@ -127,6 +143,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
 // ---- defaults --------------------------------------------------------------------
 
 export const SETTINGS_DEFAULTS: Record<string, unknown> = {
+  ...ADSENSE_DEFAULTS,
   UPLOAD_PROVIDER: 'cloudflare',
   UPLOAD_REGION: 'auto',
   UPLOAD_FORCE_PATH_STYLE: false,

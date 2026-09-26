@@ -12,6 +12,7 @@ import { guestbookModule } from './guestbook';
 import { linkPreviewModule } from './link-preview';
 import { mediaModule } from './media';
 import { newsletterModule, newslettersModule } from './newsletter';
+import { newsletterAdminModule } from './newsletter/admin';
 import { postsModule } from './posts';
 import { projectsModule } from './projects';
 import { reactionsModule } from './reactions';
@@ -41,6 +42,7 @@ export const apiModule = new Elysia({ prefix: '/api', aot: false })
   .use(commentsModule)
   .use(projectsModule)
   .use(newsletterModule)
+  .use(newsletterAdminModule)
   .use(newslettersModule)
   .use(reactionsModule)
   .use(activityModule)

@@ -1,8 +1,13 @@
+import { pageHead } from '../lib/seo';
+import { loadPublicQuery } from '../lib/route-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { usePublicProjects } from '../lib/admin-queries';
+import { publicProjectsQueryOptions, usePublicProjects } from '../lib/admin-queries';
 import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+import { AdBanner } from '../lib/adsense';
 
-export const Route = createFileRoute('/projects')({ component: ProjectsPage });
+export const Route = createFileRoute('/projects')({
+  head: () => pageHead('独立开发项目', 'Koya 持续维护的在线工具与实验项目，涵盖 AI 应用、生产力工具和全栈开发实践。', '/projects'),
+  loader: ({ context }) => loadPublicQuery(context.queryClient, publicProjectsQueryOptions()), component: ProjectsPage });
 
 function ProjectsPage() {
   const projects = usePublicProjects();
@@ -14,8 +19,8 @@ function ProjectsPage() {
         <h1>项目</h1>
         <p>一些在线小工具、实验项目和持续维护的作品。</p>
       </header>
-      {projects.isLoading && (
-        <div className='project-list'>
+      {projects.isPending && (
+        <div className='project-list' role='status' aria-label='项目加载中'>
           {Array.from({ length: 4 }).map((_, i) => (
             <div className='project-card' key={i}>
               <span className='project-icon'><Skeleton className='h-10 w-10 rounded-full' /></span>
@@ -36,6 +41,7 @@ function ProjectsPage() {
           ))}
         </div>
       )}
+      {!!projects.data?.length && <AdBanner placement='projects' />}
     </section>
   );
 }

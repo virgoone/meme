@@ -1,0 +1,68 @@
+.admin-shell--studio, .admin-sidebar--studio {
+  --studio-bg: #fcfcfc; --studio-panel: #f7f7f8; --studio-ink: #27272a;
+  --studio-muted: #62626b; --studio-line: #e5e5e8; --studio-hover: #ededf0;
+  --studio-active: #e5eadf; --studio-active-ink: #30401f;
+  --sidebar: var(--studio-panel); --sidebar-foreground: var(--studio-ink);
+  --sidebar-accent: var(--studio-hover); --sidebar-accent-foreground: var(--studio-ink);
+  --sidebar-border: var(--studio-line); --sidebar-ring: #7d984f;
+  --ui-sidebar-radius: 0; --ui-sidebar-border-width: 0px; --ui-sidebar-menu-item-border-width: 0px;
+}
+:root.dark .admin-shell--studio, :root.dark .admin-sidebar--studio {
+  --studio-bg: #101012; --studio-panel: #171719; --studio-ink: #ececee;
+  --studio-muted: #a4a4ad; --studio-line: #2a2a2e; --studio-hover: #252528;
+  --studio-active: #293020; --studio-active-ink: #d1e6b0;
+}
+.admin-shell.admin-shell--studio { display: flex; width: 100%; min-height: 100svh; background: var(--studio-bg); color: var(--studio-ink); }
+.admin-shell--studio .admin-workspace { display: flex; flex-direction: column; width: 100%; min-width: 0; background: var(--studio-bg); }
+.admin-sidebar--studio { border-right: 1px solid var(--studio-line); }
+.admin-sidebar--studio [data-sidebar='sidebar'] { border: 0; border-radius: 0; background: var(--studio-panel); }
+.admin-sidebar--studio [data-sidebar='header'] { padding: 23px 16px 17px; }
+.studio-sidebar-header { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+.studio-brand { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--studio-ink); }
+.studio-brand > img { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+.studio-brand > span { display: grid; gap: 3px; }
+.studio-brand strong { font-size: 14px; font-weight: 650; line-height: 20px; }
+.studio-brand small { color: var(--studio-muted); font-size: 11px; line-height: 16px; }
+.admin-sidebar--studio [data-sidebar='content'] { gap: 13px; padding: 0 10px; }
+.studio-create { padding: 0 0 4px; }
+.studio-create > a { display: flex; justify-content: center; align-items: center; gap: 8px; height: 36px; border: 1px solid var(--studio-line); border-radius: 7px; background: var(--studio-bg); color: var(--studio-ink); font-size: 13px; font-weight: 550; transition: background 160ms ease-out; }
+.studio-create > a:hover { background: var(--studio-hover); }
+.admin-sidebar--studio [data-sidebar='group'] { padding: 0; }
+.admin-sidebar--studio [data-sidebar='group-label'] { height: 27px; padding: 0 10px; margin: 0; color: var(--studio-muted); font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.admin-sidebar--studio [data-sidebar='menu'] { gap: 3px; }
+.admin-sidebar--studio [data-sidebar='menu-button'] { height: 37px; min-height: 37px; padding: 8px 10px; border: 0; border-radius: 7px; color: var(--studio-muted); font-size: 13px; font-weight: 450; line-height: 20px; box-shadow: none; gap: 10px; transition: background 160ms ease-out, color 160ms ease-out; }
+.admin-sidebar--studio [data-sidebar='menu-button'] svg { width: 17px; height: 17px; stroke-width: 1.7; }
+.admin-sidebar--studio [data-sidebar='menu-button']:hover { color: var(--studio-ink); background: var(--studio-hover); }
+.admin-sidebar--studio [data-sidebar='menu-button'][data-active='true'] { background: var(--studio-active); color: var(--studio-active-ink); font-weight: 600; }
+.admin-sidebar--studio [data-sidebar='footer'] { gap: 12px; padding: 14px 10px; border-top: 1px solid var(--studio-line); }
+.studio-account { display: flex; align-items: center; gap: 9px; padding: 3px 3px 1px; }
+.studio-account-avatar { display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: var(--studio-active); color: var(--studio-active-ink); font-size: 12px; font-weight: 600; }
+.studio-account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.studio-account-copy { display: grid; gap: 3px; flex: 1; min-width: 0; }
+.studio-account-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; }
+.studio-account-copy small { color: var(--studio-muted); font-size: 11px; }
+.studio-identity-placeholder { width: 80px; height: 12px; background: var(--studio-hover); border-radius: 4px; }
+.studio-icon-button { display: inline-flex; justify-content: center; align-items: center; width: 34px; height: 34px; padding: 0; flex-shrink: 0; border: 0; border-radius: 6px; background: transparent; color: var(--studio-muted); cursor: pointer; }
+.studio-icon-button:hover { background: var(--studio-hover); color: var(--studio-ink); }
+.studio-signout { align-self: center; }
+.admin-shell--studio .admin-topbar { min-height: 62px; border-bottom: 1px solid var(--studio-line); padding: 0 28px; background: var(--studio-bg); }
+.studio-topbar-location { display: flex; align-items: center; gap: 17px; min-width: 0; }
+.admin-shell--studio .admin-topbar nav { gap: 10px; font-size: 12px; color: var(--studio-muted); }
+.admin-shell--studio .admin-topbar nav [aria-current] { color: var(--studio-ink); font-weight: 500; }
+.admin-shell--studio .admin-main { width: 100%; min-width: 0; padding: 28px; }
+.admin-shell--studio .admin-page { min-width: 0; }
+.admin-shell--studio :is(button,a):focus-visible, .admin-sidebar--studio :is(button,a):focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: 3px; }
+.admin-shell--studio [data-collapsible='icon'] [data-sidebar='header'] { padding: 23px 16px 17px; }
+.admin-shell--studio [data-collapsible='icon'] [data-sidebar='group-label'] { display: none; }
+.admin-shell--studio [data-collapsible='icon'] [data-sidebar='content'] { gap: 20px; padding: 0 12px; }
+.admin-shell--studio [data-collapsible='icon'] [data-sidebar='menu-button'] { width: 40px !important; height: 37px !important; padding: 10px !important; }
+.admin-shell--studio [data-collapsible='icon'] .studio-account { justify-content: center; }
+.admin-sidebar--studio[data-mobile='true'] { --sidebar-width: 17.5rem !important; max-width: 85vw; background: var(--studio-panel); color: var(--studio-ink); border: 0; border-right: 1px solid var(--studio-line); border-radius: 0; box-shadow: 8px 0 28px #0002; }
+@media (max-width: 767px) {
+  .admin-shell--studio .admin-topbar { min-height: 58px; padding: 0 16px; }
+  .admin-shell--studio .admin-main { padding: 22px 16px; }
+  .studio-topbar-location { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell--studio *, .admin-sidebar--studio * { transition: none !important; animation: none !important; }
+}

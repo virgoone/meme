@@ -15,6 +15,14 @@ const baseURL = (
 export const authClient = createAuthClient({
   ...(baseURL ? { baseURL } : {}),
   basePath: '/api/auth',
+  sessionOptions: {
+    // The singleton already shares one session atom across all useSession calls.
+    // Keep focus refresh and Better Auth's built-in throttling, plus periodic,
+    // reconnect, and auth mutation/broadcast synchronization.
+    refetchOnWindowFocus: true,
+    refetchInterval: 300,
+    refetchWhenOffline: false,
+  },
   plugins: [
     emailOTPClient(),
     inferAdditionalFields<Auth>({ user: { role: { type: 'string' } } }),

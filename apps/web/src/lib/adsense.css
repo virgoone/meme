@@ -1,0 +1,9 @@
+.blog-ad { width: 100%; min-width: 0; margin: 40px auto; padding: 16px 0; text-align: center; }
+.blog-ad-label { display: block; margin-bottom: 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.legacy-blog-grid > .blog-ad { margin: 20px 0; }
+.legacy-home > .blog-ad { width: min(100% - 64px, 1120px); }
+.blog-ad:has(ins[data-ad-status='unfilled']) { display: none; }
+@media (max-width: 640px) {
+  .blog-ad { margin-block: 28px; padding-block: 12px; }
+  .legacy-home > .blog-ad { width: calc(100% - 32px); }
+}

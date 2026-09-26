@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Send } from 'lucide-react';
 
 import { DataTableSkeleton } from '@bunship-ai/data-table';
 
@@ -15,9 +16,9 @@ function AdminSubscribersPage() {
 
   return (
     <section className='admin-page'>
-      <AdminPageHeader title='订阅' description='邮件订阅用户和确认状态。' />
+      <AdminPageHeader title='订阅' description='管理读者订阅，把最近的文章整理成一封邮件。' action={<Link to='/admin/newsletters/new' className='admin-button' style={{ gap: 8 }}><Send size={15} />发送最近更新</Link>} />
 
-      {subscribers.isLoading ? (
+      {subscribers.isPending ? (
         <DataTableSkeleton columnCount={3} rowCount={10} />
       ) : subscribers.isError ? (
         <p className='admin-error'>
@@ -42,10 +43,10 @@ function AdminSubscribersPage() {
             />
           </div>
           <AdminTable
-            columns={['Email', 'Status', '订阅时间']}
+            columns={['邮箱', '订阅状态', '订阅时间']}
             rows={subscribers.data.map((subscriber) => [
               subscriber.email ?? `Subscriber #${subscriber.id}`,
-              subscriber.subscribedAt ? 'subscribed' : 'pending',
+              subscriber.unsubscribedAt ? '已退订' : subscriber.subscribedAt ? '已订阅' : '待确认',
               subscriber.subscribedAt
                 ? formatDate(subscriber.subscribedAt)
                 : formatDate(subscriber.updatedAt),
@@ -58,7 +59,7 @@ function AdminSubscribersPage() {
 }
 
 function subscribedRows(rows: Subscriber[]) {
-  return rows.filter((row) => row.subscribedAt);
+  return rows.filter((row) => row.subscribedAt && !row.unsubscribedAt);
 }
 
 function countSubscribedToday(rows: Subscriber[]) {

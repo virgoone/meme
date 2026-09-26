@@ -1,0 +1,62 @@
+/* Grid's automatic minimum used the unwrapped toolbar width for the entire
+   editor track, so the card clipped paragraphs before they could wrap. */
+.admin-editor-page,
+.admin-editor-canvas,
+.admin-editor-card {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.admin-editor-page > *,
+.admin-editor-page .admin-page-header > *,
+.admin-editor-canvas > *,
+.admin-editor-title-grid > *,
+.admin-plate-editor,
+.admin-plate-editor .editor-widget-host,
+.admin-plate-editor bunship-editor,
+.admin-plate-editor bunship-editor > div,
+.admin-plate-editor .bwe-widget-root {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-plate-editor [data-slate-editor='true'] {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.admin-plate-editor [role='toolbar'] {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.admin-editor-page .admin-field input,
+.admin-editor-page .admin-field textarea {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  .admin-editor-page .admin-editor-workbench {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-editor-page .admin-page-header,
+  .admin-editor-page .admin-editor-title-grid,
+  .admin-editor-page .admin-editor-inspector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-editor-page .admin-page-header h1 {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

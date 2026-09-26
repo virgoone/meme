@@ -7,6 +7,17 @@ import {
 } from './block-id';
 
 describe('editor block ids', () => {
+  test('Enter-created paragraphs get unique stable ids without moving the original anchor', () => {
+    const blocks = withStableBlockIds([
+      { id: 'original', blockId: 'original', blockID: 'original', children: [{ text: 'First' }] },
+      { id: 'new-slate-id', blockId: 'original', blockID: 'original', children: [{ text: 'Second' }] },
+      { id: 'original', blockId: 'original', blockID: 'original', children: [{ text: 'Third' }] },
+    ]);
+    expect(blocks[0].id).toBe('original');
+    expect(blocks[1].id).toBe('new-slate-id');
+    expect(new Set(blocks.map((block) => block.id)).size).toBe(3);
+    expect(withStableBlockIds(blocks)).toEqual(blocks);
+  });
   test('preserves existing Sanity-derived ids', () => {
     const [block] = withStableBlockIds([
       {

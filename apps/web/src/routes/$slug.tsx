@@ -1,12 +1,34 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { articleHead, privateHead } from '../lib/seo';
+import { loadPublicQuery } from '../lib/route-query';
+import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router';
+import { normalizePage } from '@meme/shared';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { usePost, usePostComments, usePostReactions, type PostDetail } from '../lib/admin-queries';
-import { addComment, blogPostState, type CommentDto } from '../lib/blog-post-state';
+import { postQueryOptions, usePost, usePostComments, usePostReactions, type PostDetail } from '../lib/admin-queries';
+import { blogPostState, selectCommentPost, setPostComments } from '../lib/blog-post-state';
 import { Commentable } from '../lib/commentable';
 import { formatDate, moodEmoji, moodLabel } from '../lib/format';
 import { CalendarIcon, CursorClickIcon, HourglassIcon, UTurnLeftIcon } from '../lib/icons';
+import { LoadingImage } from '../lib/loading-image';
+import { SlatePostBlock } from '../lib/slate-post-block';
+import { BlogPostPageSkeleton } from '../lib/page-skeletons';
+import { ArticleCodeBlock } from '../lib/article-code-block';
+import '../lib/article-content.css';
+import { usePostViews } from '../lib/page-views';
+import { legacyCode, legacyListFormats, type LegacyListFormat } from '../lib/legacy-post-format';
+import { AdBanner } from '../lib/adsense';
 
-export const Route = createFileRoute('/$slug')({ component: BlogPostPage });
+export const Route = createFileRoute('/$slug')({
+  loader: async ({ context, params }) => {
+    try { return await loadPublicQuery(context.queryClient, postQueryOptions(params.slug)); }
+    catch (error) {
+      if ((error as { statusCode?: number }).statusCode === 404) throw notFound();
+      throw error;
+    }
+  },
+  head: ({ loaderData }) => loaderData ? articleHead(loaderData) : privateHead(),
+  notFoundComponent: () => <section className='content-page'><h1>文章不存在</h1><p>这篇文章可能已移动或尚未发布。</p><Link to='/blog'>查看全部文章</Link></section>,
+  component: BlogPostPage,
+});
 
 export type { PostDetail };
 
@@ -15,90 +37,61 @@ function BlogPostPage() {
   const post = usePost(slug);
   return (
     <article className='article-page'>
-      {post.isLoading && <BlogPostPageSkeleton />}
+      {post.isPending && <BlogPostPageSkeleton />}
       {post.isError && <p className='state-text state-text--error'>{post.error instanceof Error ? post.error.message : String(post.error)}</p>}
       {post.data && <PostContent post={post.data} />}
     </article>
   );
 }
 
-export function BlogPostPageSkeleton() {
-  return (
-    <div className='legacy-article-skeleton' role='status' aria-label='文章加载中'>
-      <aside className='legacy-article-skeleton__toc' aria-hidden='true'>
-        <span />
-        <span />
-        <span />
-        <span />
-      </aside>
-      <main className='legacy-article-skeleton__main' aria-hidden='true'>
-        <span className='legacy-article-skeleton__cover' />
-        <div className='legacy-article-skeleton__meta'>
-          <span />
-          <span />
-        </div>
-        <span className='legacy-article-skeleton__title' />
-        <span className='legacy-article-skeleton__title short' />
-        <span className='legacy-article-skeleton__lead' />
-        <div className='legacy-article-skeleton__body'>
-          {Array.from({ length: 8 }).map((_, index) => (
-            <span key={index} />
-          ))}
-        </div>
-      </main>
-      <aside className='legacy-article-skeleton__reactions' aria-hidden='true'>
-        <span />
-        <span />
-        <span />
-        <span />
-      </aside>
-    </div>
-  );
-}
-
 export function PostContent({ post }: { post: PostDetail }) {
+  const archivePage = useRouterState({ select: state => normalizePage((state.location.state as { blogArchivePage?: unknown }).blogArchivePage) });
+  const views = usePostViews(post.id, post.slug);
   const blocks = post.blocks ?? [];
+  const listFormats = legacyListFormats(blocks.map(block => block.portableTextJson));
   const outline = useMemo(() => getOutline(blocks), [blocks]);
   const comments = usePostComments(post.id);
   const commentsEnabled = true;
 
-  useEffect(() => { blogPostState.postId = post.id; }, [post.id]);
   useEffect(() => {
-    if (comments.data && Array.isArray(comments.data)) {
-      comments.data.forEach((c) => {
-        addComment(c as unknown as CommentDto);
-      });
-    }
-  }, [comments.data]);
+    selectCommentPost(post.id);
+    return () => { if (blogPostState.postId === post.id) selectCommentPost(''); };
+  }, [post.id]);
+  useEffect(() => {
+    if (comments.data) setPostComments(post.id, comments.data);
+  }, [post.id, comments.data]);
 
   return (
     <div className='legacy-article-layout'>
       <aside className='legacy-article-toc-wrap'><div className='legacy-article-toc-sticky'><ArticleTableOfContents outline={outline} /></div></aside>
       <div className='legacy-article-main'>
-        <Link to='/blog' className='legacy-back-button' aria-label='返回博客页面'><UTurnLeftIcon /></Link>
+        <Link to='/blog' search={{ page: archivePage > 1 ? archivePage : undefined }} className='legacy-back-button' aria-label='返回博客页面'><UTurnLeftIcon /></Link>
         <article data-postid={post.id}>
           <header className='legacy-article-header'>
-            {post.coverImageUrl && (<div className='legacy-article-cover'><div aria-hidden='true'><img src={post.coverImageUrl} alt='' /></div><img src={post.coverImageUrl} alt={post.title} /></div>)}
+            {post.coverImageUrl && (<div className='legacy-article-cover'><LoadingImage src={post.coverImageUrl} alt={post.title} loading='eager' fill /></div>)}
             <div className='legacy-article-meta'>
+              <Link to='/about' className='article-author' rel='author'>Koya</Link>
               <time dateTime={post.publishedAt ?? undefined}><CalendarIcon /><span>{formatDate(post.publishedAt)}</span></time>
               <span><span className='legacy-mood-emoji' aria-hidden='true'>{moodEmoji(post.mood)}</span><span>{moodLabel(post.mood)}</span></span>
             </div>
             <h1>{post.title}</h1>
             {post.description && <p>{post.description}</p>}
             <div className='legacy-article-submeta'>
-              <span title='0'><CursorClickIcon /><span>0次点击</span></span>
+              <span title={views.data ? `${views.data.views}次浏览` : undefined}><CursorClickIcon /><span>{views.data ? Intl.NumberFormat('en-US').format(views.data.views) : '—'}次点击</span></span>
               <span><HourglassIcon /><span>{Math.round(post.readingTime ?? 0)}分钟阅读</span></span>
             </div>
           </header>
+          {comments.isError && <p className='state-text state-text--error' role='alert'>评论暂时加载失败。<button type='button' onClick={() => void comments.refetch()}>重新加载评论</button></p>}
           <div className='legacy-prose'>
-            {blocks.length === 0 ? <p className='state-text'>这篇文章还没有导入正文。</p> : blocks.map((block) => (
-              <div key={block.blockId} className='group relative'>
-                <PostBlockView block={block} />
-                {commentsEnabled && <Commentable blockId={block.blockId} />}
+            {blocks.length === 0 ? <p className='state-text'>这篇文章还没有导入正文。</p> : blocks.map((block, index) => (
+              <div key={block.blockId} className='group relative article-block'>
+                <PostBlockView block={block} listFormat={listFormats[index]} />
+                {commentsEnabled && <Commentable postId={post.id} blockId={block.blockId} />}
               </div>
             ))}
           </div>
         </article>
+        {blocks.length > 0 && <AdBanner placement='article' />}
       </div>
       <aside className='legacy-article-reactions-wrap'><div className='legacy-article-reactions-sticky'><ArticleReactions id={post.id} mood={post.mood} /></div></aside>
     </div>
@@ -106,7 +99,7 @@ export function PostContent({ post }: { post: PostDetail }) {
 }
 
 type OutlineNode = { id: string; style: 'h1'|'h2'|'h3'|'h4'; text: string };
-type PostBlock = { blockId: string; sortIndex?: number; type?: string; plainText?: string | null; portableTextJson?: unknown };
+type PostBlock = { blockId: string; sortIndex?: number; type?: string; plainText?: string | null; portableTextJson?: unknown; slateJson?: unknown };
 
 function ArticleTableOfContents({ outline }: { outline: OutlineNode[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -162,16 +155,17 @@ function portableTextStyle(v: unknown): string { if (!v||typeof v!=='object') re
 function portableTextText(v: unknown): string { if (!v||typeof v!=='object') return ''; const c = (v as {children?:unknown}).children; if (!Array.isArray(c)) return ''; return c.map((ch) => ch&&typeof ch==='object'&&'text' in ch?String((ch as {text?:unknown}).text??''):'').join(''); }
 function prettifyNumber(v: number) { return v>=1000?`${Number((v/1000).toFixed(1))}k`:String(v); }
 
-function PostBlockView({ block }: { block: PostBlock }) {
-  const t = block.type ?? '';
-  if (t==='code') return (<pre className='code-block' data-block-id={block.blockId}><code>{block.plainText ?? stringifyBlock(block.portableTextJson)}</code></pre>);
-  if (isImageBlock(block)) { const u = sanityImageUrl(block.portableTextJson); return (<figure className='image-block' data-block-id={block.blockId}>{u ? <img src={u} alt={block.plainText??''} loading='lazy' /> : <div>Image</div>}{block.plainText && <figcaption>{block.plainText}</figcaption>}</figure>); }
+function PostBlockView({ block, listFormat }: { block: PostBlock; listFormat?: LegacyListFormat }) {
+  if ((block.portableTextJson as { _type?: string } | null)?._type === 'slate' && block.slateJson) return <SlatePostBlock value={block.slateJson} blockId={block.blockId} />;
+  const code = legacyCode(block.portableTextJson, block.type, block.plainText);
+  if (code) return <ArticleCodeBlock blockId={block.blockId} {...code} />;
+  if (isImageBlock(block)) { const u = sanityImageUrl(block.portableTextJson); const alt = (block.portableTextJson as { alt?: string } | null)?.alt; return (<figure className='image-block' data-block-id={block.blockId}>{u ? <LoadingImage src={u} alt={alt || block.plainText || ''} /> : <div>Image</div>}{block.plainText && <figcaption>{block.plainText}</figcaption>}</figure>); }
   const text = block.plainText ?? stringifyBlock(block.portableTextJson); if (!text.trim()) return null;
   const st = portableTextStyle(block.portableTextJson); const children = renderPortableTextChildren(block.portableTextJson);
   if (isHeadingStyle(st)) { const H = st; return (<H id={block.blockId} data-block-id={block.blockId}><a href={`#${block.blockId}`}>{text}</a></H>); }
   if (st==='blockquote') return <blockquote data-block-id={block.blockId}>{children}</blockquote>;
   const li = portableTextListItem(block.portableTextJson);
-  if (li==='bullet'||li==='number') { const L = li==='number'?'ol':'ul'; return (<L data-block-id={block.blockId}><li>{children}</li></L>); }
+  if (li==='bullet'||li==='number') { const L = li==='number'?'ol':'ul'; return (<L start={listFormat?.start} style={{ marginInlineStart: `${((listFormat?.level ?? 1) - 1) * 1.25}rem` }} data-block-id={block.blockId}><li>{children}</li></L>); }
   return <p data-block-id={block.blockId}>{children}</p>;
 }
 function isImageBlock(b: PostBlock) { if (b.type==='image') return true; const v=b.portableTextJson; if (!v||typeof v!=='object') return false; return (v as {_type?:unknown})._type==='image'&&sanityImageUrl(v)!==null; }

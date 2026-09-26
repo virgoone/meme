@@ -1,3 +1,4 @@
+import type { Fetcher, D1Database, R2Bucket, KVNamespace } from "@cloudflare/workers-types";
 export type WorkerEnv = {
   ASSETS?: Fetcher;
   DB: D1Database;

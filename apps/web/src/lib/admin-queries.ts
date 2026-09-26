@@ -1,12 +1,28 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import type { AdSenseConfig, PostPage } from '@meme/shared';
 
 // ---- generic fetch helpers -------------------------------------------------------
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url, { headers: { accept: 'application/json' } });
-  if (!r.ok) throw new Error(await r.text());
+const readJson = createIsomorphicFn()
+ .server(async (url: string): Promise<unknown> => {
+   const { readPublicData } = await import('./public-data.server');
+   return readPublicData(url);
+ })
+ .client(async (url: string): Promise<unknown> => {
+  const r = await fetch(url, { headers: { accept: 'application/json' }, ...(url === '/api/public-config' ? { cache: 'no-cache' as const } : {}) });
+  if (!r.ok) throw Object.assign(new Error(await r.text()), { statusCode: r.status });
   return r.json();
+ });
+
+async function fetchJson<T>(url: string): Promise<T> {
+  return await readJson(url) as T;
 }
+
+export type PublicConfig = { gaMeasurementId: string | null; googleSiteVerification: string | null; analyticsOrigin: string | null; adsense: AdSenseConfig };
+export const publicConfigQueryOptions = () => queryOptions({
+  queryKey: ['public', 'config'], queryFn: () => fetchJson<PublicConfig>('/api/public-config'), staleTime: 5 * 60_000,
+});
 
 async function putJson<T>(url: string, body: unknown): Promise<T> {
   const r = await fetch(url, {
@@ -77,7 +93,7 @@ export function useAdminGuestbook() {
 export function useAdminBlogPosts() {
   return useQuery({
     queryKey: ['admin', 'blog-posts'],
-    queryFn: () => fetchJson<BlogPost[]>('/api/posts?limit=200'),
+    queryFn: () => fetchJson<BlogPost[]>('/api/admin/posts?limit=100'),
     staleTime: 30_000,
   });
 }
@@ -143,6 +159,7 @@ export function useUpdateAdminSettings() {
       putJson<Record<string, unknown>>('/api/admin/settings', values),
     onSuccess: (data) => {
       queryClient.setQueryData(['admin', 'settings'], data);
+      void queryClient.invalidateQueries({ queryKey: ['public', 'config'] });
     },
   });
 }
@@ -220,6 +237,8 @@ export type ProjectInput = {
 };
 
 export type Newsletter = {
+  campaignId?: string | null;
+  campaignStatus?: 'draft' | 'sending' | 'sent' | null;
   id: number;
   subject: string | null;
   body: string | null;
@@ -232,7 +251,7 @@ export type Newsletter = {
 export type SiteStats = {
   totalPageViews: number;
   subscriberCount: number;
-  lastVisitor: {
+  lastVisitor: null | {
     country: string;
     city?: string;
     flag: string;
@@ -250,6 +269,7 @@ export function useSiteStats() {
 // ---- public page hooks -----------------------------------------------------------
 
 export type PostCardItem = {
+  views?: number;
   id: string;
   title: string;
   slug: string;
@@ -261,28 +281,43 @@ export type PostCardItem = {
   mainImageUrl?: string | null;
 };
 
-export function useHomePosts() {
-  return useQuery({
+export function homePostsQueryOptions() {
+  return queryOptions({
     queryKey: ['public', 'posts', { limit: 5 }],
     queryFn: () => fetchJson<PostCardItem[]>('/api/posts?limit=5'),
+    retryOnMount: false,
     staleTime: 60_000,
   });
 }
 
-export function useBlogPosts() {
-  return useQuery({
-    queryKey: ['public', 'posts', { limit: 20 }],
-    queryFn: () => fetchJson<PostCardItem[]>('/api/posts?limit=20'),
+export function useHomePosts() {
+  return useQuery(homePostsQueryOptions());
+}
+
+export function blogPostsQueryOptions(page = 1) {
+  return queryOptions({
+    queryKey: ['public', 'posts', { page }],
+    queryFn: () => fetchJson<PostPage<PostCardItem>>(`/api/posts?page=${page}`),
+    retryOnMount: false,
     staleTime: 60_000,
+  });
+}
+
+export function useBlogPosts(page = 1) {
+  return useQuery(blogPostsQueryOptions(page));
+}
+
+export function publicProjectsQueryOptions() {
+  return queryOptions({
+    queryKey: ['public', 'projects'],
+    queryFn: () => fetchJson<PublicProject[]>('/api/projects?limit=200'),
+    retryOnMount: false,
+    staleTime: 3 * 60_000,
   });
 }
 
 export function usePublicProjects() {
-  return useQuery({
-    queryKey: ['public', 'projects'],
-    queryFn: () => fetchJson<PublicProject[]>('/api/projects?limit=200'),
-    staleTime: 3 * 60_000,
-  });
+  return useQuery(publicProjectsQueryOptions());
 }
 
 export type PublicProject = {
@@ -294,12 +329,17 @@ export type PublicProject = {
   createdAt: string | null;
 };
 
-export function usePublicGuestbook() {
-  return useQuery({
+export function publicGuestbookQueryOptions() {
+  return queryOptions({
     queryKey: ['public', 'guestbook'],
     queryFn: () => fetchJson<PublicGuestbookEntry[]>('/api/guestbook?limit=50'),
+    retryOnMount: false,
     staleTime: 30_000,
   });
+}
+
+export function usePublicGuestbook() {
+  return useQuery(publicGuestbookQueryOptions());
 }
 
 export type PublicGuestbookEntry = {
@@ -348,7 +388,7 @@ export type ConfirmationResult = { status: 'success' };
 export function usePostComments(postId: string) {
   return useQuery({
     queryKey: ['public', 'comments', postId],
-    queryFn: () => fetchJson<CommentDto[]>(`/api/comments/${encodeURIComponent(postId)}`),
+    queryFn: () => fetchJson<import('./blog-post-state').CommentDto[]>(`/api/comments/${encodeURIComponent(postId)}`),
     staleTime: 30_000,
     enabled: !!postId,
   });
@@ -377,6 +417,7 @@ export function usePostReactions(postId: string) {
 // ---- admin editor (single-post load + save) --------------------------------------
 
 export type PostDetail = {
+  updatedAt?: string | null;
   id: string;
   title: string;
   slug: string;
@@ -397,11 +438,25 @@ export type PostDetail = {
   slateJson?: unknown;
 };
 
+export function postQueryOptions(slug: string) {
+  return queryOptions({
+    queryKey: ['public', 'post', slug],
+    queryFn: () => fetchJson<PostDetail>(`/api/posts/${encodeURIComponent(slug)}`),
+    retryOnMount: false,
+    staleTime: 2 * 60_000,
+  });
+}
+
 export function usePost(slug: string) {
+  return useQuery(postQueryOptions(slug));
+}
+
+export function useAdminPost(slug: string) {
   return useQuery({
     queryKey: ['admin', 'post', slug],
-    queryFn: () => fetchJson<PostDetail>(`/api/posts/${encodeURIComponent(slug)}`),
+    queryFn: () => fetchJson<PostDetail>(`/api/admin/posts/${encodeURIComponent(slug)}`),
     staleTime: 2 * 60_000,
     enabled: !!slug,
+    refetchOnWindowFocus: false,
   });
 }

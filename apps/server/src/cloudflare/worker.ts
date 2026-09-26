@@ -68,7 +68,14 @@ export default {
 
     try {
       const webServer = await loadWebServer();
-      return await webServer.fetch(request, env);
+      const response = await webServer.fetch(request, env);
+      if (/^\/(admin|login|confirm|newsletters)(\/|$)/.test(url.pathname) || response.status >= 400) {
+        const headers = new Headers(response.headers);
+        headers.set('x-robots-tag', 'noindex, nofollow');
+        headers.set('cache-control', 'private, no-store');
+        return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+      }
+      return response;
     } catch (error) {
       if (env.ASSETS) {
         const assetResponse = await env.ASSETS.fetch(request);

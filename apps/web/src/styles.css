@@ -6,6 +6,29 @@
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
 
+/* Loading surfaces do not rely on the optional shared Tailwind theme plugin. */
+[data-slot='skeleton'],
+.image-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--skeleton-base);
+}
+
+[data-slot='skeleton']::before,
+.image-skeleton::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, transparent, var(--skeleton-highlight), transparent);
+  transform: translateX(-100%);
+  animation: loading-sweep 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-sweep {
+  to { transform: translateX(100%); }
+}
+
 :root {
   color: #27272a;
   background: #fafafa;
@@ -24,6 +47,8 @@
   --accent: #84cc16;
   --accent-strong: #4d7c0f;
   --shadow: 0 18px 50px rgba(24, 24, 27, 0.08);
+  --skeleton-base: #e4e4e7;
+  --skeleton-highlight: rgba(255, 255, 255, 0.55);
 }
 
 :root.dark {
@@ -39,6 +64,8 @@
   --accent: #a3e635;
   --accent-strong: #bef264;
   --shadow: 0 20px 70px rgba(0, 0, 0, 0.34);
+  --skeleton-base: #303034;
+  --skeleton-highlight: rgba(255, 255, 255, 0.09);
 }
 
 * {
@@ -738,7 +765,6 @@ p {
   line-height: 1.6;
   outline: none;
   padding: 3px 0 0;
-  transition: height 160ms ease;
 }
 
 .legacy-guestbook-input textarea::placeholder {
@@ -936,7 +962,7 @@ p {
   width: 160px;
   height: 10px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--muted) 18%, transparent);
+  background: var(--skeleton-base);
 }
 
 .line-placeholder.short {
@@ -6279,7 +6305,7 @@ p {
   border-radius: 999px;
   background:
     linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent),
-    color-mix(in srgb, var(--muted) 16%, transparent);
+    var(--skeleton-base);
   background-size: 220% 100%, auto;
   animation: skeleton-shimmer 1.25s ease-in-out infinite;
 }
@@ -6299,7 +6325,7 @@ p {
 :root.dark .editor-widget-skeleton span {
   background:
     linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent),
-    color-mix(in srgb, var(--muted) 18%, transparent);
+    var(--skeleton-base);
   background-size: 220% 100%, auto;
 }
 
@@ -7296,7 +7322,8 @@ body {
 
 .legacy-post-card--skeleton .legacy-post-card__image,
 .legacy-post-card--skeleton .skeleton-line {
-  background: color-mix(in srgb, var(--muted) 16%, transparent);
+  background: linear-gradient(90deg, transparent, var(--skeleton-highlight), transparent), var(--skeleton-base);
+  background-size: 220% 100%, auto;
 }
 
 @keyframes status-breathe {

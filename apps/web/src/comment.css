@@ -64,7 +64,7 @@
 
 @media (max-width: 760px) {
   .comment-block-trigger {
-    right: -1.65rem;
+    right: 0.15rem;
     transform: translateX(0);
   }
 
@@ -72,12 +72,6 @@
     width: 1.4rem;
     height: 1.4rem;
     background: rgba(255, 255, 255, 0.92);
-  }
-}
-
-@media (max-width: 520px) {
-  .comment-block-trigger {
-    right: 0.15rem;
   }
 }
 

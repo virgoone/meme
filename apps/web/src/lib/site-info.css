@@ -1,0 +1,25 @@
+.site-info-page {
+  width: min(100%, 740px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 64px) 0 48px;
+  overflow-wrap: anywhere;
+}
+.site-info-header { margin-bottom: 40px; }
+.site-info-home { color: var(--muted); font-size: 14px; }
+.site-info-header h1 { margin: 20px 0 16px; font-size: clamp(32px, 5vw, 48px); line-height: 1.25; letter-spacing: -.03em; }
+.site-info-header > p { color: var(--muted); font-size: 18px; line-height: 1.8; }
+.site-info-body { font-size: 16px; line-height: 1.95; }
+.site-info-body section + section { margin-top: 36px; }
+.site-info-body h2 { margin: 0 0 12px; font-size: 21px; line-height: 1.5; letter-spacing: -.015em; }
+.site-info-body p { margin: 0 0 16px; }
+.site-info-body a { color: var(--accent-strong); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.site-info-updated { color: var(--muted); font-size: 14px; margin-bottom: 32px !important; }
+.site-info-links { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-top: 16px; color: var(--muted); font-size: 13px; }
+.site-info-links a:hover, .site-info-home:hover { color: var(--text); }
+.article-author { color: inherit; text-underline-offset: 4px; }
+.article-author:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .site-info-header { margin-bottom: 32px; }
+  .site-info-header > p { font-size: 16px; }
+  .site-info-body { line-height: 1.85; }
+}

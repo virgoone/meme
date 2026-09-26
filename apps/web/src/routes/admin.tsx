@@ -1,3 +1,4 @@
+import { privateHead } from '../lib/seo';
 import {
   createFileRoute,
   Link,
@@ -13,8 +14,11 @@ import {
 } from '../lib/admin-queries';
 import { AdminPageHeader, StatCard } from '../lib/admin-ui';
 import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+import { AdminContentSkeleton } from '../lib/page-skeletons';
 
 export const Route = createFileRoute('/admin')({
+  head: privateHead,
+
   component: AdminRoute,
 });
 
@@ -50,6 +54,9 @@ function AdminPage({
   subscribers: ReturnType<typeof useAdminSubscribers>;
   guestbook: ReturnType<typeof useAdminGuestbook>;
 }) {
+  if (health.isPending || comments.isPending || subscribers.isPending || guestbook.isPending) {
+    return <AdminContentSkeleton />;
+  }
   return (
     <section className='admin-page'>
       <AdminPageHeader title='仪表盘' description='站点内容和迁移数据概览。' />
@@ -60,7 +67,7 @@ function AdminPage({
           title='总订阅'
           value={
             subscribers.data
-              ? subscribers.data.filter((s) => s.subscribedAt).length
+              ? subscribers.data.filter((s) => s.subscribedAt && !s.unsubscribedAt).length
               : '-'
           }
         />
@@ -72,7 +79,7 @@ function AdminPage({
           <div className='admin-card__header'>
             <h2>服务状态</h2>
           </div>
-          {health.isLoading ? (
+          {health.isPending ? (
             <Skeleton className='h-20 w-full' />
           ) : health.isError ? (
             <p className='admin-error'>
@@ -99,7 +106,7 @@ function AdminPage({
             <Link to='/admin/content/project'>项目列表</Link>
             <Link to='/admin/comments'>评论</Link>
             <Link to='/admin/subscribers'>订阅</Link>
-            <Link to='/admin/newsletters'>Newsletters</Link>
+            <Link to='/admin/newsletters'>邮件记录</Link>
             <Link to='/admin/settings'>站点设置</Link>
           </div>
         </section>

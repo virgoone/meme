@@ -2,6 +2,7 @@ import { Elysia } from 'elysia';
 
 import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
 import { rateLimit } from '../shared';
+import { unsubscribeNewsletter } from './campaign';
 import {
   confirmNewsletterToken,
   getNewsletterById,
@@ -10,6 +11,8 @@ import {
 } from './service';
 
 export const newsletterModule = new Elysia({ prefix: '/newsletter' })
+  .get('/unsubscribe/:token', ({ params }) => unsubscribeNewsletter(getCloudflareRuntimeEnv(), params.token, false))
+  .post('/unsubscribe/:token', ({ params }) => unsubscribeNewsletter(getCloudflareRuntimeEnv(), params.token, true))
   .post('/', async ({ body, request }) => {
     const limited = await rateLimit(request, 'newsletter', {
       limit: 5,

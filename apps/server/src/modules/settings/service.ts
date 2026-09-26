@@ -1,4 +1,4 @@
-import { ALL_SETTINGS_KEYS, SETTINGS_DEFAULTS } from '@meme/shared';
+import { ALL_SETTINGS_KEYS, SETTINGS_DEFAULTS, validateAdSenseSettings } from '@meme/shared';
 import {
   createD1Database,
   settings,
@@ -7,6 +7,7 @@ import {
 import { eq } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
+import { AppError } from '../../middleware/errorHandler';
 
 export async function getAllSettings(env: WorkerEnv): Promise<Record<string, unknown>> {
   const db = createD1Database(env.DB);
@@ -27,6 +28,8 @@ export async function upsertSettings(
   env: WorkerEnv,
   input: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
+  const adsenseError = validateAdSenseSettings(input);
+  if (adsenseError) throw AppError.badRequest(adsenseError);
   const db = createD1Database(env.DB);
   const known = new Set<string>(ALL_SETTINGS_KEYS);
 

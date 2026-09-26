@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 
 import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
 import { AuthPlugin } from '../../plugins/auth';
+import { AppError } from '../../middleware/errorHandler';
 import { clampLimit, rateLimit } from '../shared';
 import { createGuestbookEntry, listGuestbookEntries } from './service';
 
@@ -13,6 +14,7 @@ export const guestbookModule = new Elysia({ prefix: '/guestbook' })
   .post(
     '/',
     async ({ body, request, user }) => {
+      if (!user.name?.trim()) throw AppError.badRequest('请先设置公开昵称，再发送留言。');
       const limited = await rateLimit(request, 'guestbook', {
         limit: 5,
         windowSeconds: 60,

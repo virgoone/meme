@@ -1,4 +1,4 @@
-import { emailOtp, signIn } from '@meme/auth/client';
+import { authClient, emailOtp, signIn } from '@meme/auth/client';
 import { useState } from 'react';
 
 type AuthFormProps = {
@@ -8,8 +8,9 @@ type AuthFormProps = {
 export function AuthForm({ onSuccess }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'verifying'>(
+  const [name, setName] = useState('');
+  const [step, setStep] = useState<'email' | 'otp' | 'profile'>('email');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'verifying' | 'saving'>(
     'idle',
   );
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,25 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
       setError(result.error.message ?? '验证码错误或已过期。');
       return;
     }
+    if (!result.data?.user.name?.trim()) {
+      setStep('profile');
+      return;
+    }
     onSuccess?.();
+  }
+
+  async function saveName(event: React.FormEvent) {
+    event.preventDefault();
+    if (!name.trim()) { setError('请填写公开昵称。'); return; }
+    setStatus('saving');
+    setError(null);
+    try {
+      const result = await authClient.updateUser({ name: name.trim() });
+      if (result.error) throw new Error(result.error.message || '昵称保存失败，请重试。');
+      onSuccess?.();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '昵称保存失败，请重试。');
+    } finally { setStatus('idle'); }
   }
 
   return (
@@ -68,6 +87,12 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
           >
             {status === 'sending' ? '发送中...' : '发送验证码'}
           </button>
+        </form>
+      ) : step === 'profile' ? (
+        <form className='auth-form' onSubmit={saveName}>
+          <p className='auth-sub'>登录成功，设置一个公开昵称，用于显示你的留言和评论。</p>
+          <label>公开昵称<input required maxLength={40} autoComplete='nickname' value={name} onChange={event => setName(event.target.value)} placeholder='你希望显示的名字' /></label>
+          <button type='submit' className='admin-button' disabled={status === 'saving'}>{status === 'saving' ? '保存中…' : '保存并继续'}</button>
         </form>
       ) : (
         <form className='auth-form' onSubmit={verify}>

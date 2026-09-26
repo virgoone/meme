@@ -1,4 +1,4 @@
-import { Elysia } from 'elysia';
+import { Elysia, t } from 'elysia';
 
 import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
 import { AppError } from '../../middleware/errorHandler';
@@ -10,6 +10,11 @@ import {
   listCommentsByPost,
   listCommentsByPostAsc,
 } from './service';
+
+const commentBody = t.Object({
+  body: t.Object({ blockId: t.Optional(t.String({ maxLength: 200 })), text: t.String({ minLength: 1, maxLength: 999 }) }),
+  parentId: t.Optional(t.Nullable(t.Integer({ minimum: 1 }))),
+});
 
 export const commentsModule = new Elysia({ prefix: '/comments' })
   .use(AuthPlugin)
@@ -31,9 +36,10 @@ export const commentsModule = new Elysia({ prefix: '/comments' })
       return createComment(getCloudflareRuntimeEnv(), {
         ...(body as CommentInput),
         userId: user.id,
+        userInfo: { name: user.name, imageUrl: user.image },
       });
     },
-    { auth: true },
+    { auth: true, body: t.Composite([commentBody, t.Object({ postId: t.String({ minLength: 1, maxLength: 200 }) })]) },
   )
   .post(
     '/:postId',
@@ -47,7 +53,8 @@ export const commentsModule = new Elysia({ prefix: '/comments' })
         ...(body as CommentInput),
         postId: params.postId,
         userId: user.id,
+        userInfo: { name: user.name, imageUrl: user.image },
       });
     },
-    { auth: true },
+    { auth: true, body: commentBody },
   );

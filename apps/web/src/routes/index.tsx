@@ -1,7 +1,8 @@
-import { createFileRoute, useRouterState } from '@tanstack/react-router';
+import { pageHead } from '../lib/seo';
+import { createFileRoute } from '@tanstack/react-router';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
-import { useHomePosts, usePost, type PostCardItem } from '../lib/admin-queries';
+import { homePostsQueryOptions, useHomePosts, type PostCardItem } from '../lib/admin-queries';
 import {
   GitHubIcon,
   MailIcon,
@@ -10,21 +11,18 @@ import {
   TwitterIcon,
 } from '../lib/icons';
 import { BlogPostCard, BlogPostCardSkeleton } from '../lib/post-card';
-import { BlogPostPageSkeleton, PostContent, type PostDetail } from './$slug';
+import { loadPublicQuery } from '../lib/route-query';
+import { AdBanner } from '../lib/adsense';
 
 export const Route = createFileRoute('/')({
+  head: () => pageHead('小全栈的技术实践与开发记录', '记录 Cloudflare 全栈、AI 应用、SaaS 架构与远程开发的真实实践，分享项目设计、实现过程和踩坑经验。', '/'),
+  loader: ({ context }) => loadPublicQuery(context.queryClient, homePostsQueryOptions()),
   component: HomePage,
 });
 
 function HomePage() {
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const slug = pathname.startsWith('/') ? pathname.slice(1) : pathname;
   const shouldReduceMotion = useReducedMotion();
   const posts = useHomePosts();
-
-  if (slug && !isReservedPath(slug)) {
-    return <InlineArticlePage slug={slug} />;
-  }
 
   return (
     <motion.div
@@ -47,8 +45,8 @@ function HomePage() {
           <h2 className='legacy-section-heading'>
             <span aria-hidden='true'>✎</span><span>近期文章</span>
           </h2>
-          {posts.isLoading ? (
-            <div className='legacy-post-stack'>
+          {posts.isPending ? (
+            <div className='legacy-post-stack' role='status' aria-label='文章列表加载中'>
               {Array.from({ length: 3 }).map((_, i) => (<BlogPostCardSkeleton key={i} />))}
             </div>
           ) : posts.isError ? (
@@ -65,6 +63,7 @@ function HomePage() {
           <NewsletterSection />
         </motion.aside>
       </motion.section>
+      {!!posts.data?.length && <AdBanner placement='home' />}
     </motion.div>
   );
 }
@@ -74,21 +73,6 @@ const homeItemVariants: Variants = {
   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] as const } },
 };
 
-function InlineArticlePage({ slug }: { slug: string }) {
-  const post = usePost(slug);
-  return (
-    <article className='article-page'>
-      {post.isLoading && <BlogPostPageSkeleton />}
-      {post.isError && <p className='state-text state-text--error'>{post.error instanceof Error ? post.error.message : String(post.error)}</p>}
-      {post.data && <PostContent post={post.data as unknown as PostDetail} />}
-    </article>
-  );
-}
-
-function isReservedPath(pathname: string) {
-  return /^(admin|api|blog|projects|guestbook|confirm|newsletters)(\/|$)/.test(pathname);
-}
-
 function Headline() {
   return (
     <div className='legacy-headline'>
@@ -97,11 +81,11 @@ function Headline() {
         <span><strong>Koya</strong><small>online, probably coding</small></span>
       </div>
       <h1>
-        <span className='developer'><span className='mono'>&lt;</span>小前端<span className='mono'>/&gt;</span></span>，
+        <span className='developer'><span className='mono'>&lt;</span>小全栈<span className='mono'>/&gt;</span></span>，
         <span className='designer'>正在搬砖</span>，<span className='headline-break' />
         <span className='ocd'><SparkleIcon aria-hidden='true' />啥都写点</span>
       </h1>
-      <p>欢迎来到我的博客。前端搬砖，喜欢开发。在用的一些自己添加了部分基于开源的<a href='https://douni.one/' target='_blank' rel='noreferrer'>工具</a></p>
+      <p>欢迎来到我的博客。喜欢写代码，也喜欢把想法做成小产品。这里记录全栈开发、AI 应用和日常折腾，也分享一些常用和自己改造的<a href='https://douni.one/' target='_blank' rel='noreferrer'>开源工具</a>。</p>
       <div className='legacy-socials'>
         <a href='/twitter' aria-label='我的推特'><TwitterIcon aria-hidden='true' /></a>
         <a href='/github' aria-label='我的 GitHub'><GitHubIcon aria-hidden='true' /></a>

@@ -94,10 +94,11 @@ function AdminBlogContentPage() {
     <section className='admin-page'>
       <AdminPageHeader
         title='博客内容'
-        description='迁移后的文章内容，使用站内编辑器维护正文和 blockID。'
+        description='撰写新文章，管理正文、封面和发布时间。'
+        action={<Link className='admin-button' to='/admin/content/blog/new'>新增文章</Link>}
       />
 
-      {posts.isLoading ? (
+      {posts.isPending ? (
         <DataTableSkeleton columnCount={5} rowCount={10} />
       ) : posts.isError ? (
         <p className='admin-error'>
@@ -125,7 +126,7 @@ function AdminBlogContentPage() {
               columns={columns}
               data={posts.data}
               getRowId={(post) => post.id}
-              empty='还没有导入博客文章。'
+              empty='还没有文章，点击“新增文章”开始撰写。'
             />
           </div>
         </>

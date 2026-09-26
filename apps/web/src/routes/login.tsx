@@ -1,3 +1,4 @@
+import { privateHead } from '../lib/seo';
 import { useSession } from '@meme/auth/client';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
@@ -5,6 +6,8 @@ import { useEffect } from 'react';
 import { AuthForm } from '../lib/auth-form';
 
 export const Route = createFileRoute('/login')({
+  head: privateHead,
+
   component: LoginPage,
 });
 

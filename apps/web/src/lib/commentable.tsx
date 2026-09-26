@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useSnapshot } from 'valtio';
+import { useQueryClient } from '@tanstack/react-query';
 
 import '../comment.css';
 import { useAuthedFetch } from './auth';
@@ -38,21 +39,24 @@ dayjs.extend(relativeTime);
 const MAX_COMMENT_LENGTH = 999;
 
 type CommentableProps = {
+  postId: string;
   className?: string;
   blockId?: string;
 };
 
-function Root({ className, blockId }: CommentableProps) {
+function Root({ className, blockId, postId }: CommentableProps) {
   const { comments, currentBlockId } = useSnapshot(blogPostState);
   const { data: sessionData } = useSession();
   const me = sessionData?.user;
   const authedFetch = useAuthedFetch();
   const [isPending, setIsPending] = React.useState(false);
-  const isCommenting = currentBlockId === blockId;
+  const [error, setError] = React.useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const isCommenting = blogPostState.postId === postId && currentBlockId === blockId;
 
   const currentComments = React.useMemo(
-    () => comments.filter((c) => c.body.blockId === blockId),
-    [comments, blockId],
+    () => comments.filter((c) => c.postId === postId && c.body?.blockId === blockId),
+    [comments, blockId, postId],
   );
 
   const top3Users = React.useMemo(() => {
@@ -61,10 +65,8 @@ function Root({ className, blockId }: CommentableProps) {
     const top3: CommentDto['userInfo'][] = [];
     for (const comment of currentComments) {
       if (users.has(comment.userId)) continue;
-      if (comment.userInfo.imageUrl) {
-        top3.push(comment.userInfo);
-        users.add(comment.userId);
-      }
+      top3.push(comment.userInfo);
+      users.add(comment.userId);
       if (top3.length >= 3) break;
     }
     return top3;
@@ -83,29 +85,35 @@ function Root({ className, blockId }: CommentableProps) {
   const createComment = React.useCallback(
     async (comment: string) => {
       setIsPending(true);
+      setError(null);
       try {
-        const res = await authedFetch(`/api/comments/${blogPostState.postId}`, {
+        const res = await authedFetch(`/api/comments/${encodeURIComponent(postId)}`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             body: { blockId, text: comment },
-            userInfo: {
-              name: me?.name ?? null,
-              imageUrl: me?.image ?? null,
-            },
             parentId: blogPostState.replyingTo?.id ?? null,
           }),
         });
-        if (!res.ok) throw new Error('发表评论失败');
+        if (!res.ok) {
+          const result = await res.json().catch(() => null);
+          throw new Error(result?.message || '发表评论失败，请重试');
+        }
         const data = (await res.json()) as CommentDto;
-        addComment(data);
-        window.requestAnimationFrame(() => scrollToComment(String(data.id)));
-        window.dispatchEvent(new CustomEvent('clear-comment'));
+        await queryClient.cancelQueries({ queryKey: ['public', 'comments', postId] });
+        queryClient.setQueryData<CommentDto[]>(['public', 'comments', postId], current => [...(current ?? []).filter(c => String(c.id) !== String(data.id)), data]);
+        if (blogPostState.postId === postId) {
+          addComment(data);
+          window.requestAnimationFrame(() => scrollToComment(String(data.id)));
+          window.dispatchEvent(new CustomEvent('clear-comment'));
+        }
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : '发表评论失败，请重试');
       } finally {
         setIsPending(false);
       }
     },
-    [authedFetch, blockId, me, scrollToComment],
+    [authedFetch, blockId, postId, queryClient, scrollToComment],
   );
 
   const onSubmit = React.useCallback(
@@ -168,6 +176,8 @@ function Root({ className, blockId }: CommentableProps) {
         {top3Users.length > 0 && (
           <motion.button
             type='button'
+            aria-label={`查看 ${currentComments.length} 条评论`}
+            title={`查看 ${currentComments.length} 条评论`}
             className={cn(
               'absolute -right-2 top-[4px] flex origin-top-right appearance-none flex-col items-center justify-end -space-y-1 md:right-[calc(100%+1.65rem)] md:w-16 md:flex-row md:-space-x-1.5 md:space-y-0',
               className,
@@ -180,7 +190,8 @@ function Root({ className, blockId }: CommentableProps) {
             {top3Users.map((user, idx) => (
               <img
                 key={idx}
-                src={user.imageUrl ?? ''}
+                src={avatarUrl(user)}
+                onError={(event) => { if (!event.currentTarget.src.endsWith('/avatars/avatar_1.png')) event.currentTarget.src = '/avatars/avatar_1.png'; }}
                 alt=''
                 width={20}
                 height={20}
@@ -208,6 +219,7 @@ function Root({ className, blockId }: CommentableProps) {
           side='top'
           align='start'
           sideOffset={6}
+          collisionPadding={12}
           onOpenAutoFocus={(e) => e.preventDefault()}
           className='comment-popover relative z-50 rounded-xl border border-zinc-400/20 bg-white/95 p-4 shadow-xl backdrop-blur dark:border-zinc-300/10 dark:bg-zinc-800/95'
         >
@@ -240,6 +252,7 @@ function Root({ className, blockId }: CommentableProps) {
               ref={formRef}
               onSubmit={onSubmit}
             >
+              {error && <p role='alert' className='text-sm text-red-600 dark:text-red-400'>{error}</p>}
               {me ? (
                 <CommentTextarea isPending={isPending} onSubmit={onSubmit} />
               ) : (
@@ -294,6 +307,7 @@ function Comment({
         <div className='flex w-6 shrink-0 items-end'>
           <img
             src={avatarUrl(c.userInfo)}
+            onError={(event) => { if (!event.currentTarget.src.endsWith('/avatars/avatar_1.png')) event.currentTarget.src = '/avatars/avatar_1.png'; }}
             alt=''
             className='h-6 w-6 select-none rounded-full'
             width={24}

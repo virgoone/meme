@@ -4,9 +4,12 @@ import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
 import { AppError } from '../../middleware/errorHandler';
 import { AuthPlugin } from '../../plugins/auth';
 import { clampLimit } from '../shared';
+import { postViewsKey, readViews } from '../system/views';
 import {
   getImportedPostBySlug,
+  createPost,
   listImportedPosts,
+  listPublishedPostPage,
   updateImportedPostBySlug,
   type UpdatePostInput,
 } from './service';
@@ -14,7 +17,7 @@ import {
 export const postsModule = new Elysia({ prefix: '/posts' })
   .use(AuthPlugin)
   .get('/', ({ query }) =>
-    listImportedPosts(getCloudflareRuntimeEnv(), {
+    query.page !== undefined ? listPublishedPostPage(getCloudflareRuntimeEnv(), query.page) : listImportedPosts(getCloudflareRuntimeEnv(), {
       limit: clampLimit(query.limit, 20),
     }),
   )
@@ -26,6 +29,18 @@ export const postsModule = new Elysia({ prefix: '/posts' })
     if (!post) throw AppError.notFound();
     return post;
   })
+  .get('/:slug/views', async ({ params, set }) => {
+    const env = getCloudflareRuntimeEnv();
+    const post = await getImportedPostBySlug(env, params.slug);
+    if (!post) throw AppError.notFound();
+    set.headers['cache-control'] = 'no-store';
+    return { views: await readViews(env, postViewsKey(post.id)) };
+  })
+  .post('/', async ({ body, set }) => {
+    const post = await createPost(getCloudflareRuntimeEnv(), normalizePostUpdateInput(body));
+    set.status = 201;
+    return post;
+  }, { admin: true })
   .put(
     '/:slug',
     async ({ params, body }) => {
@@ -41,8 +56,12 @@ export const postsModule = new Elysia({ prefix: '/posts' })
   );
 
 function normalizePostUpdateInput(body: unknown): UpdatePostInput {
-  if (!body || typeof body !== 'object') return {};
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw AppError.badRequest();
   const input = body as Record<string, unknown>;
+  for (const key of ['title', 'slug']) {
+    if (key in input && typeof input[key] !== 'string') throw AppError.badRequest(`${key} 格式无效`);
+  }
+  if ('slateJson' in input && !Array.isArray(input.slateJson)) throw AppError.badRequest('正文格式无效');
 
   return {
     title: typeof input.title === 'string' ? input.title : undefined,
@@ -57,7 +76,7 @@ function normalizePostUpdateInput(body: unknown): UpdatePostInput {
         : undefined,
     mood: isMood(input.mood) ? input.mood : undefined,
     readingTime:
-      typeof input.readingTime === 'number' ? input.readingTime : undefined,
+      typeof input.readingTime === 'number' || input.readingTime === null ? input.readingTime : undefined,
     publishedAt:
       typeof input.publishedAt === 'string' || input.publishedAt === null
         ? input.publishedAt

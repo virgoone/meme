@@ -41,8 +41,19 @@ export function getBlockId(block: EditorBlockNode): string | null {
 export function withStableBlockIds(
   blocks: EditorBlockNode[],
 ): EditorBlockNode[] {
+  const usedIds = new Set<string>();
   return blocks.map((block, index) => {
-    const blockId = getBlockId(block) ?? deterministicBlockId(block, index);
+    let blockId = getBlockId(block) ?? deterministicBlockId(block, index);
+    // Slate may copy blockId/blockID when Enter splits a paragraph, while its
+    // node-id plugin assigns a new id. Keep the original comment anchor only
+    // on the first block and use a distinct anchor for the new paragraph.
+    if (usedIds.has(blockId)) {
+      blockId = typeof block.id === 'string' && block.id && !usedIds.has(block.id)
+        ? block.id
+        : deterministicBlockId({ ...block, id: undefined, blockId: undefined, blockID: undefined }, index);
+      while (usedIds.has(blockId)) blockId += '_next';
+    }
+    usedIds.add(blockId);
     return {
       ...block,
       id: blockId,

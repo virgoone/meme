@@ -86,7 +86,7 @@ function AdminCommentsPage() {
     [postTitle],
   );
 
-  const isLoading = comments.isLoading || posts.isLoading;
+  const isLoading = comments.isPending || posts.isPending;
   const isError = comments.isError || posts.isError;
   const error = comments.error ?? posts.error;
 

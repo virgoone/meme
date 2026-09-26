@@ -11,7 +11,7 @@ export const Route = createFileRoute('/admin/settings')({
 });
 
 function AdminSettingsPage() {
-  const { data: serverValues, isLoading, isError, error } = useAdminSettings();
+  const { data: serverValues, isPending, isError, error } = useAdminSettings();
   const mutation = useUpdateAdminSettings();
   const [activeTab, setActiveTab] = useState(0);
   const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
@@ -32,7 +32,7 @@ function AdminSettingsPage() {
     });
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <section className="admin-page">
         <AdminPageHeader title="设置" description="站点配置与服务集成。" />
