@@ -88,6 +88,26 @@ export function useAdminGuestbook() {
   });
 }
 
+export type DailyPoint = { day: string; value: number };
+
+export type AdminStats = {
+  generatedAt: string;
+  views: { total: number; today: number; week: number; month: number; daily: DailyPoint[]; trackedSince: string | null };
+  topPosts: Array<{ id: string; title: string; slug: string; views: number; last7: number; last30: number }>;
+  subscribers: { active: number; total: number; today: number; month: number; daily: DailyPoint[] };
+  comments: { total: number; month: number; daily: DailyPoint[] };
+  guestbook: { total: number; month: number; daily: DailyPoint[] };
+  publishing: { total: number; monthly: Array<{ month: string; value: number }> };
+};
+
+export function useAdminStats() {
+  return useQuery({
+    queryKey: ['admin', 'stats'],
+    queryFn: () => fetchJson<AdminStats>('/api/admin/stats'),
+    staleTime: 60_000,
+  });
+}
+
 // ---- content management ----------------------------------------------------------
 
 export function useAdminBlogPosts() {

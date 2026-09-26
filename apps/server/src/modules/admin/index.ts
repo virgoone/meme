@@ -7,6 +7,7 @@ import { listNewsletters, listSubscribers } from '../newsletter/service';
 import { getAllSettings, upsertSettings } from '../settings/service';
 import { clampLimit } from '../shared';
 import { getImportedPostBySlug, listImportedPosts } from '../posts/service';
+import { getAdminStats } from '../system/stats';
 import { AppError } from '../../middleware/errorHandler';
 
 export const adminModule = new Elysia({ prefix: '/admin' })
@@ -44,6 +45,10 @@ export const adminModule = new Elysia({ prefix: '/admin' })
     () => getAllSettings(getCloudflareRuntimeEnv()),
     { admin: true },
   )
+  .get('/stats', ({ set }) => {
+    set.headers['cache-control'] = 'private, no-store';
+    return getAdminStats(getCloudflareRuntimeEnv());
+  }, { admin: true })
   .put(
     '/settings',
     async ({ body }) => upsertSettings(getCloudflareRuntimeEnv(), body as Record<string, unknown>),

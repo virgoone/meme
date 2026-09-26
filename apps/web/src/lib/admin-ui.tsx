@@ -32,7 +32,7 @@ export function StatGrid({ children }: { children: ReactNode }) {
   return <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>{children}</div>;
 }
 
-export function StatCard({ title, value, hint }: { title: string; value: number | string; hint?: string }) {
+export function StatCard({ title, value, hint }: { title: string; value: ReactNode; hint?: string }) {
   return (
     <Card className='gap-2 py-4'>
       <CardHeader className='px-5'>

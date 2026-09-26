@@ -5,6 +5,16 @@ import { siteInfoLinks } from '@meme/shared';
 
 export const totalViewsKey = 'analytics:views:total';
 export const postViewsKey = (id: string) => `analytics:views:post:${id}`;
+export const dayViewsKey = (day: string) => `analytics:views:day:${day}`;
+export const postDayViewsKey = (id: string, day: string) => `analytics:views:post-day:${id}:${day}`;
+
+export const VIEW_TIME_ZONE = 'Asia/Shanghai';
+const dayFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: VIEW_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' });
+
+/** Calendar day (YYYY-MM-DD) in the site's timezone, used to key daily counters. */
+export function viewDay(date = new Date()) {
+  return dayFormatter.format(date);
+}
 
 export async function readViews(env: WorkerEnv, key: string) {
   const rows = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind(key).all<{ value: string }>();
@@ -25,7 +35,9 @@ export async function recordPageView(env: WorkerEnv, path: unknown, visitor?: Vi
     postId = posts.results[0]?.id ?? null;
     if (!postId) return { counted: false };
   }
-  const keys = [totalViewsKey, ...(postId ? [postViewsKey(postId)] : [])];
+  const day = viewDay();
+  // The first two counters are read back below; the daily counters just accumulate.
+  const keys = [totalViewsKey, ...(postId ? [postViewsKey(postId)] : []), dayViewsKey(day), ...(postId ? [postDayViewsKey(postId, day)] : [])];
   // Increment in SQLite, not KV read/modify/write, so concurrent visits cannot
   // overwrite each other. Both counters commit in one D1 batch transaction.
   const statements = keys.map(key => env.DB.prepare(`
