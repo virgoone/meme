@@ -13,7 +13,7 @@
 Every push to `main` triggers `.github/workflows/deploy-cloudflare.yml`:
 
 1. Install the locked dependencies, lint, check types, run all tracked regression suites in separate processes, and build the web app and server.
-2. Transfer that verified web build to the deployment job and deploy Worker `meme` with the Git commit recorded in the deployment message.
+2. Transfer that verified web build to the deployment job, upload a Worker version, verify its commit tag and message through the Worker API, and deploy that exact version to 100% of traffic. Read back the active version before reporting success.
 3. Check health, server-rendered blog HTML, published posts, sitemap, and RSS on both the Worker origin and `blog.douni.one`. These checks only read data.
 
 Production releases are queued instead of cancelling an in-progress upload. A failed check prevents deployment. A failed post-deployment check reports a failed release; inspect and roll back the Worker if needed.
@@ -21,7 +21,9 @@ Production releases are queued instead of cancelling an in-progress upload. A fa
 Configure these repository **Actions secrets** in `virgoone/meme`:
 
 - `CLOUDFLARE_ACCOUNT_ID`: the existing account ID.
-- `CLOUDFLARE_API_TOKEN`: a dedicated account-owned token with Workers Editor permission scoped to `meme`. If Wrangler manages the configured route, grant Workers Routes Write and Zone Read scoped only to `douni.one`. Do not reuse the local Wrangler OAuth token or add database/storage administration permissions just to deploy existing bindings.
+- `CLOUDFLARE_API_TOKEN`: a dedicated account-owned token with Workers Editor permission scoped to `meme`. Route administration additionally needs Workers Routes Write and Zone Read scoped only to `douni.one`. Do not reuse the local Wrangler OAuth token or add database/storage administration permissions just to deploy existing bindings.
+
+The normal pipeline uses `scripts/deploy-worker.mjs` and preserves existing domains, routes, and schedules. Apply intentional trigger changes separately with `wrangler triggers deploy`; do not change the account-wide subdomain during a code release. Wrangler 4.101 can upload successfully and then fail while displaying a preview URL because the account subdomain endpoint requires broader permissions. The script accepts only that exact post-upload error, verifies the returned version and commit through the Worker API, and then explicitly deploys it. Any upload, verification, or deployment failure still fails the job.
 
 Deployment is enabled by default. Set the repository variable `CF_DEPLOY_ENABLED=false` only to pause automatic releases during an incident; delete that variable or set it to `true` to resume. Missing secrets fail explicitly instead of silently skipping deployment. To retry, rerun the failed job or dispatch **Cloudflare Deploy** on `main`.
 

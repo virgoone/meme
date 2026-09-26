@@ -96,7 +96,7 @@ jobs:
           path: apps/web/dist
 
       - name: Deploy
-        run: bun run cf:deploy --keep-vars --message "GitHub main ${GITHUB_SHA}"
+        run: bun scripts/deploy-worker.mjs
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

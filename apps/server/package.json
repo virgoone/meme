@@ -9,6 +9,8 @@
     "check-types": "tsc --noEmit",
     "db:migrate:prod": "wrangler d1 migrations apply meme-prod --remote --config ../../wrangler.jsonc",
     "deploy": "wrangler deploy --config ../../wrangler.jsonc",
+    "version:upload": "wrangler versions upload --config ../../wrangler.jsonc",
+    "version:deploy": "wrangler versions deploy --config ../../wrangler.jsonc",
     "dev": "wrangler dev --config ../../wrangler.dev.jsonc"
   },
   "dependencies": {
