@@ -7,6 +7,7 @@ import { siteUrl } from './seo';
 import './adsense.css';
 
 type AdWindow = Window & { adsbygoogle?: { push: (parameters: Record<string, never>) => unknown } };
+type AdFormat = 'display' | 'in-article';
 let scriptLoad: { client: string; promise: Promise<void> } | undefined;
 
 function loadAdSense(client: string) {
@@ -26,16 +27,17 @@ function loadAdSense(client: string) {
   return promise;
 }
 
-/** One manual display unit per page; verification remains when display is off. */
-export function AdBanner({ placement, instanceKey = '', className = '' }: { placement: AdPlacement; instanceKey?: string; className?: string }) {
+/** Manual ad units share one script and respect the site's placement switches. */
+export function AdBanner({ placement, format = 'display', instanceKey = '', className = '' }: { placement: AdPlacement; format?: AdFormat; instanceKey?: string; className?: string }) {
   const { data } = useQuery(publicConfigQueryOptions());
   const pathname = useRouterState({ select: state => state.location.pathname });
   const config = data?.adsense;
-  if (!config?.enabled || !config.clientId || !config.slotId || !config.placements[placement]) return null;
-  return <DisplayAd key={`${pathname}:${instanceKey}:${config.clientId}:${config.slotId}`} client={config.clientId} slot={config.slotId} placement={placement} className={className} />;
+  const slot = format === 'in-article' ? '5983520697' : config?.slotId;
+  if (!config?.enabled || !config.clientId || !slot || !config.placements[placement]) return null;
+  return <DisplayAd key={`${pathname}:${instanceKey}:${config.clientId}:${slot}:${format}`} client={config.clientId} slot={slot} placement={placement} format={format} className={className} />;
 }
 
-function DisplayAd({ client, slot, placement, className }: { client: string; slot: string; placement: AdPlacement; className: string }) {
+function DisplayAd({ client, slot, placement, format, className }: { client: string; slot: string; placement: AdPlacement; format: AdFormat; className: string }) {
   const unitRef = useRef<HTMLModElement>(null);
   const requested = useRef(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -87,8 +89,12 @@ function DisplayAd({ client, slot, placement, className }: { client: string; slo
   if (collapsed) return null;
   return <aside className={`blog-ad blog-ad--${placement} ${className}`} aria-label='广告' data-ad-placement={placement}>
     <span className='blog-ad-label'>广告</span>
-    {/* Google permits fluid width/fixed height; keep sizing next to the unit. */}
-    <style>{`.KoyaDisplayAd{display:block;width:100%;height:100px;max-width:970px;margin:0 auto}@media(min-width:768px){.KoyaDisplayAd{height:90px}}`}</style>
-    <ins ref={unitRef} className='adsbygoogle KoyaDisplayAd' data-ad-client={client} data-ad-slot={slot} />
+    {/* In-article units size themselves; fixed display sizing only applies to banners. */}
+    {format === 'display' && <style>{`.KoyaDisplayAd{display:block;width:100%;height:100px;max-width:970px;margin:0 auto}@media(min-width:768px){.KoyaDisplayAd{height:90px}}`}</style>}
+    <ins ref={unitRef} className={format === 'in-article' ? 'adsbygoogle' : 'adsbygoogle KoyaDisplayAd'}
+      style={format === 'in-article' ? { display: 'block', textAlign: 'center' } : undefined}
+      data-ad-layout={format === 'in-article' ? 'in-article' : undefined}
+      data-ad-format={format === 'in-article' ? 'fluid' : undefined}
+      data-ad-client={client} data-ad-slot={slot} />
   </aside>;
 }

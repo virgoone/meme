@@ -5,6 +5,7 @@ import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useS
 
 import { postQueryOptions, usePost, usePostComments, usePostReactions, type PostDetail } from '../lib/admin-queries';
 import { AdBanner } from '../lib/adsense';
+import { articleAdIndex } from '../lib/article-ad-placement';
 import { ArticleCodeBlock } from '../lib/article-code-block';
 import { blogPostState, selectCommentPost, setPostComments } from '../lib/blog-post-state';
 import { Commentable } from '../lib/commentable';
@@ -57,6 +58,7 @@ export function PostContent({ post }: { post: PostDetail }) {
   const archivePage = useRouterState({ select: (state) => normalizePage((state.location.state as { blogArchivePage?: unknown }).blogArchivePage) });
   const views = usePostViews(post.id, post.slug);
   const blocks = post.blocks ?? [];
+  const inlineAdIndex = articleAdIndex(blocks);
   const listFormats = legacyListFormats(blocks.map((block) => block.portableTextJson));
   const outline = useMemo(() => getOutline(blocks), [blocks]);
   const comments = usePostComments(post.id);
@@ -118,10 +120,13 @@ export function PostContent({ post }: { post: PostDetail }) {
 
         <div className='article-body'>
           {blocks.length === 0 ? <p className='site-empty'>这篇文章还没有导入正文。</p> : blocks.map((block, index) => (
-            <div key={block.blockId} className='group relative article-block'>
-              <PostBlockView block={block} listFormat={listFormats[index]} />
-              {commentsEnabled && <Commentable postId={post.id} blockId={block.blockId} />}
-            </div>
+            <Fragment key={block.blockId}>
+              <div className='group relative article-block'>
+                <PostBlockView block={block} listFormat={listFormats[index]} />
+                {commentsEnabled && <Commentable postId={post.id} blockId={block.blockId} />}
+              </div>
+              {index === inlineAdIndex && <AdBanner placement='article' format='in-article' instanceKey={post.id} />}
+            </Fragment>
           ))}
         </div>
 
