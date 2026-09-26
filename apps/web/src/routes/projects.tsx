@@ -1,49 +1,75 @@
-import { pageHead } from '../lib/seo';
-import { loadPublicQuery } from '../lib/route-query';
 import { createFileRoute } from '@tanstack/react-router';
+
 import { publicProjectsQueryOptions, usePublicProjects } from '../lib/admin-queries';
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
 import { AdBanner } from '../lib/adsense';
+import { loadPublicQuery } from '../lib/route-query';
+import { pageHead } from '../lib/seo';
 
 export const Route = createFileRoute('/projects')({
   head: () => pageHead('独立开发项目', 'Koya 持续维护的在线工具与实验项目，涵盖 AI 应用、生产力工具和全栈开发实践。', '/projects'),
-  loader: ({ context }) => loadPublicQuery(context.queryClient, publicProjectsQueryOptions()), component: ProjectsPage });
+  loader: ({ context }) => loadPublicQuery(context.queryClient, publicProjectsQueryOptions()),
+  component: ProjectsPage,
+});
 
 function ProjectsPage() {
   const projects = usePublicProjects();
 
   return (
-    <section className='content-page'>
-      <header className='page-heading'>
-        <p className='section-kicker'>Projects</p>
-        <h1>项目</h1>
-        <p>一些在线小工具、实验项目和持续维护的作品。</p>
+    <section className='site-measure'>
+      <header>
+        <p className='site-kicker'><span>项目</span></p>
+        <h1 className='site-title'>做过的一些东西</h1>
+        <p className='site-lead'>在线小工具、实验项目和持续维护的作品。</p>
       </header>
-      {projects.isPending && (
-        <div className='project-list' role='status' aria-label='项目加载中'>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div className='project-card' key={i}>
-              <span className='project-icon'><Skeleton className='h-10 w-10 rounded-full' /></span>
-              <span><Skeleton className='h-4 w-32' /><Skeleton className='h-3 w-48 mt-2' /></span>
-            </div>
-          ))}
-        </div>
-      )}
-      {projects.isError && <p className='state-text state-text--error'>{projects.error instanceof Error ? projects.error.message : String(projects.error)}</p>}
-      {projects.data && projects.data.length === 0 && <p className='state-text'>还没有导入项目。</p>}
-      {projects.data && projects.data.length > 0 && (
-        <div className='project-list'>
-          {projects.data.map((p) => (
-            <a className='project-card' href={p.url} target='_blank' rel='noreferrer' key={p.id}>
-              <span className='project-icon'>{isImageUrl(p.icon) ? <img src={p.icon} alt='' loading='lazy' /> : p.icon}</span>
-              <span><strong>{p.name}</strong><small>{p.description}</small></span>
-            </a>
-          ))}
-        </div>
-      )}
+
+      <div className='site-section'>
+        {projects.isPending && (
+          <ul className='site-rows site-skeleton-rows' role='status' aria-label='项目加载中'>
+            {Array.from({ length: 4 }, (_, index) => (
+              <li key={index} aria-hidden='true'>
+                <span className='skeleton-line skeleton-line--title' />
+                <span className='skeleton-line skeleton-line--text' />
+              </li>
+            ))}
+          </ul>
+        )}
+        {projects.isError && (
+          <p className='site-empty site-empty--error'>{projects.error instanceof Error ? projects.error.message : String(projects.error)}</p>
+        )}
+        {projects.data && projects.data.length === 0 && <p className='site-empty'>还没有项目。</p>}
+        {projects.data && projects.data.length > 0 && (
+          <ul className='site-rows'>
+            {projects.data.map((project) => (
+              <li key={project.id}>
+                <a className='site-row site-row--project' href={project.url} target='_blank' rel='noreferrer'>
+                  <span className='site-row__icon' aria-hidden='true'>
+                    {isImageUrl(project.icon) ? <img src={project.icon} alt='' loading='lazy' /> : project.icon}
+                  </span>
+                  <h2 className='site-row__title'>{project.name}</h2>
+                  <span className='site-row__meta'>
+                    <span>{hostname(project.url)}</span>
+                    <span className='site-row__arrow' aria-hidden='true'>↗</span>
+                  </span>
+                  {project.description ? <p className='site-row__desc'>{project.description}</p> : null}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       {!!projects.data?.length && <AdBanner placement='projects' />}
     </section>
   );
 }
 
-function isImageUrl(v: string) { return /^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(v); }
+function isImageUrl(value: string) {
+  return /^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(value);
+}
+
+function hostname(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}

@@ -1,4 +1,5 @@
 import { signOut, useSession } from '@meme/auth/client';
+import { normalizePage, siteInfoLinks } from '@meme/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
@@ -9,34 +10,26 @@ import {
   useNavigate,
   useRouterState,
 } from '@tanstack/react-router';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { LogIn, Moon, Sun } from 'lucide-react';
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 
-import { siteDescription, siteName, siteEntityScript } from '../lib/seo';
-import { GoogleAnalytics } from '../lib/google-analytics';
-import { loadPublicQuery } from '../lib/route-query';
-import { publicConfigQueryOptions, useSiteStats } from '../lib/admin-queries';
-import { usePageViewTracking } from '../lib/page-views';
-import { normalizePage, siteInfoLinks } from '@meme/shared';
+import { publicConfigQueryOptions, useSiteStats, useSubscribeNewsletter } from '../lib/admin-queries';
+import { AdminWorkspace } from '../lib/admin-workspace';
 import { AuthDialogHost } from '../lib/auth-dialog';
 import { openAuthDialog } from '../lib/auth-dialog-store';
-import { AdminContentSkeleton } from '../lib/page-skeletons';
-import {
-  CursorClickIcon,
-  MoonIcon,
-  SunIcon,
-  TiltedSendIcon,
-  UserArrowLeftIcon,
-  UsersIcon,
-} from '../lib/icons';
-import { AdminWorkspace } from '../lib/admin-workspace';
 import { formatTotalViews } from '../lib/format-views';
+import { GoogleAnalytics } from '../lib/google-analytics';
+import { AdminContentSkeleton } from '../lib/page-skeletons';
+import { usePageViewTracking } from '../lib/page-views';
+import { loadPublicQuery } from '../lib/route-query';
+import { siteDescription, siteEntityScript, siteName } from '../lib/seo';
 import '../styles.css';
 import '../loading.css';
-import '../lib/blog-list.css';
 import '../lib/site-info.css';
+import '../site.css';
+import '../admin.css';
 
 const navItems = [
-  { label: '首页', to: '/' },
   { label: '博客', to: '/blog' },
   { label: '项目', to: '/projects' },
   { label: '留言墙', to: '/guestbook' },
@@ -67,6 +60,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: 'apple-touch-icon',
         href: '/apple-touch-icon.png',
+      },
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&display=swap',
       },
     ],
     scripts: [siteEntityScript()],
@@ -113,19 +112,17 @@ function HeaderAuth({ pathname }: { pathname: string }) {
     return null;
   }
 
-  if (isPending) {
-    return <span className='site-icon-button' aria-hidden='true' />;
-  }
-
+  // Keep the icon visible while the session loads; the dialog works either way.
   if (!user) {
     return (
       <button
         type='button'
         className='site-icon-button'
         aria-label='登录'
+        aria-busy={isPending || undefined}
         onClick={() => openAuthDialog('signin')}
       >
-        <UserArrowLeftIcon aria-hidden='true' />
+        <LogIn aria-hidden='true' />
         <span className='sr-only'>登录</span>
       </button>
     );
@@ -223,19 +220,12 @@ function AppShell() {
 
   return (
     <div className='site-shell'>
-      <header className={`site-header${pathname === '/' ? ' is-home' : ''}`}>
-        {pathname === '/' ? (
-          <div className='site-avatar-row'>
-            <Link to='/' className='site-avatar-large' aria-label='主页'>
-              <img src='/portrait.png' alt='' />
-            </Link>
-          </div>
-        ) : null}
-        <div className='site-header__inner'>
-          <Link to='/' className='brand-mark' aria-label='主页'>
-            <span className='brand-avatar'>
-              <img src='/portrait.png' alt='' />
-            </span>
+      <a className='sr-only' href='#main'>跳到正文</a>
+      <header className='site-header'>
+        <div className='site-header__inner site-measure'>
+          <Link to='/' className='site-brand' aria-label='主页'>
+            Koya
+            <small>blog</small>
           </Link>
 
           <nav className='site-nav' aria-label='主导航'>
@@ -246,7 +236,6 @@ function AppShell() {
                   to={item.to}
                   className='site-nav__link'
                   activeProps={{ className: 'site-nav__link active' }}
-                  activeOptions={{ exact: item.to === '/' }}
                 >
                   {item.label}
                 </Link>
@@ -271,11 +260,11 @@ function AppShell() {
         </div>
       </header>
 
-      <main className='site-main'>
+      <main className='site-main' id='main'>
         <Outlet />
       </main>
 
-      <LegacyFooter />
+      <SiteFooter />
       <AuthDialogHost />
     </div>
   );
@@ -327,93 +316,111 @@ function AdminShellSkeleton() {
   return <AdminWorkspace pathname='/admin' loading toolbar={<span className='admin-topbar-skeleton-button' aria-hidden='true' />}><AdminContentSkeleton /></AdminWorkspace>;
 }
 
-function LegacyFooter() {
+function SiteFooter() {
   const stats = useSiteStats();
-  const data = stats.data ?? {
-    totalPageViews: 0,
-    subscriberCount: 0,
-    lastVisitor: null,
-  };
-  const visitorLocation = [data.lastVisitor?.city, data.lastVisitor?.country]
-    .filter(Boolean)
-    .join(', ');
+  const data = stats.data;
+  const visitorLocation = data?.lastVisitor
+    ? [data.lastVisitor.city, data.lastVisitor.country].filter(Boolean).join(', ')
+    : '';
 
   return (
-    <footer className='legacy-footer'>
-      <div className='legacy-footer__outer'>
-        <div className='legacy-footer__inner'>
-          <div className='legacy-footer-newsletter'>
-            <h2>
-              <TiltedSendIcon aria-hidden='true' />
-              <span>动态更新</span>
-            </h2>
-            <p>
-              <span>喜欢我的内容的话不妨订阅支持一下 🫶</span>
-              <br />
-              加入其他 <strong>{data.subscriberCount}</strong> 位订阅者，
-              每月一封，随时可以取消订阅。
-            </p>
-            <form>
-              <label className='sr-only' htmlFor='footer-newsletter-email'>
-                邮箱
-              </label>
-              <input
-                id='footer-newsletter-email'
-                name='email'
-                type='email'
-                autoComplete='email'
-                placeholder='Email address'
-              />
-              <button type='submit'>订阅</button>
-            </form>
-          </div>
-
-          <div className='legacy-footer-row'>
-            <p>
-              © {new Date().getFullYear()} Koya.
-            </p>
-            <nav aria-label='底部导航'>
-              {navItems.map((item) =>
-                'to' in item ? (
-                  <Link key={item.to} to={item.to}>
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a
-                    href={item.href}
-                    key={item.href}
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    {item.label}
-                  </a>
-                ),
-              )}
-            </nav>
-          </div>
-
-          <nav className='site-info-links' aria-label='关于与站点政策'>
-            {siteInfoLinks.map(item => <Link key={item.path} to={item.path}>{item.label}</Link>)}
-          </nav>
-
-          <div className='legacy-footer-stats'>
-            <span
-              title={`${Intl.NumberFormat('en-US').format(data.totalPageViews)} 次浏览`}
-            >
-              <UsersIcon aria-hidden='true' />
-              <span className='sr-only'>总浏览量 {Intl.NumberFormat('en-US').format(data.totalPageViews)} 次</span>
-              <span aria-hidden='true'>总浏览量 <strong>{stats.data ? formatTotalViews(data.totalPageViews) : '—'}</strong></span>
-            </span>
-            {visitorLocation && data.lastVisitor && <span>
-              <CursorClickIcon aria-hidden='true' />
-              最近访客来自 {visitorLocation}
-              <strong>{data.lastVisitor.flag}</strong>
-            </span>}
-          </div>
+    <footer className='site-footer'>
+      <div className='site-measure'>
+        <div className='site-footer__newsletter'>
+          <p className='site-kicker'><span>订阅更新</span></p>
+          <p>
+            每月一封，聊聊最近在写的东西，随时可以取消。
+            {data && data.subscriberCount > 0 ? ` 已有 ${data.subscriberCount} 位订阅者。` : ''}
+          </p>
+          <NewsletterForm />
         </div>
+
+        <div className='site-footer__row'>
+          <p>© {new Date().getFullYear()} Koya.</p>
+          <nav aria-label='底部导航'>
+            <Link to='/'>首页</Link>
+            {navItems.map((item) =>
+              'to' in item ? (
+                <Link key={item.to} to={item.to}>{item.label}</Link>
+              ) : (
+                <a href={item.href} key={item.href} target='_blank' rel='noreferrer'>{item.label}</a>
+              ),
+            )}
+            <a href='/feed.xml'>RSS</a>
+          </nav>
+        </div>
+
+        <nav className='site-info-links' aria-label='关于与站点政策'>
+          {siteInfoLinks.map((item) => <Link key={item.path} to={item.path}>{item.label}</Link>)}
+        </nav>
+
+        {data ? (
+          <div className='site-footer__stats'>
+            <span title={`${Intl.NumberFormat('en-US').format(data.totalPageViews)} 次浏览`}>
+              总浏览量 {formatTotalViews(data.totalPageViews)}
+            </span>
+            {visitorLocation && data.lastVisitor ? (
+              <span>最近访客来自 {visitorLocation} {data.lastVisitor.flag}</span>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </footer>
   );
+}
+
+function NewsletterForm() {
+  const subscribe = useSubscribeNewsletter();
+  const [email, setEmail] = useState('');
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = email.trim();
+    if (!value || subscribe.isPending) return;
+    subscribe.mutate(value, { onSuccess: () => setEmail('') });
+  }
+
+  const status = subscribe.isSuccess
+    ? '确认邮件已发送，请查收邮箱完成订阅。'
+    : subscribe.isError
+      ? describeSubscribeError(subscribe.error)
+      : '';
+
+  return (
+    <form className='site-subscribe' onSubmit={onSubmit} aria-describedby='newsletter-status'>
+      <label className='sr-only' htmlFor='newsletter-email'>邮箱</label>
+      <input
+        id='newsletter-email'
+        name='email'
+        type='email'
+        required
+        autoComplete='email'
+        placeholder='你的邮箱'
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        disabled={subscribe.isPending}
+      />
+      <button type='submit' className='site-button' disabled={subscribe.isPending || !email.trim()}>
+        {subscribe.isPending ? '提交中…' : '订阅'}
+      </button>
+      <span
+        id='newsletter-status'
+        className={`site-status${subscribe.isError ? ' site-status--error' : ''}`}
+        role='status'
+        aria-live='polite'
+        style={{ margin: 0 }}
+      >
+        {status}
+      </span>
+    </form>
+  );
+}
+
+function describeSubscribeError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/429|rate/i.test(message)) return '提交太频繁了，请稍后再试。';
+  if (/invalid/i.test(message)) return '邮箱格式不正确。';
+  return '订阅失败，请稍后再试。';
 }
 
 function ThemeSwitcher() {
@@ -433,12 +440,12 @@ function ThemeSwitcher() {
   return (
     <button
       type='button'
-      className='theme-switcher'
+      className='site-icon-button theme-switcher'
       onClick={toggleTheme}
-      aria-label='切换颜色主题'
+      aria-label={dark ? '切换到浅色主题' : '切换到深色主题'}
       title='切换主题'
     >
-      {dark ? <MoonIcon aria-hidden='true' /> : <SunIcon aria-hidden='true' />}
+      {dark ? <Moon aria-hidden='true' /> : <Sun aria-hidden='true' />}
     </button>
   );
 }

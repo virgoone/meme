@@ -1,4 +1,5 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { X } from 'lucide-react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 
 import {
   CLOSE_AUTH_DIALOG_EVENT,
@@ -7,11 +8,9 @@ import {
   OPEN_AUTH_DIALOG_EVENT,
   type OpenAuthDialogEventDetail,
   openAuthDialog,
-  setAuthDialogMode,
   subscribeAuthDialog,
 } from './auth-dialog-store';
 import { AuthForm } from './auth-form';
-import { XIcon } from './comment-icons';
 
 export function AuthDialogHost() {
   const dialog = useSyncExternalStore(
@@ -19,6 +18,7 @@ export function AuthDialogHost() {
     getAuthDialogState,
     getAuthDialogState,
   );
+  const panelRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     function handleOpen(event: Event) {
@@ -53,9 +53,12 @@ export function AuthDialogHost() {
   useEffect(() => {
     if (!dialog.open) return;
     const previousOverflow = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = 'hidden';
+    panelRef.current?.querySelector<HTMLElement>('input')?.focus();
     return () => {
       document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus?.();
     };
   }, [dialog.open]);
 
@@ -63,55 +66,39 @@ export function AuthDialogHost() {
 
   const handleSuccess = () => {
     closeAuthDialog();
-    window.location.assign(dialog.redirectTo || '/');
+    window.location.assign(dialog.redirectTo || window.location.href);
   };
 
   return (
     <div
-      className='auth-dialog-backdrop'
+      className='auth-backdrop'
       role='presentation'
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) closeAuthDialog();
       }}
     >
       <section
+        ref={panelRef}
         aria-labelledby='auth-dialog-title'
         aria-modal='true'
-        className='auth-dialog'
+        className='auth-panel'
         role='dialog'
       >
-        <button
-          type='button'
-          className='auth-dialog__close'
-          aria-label='关闭登录弹窗'
-          onClick={closeAuthDialog}
-        >
-          <XIcon aria-hidden='true' />
-        </button>
-
-        <header className='auth-dialog__header'>
-          <h2 id='auth-dialog-title'>
-            {dialog.mode === 'signup' ? '注册账号' : '登录 / 注册'}
+        <header className='auth-panel__header'>
+          <p className='site-kicker'><span>{dialog.mode === 'signup' ? '注册' : '登录'}</span></p>
+          <h2 id='auth-dialog-title' className='site-title'>
+            {dialog.mode === 'signup' ? '创建一个账号' : '欢迎回来'}
           </h2>
-          <p>输入邮箱获取验证码即可继续，无需密码。</p>
+          <p className='site-lead'>输入邮箱获取验证码即可继续。首次登录会自动创建账号。</p>
+          <button
+            type='button'
+            className='site-icon-button auth-panel__close'
+            aria-label='关闭登录弹窗'
+            onClick={closeAuthDialog}
+          >
+            <X aria-hidden='true' />
+          </button>
         </header>
-
-        <div className='auth-dialog__tabs' role='tablist' aria-label='登录模式'>
-          <button
-            type='button'
-            className={dialog.mode === 'signin' ? 'active' : ''}
-            onClick={() => setAuthDialogMode('signin')}
-          >
-            登录
-          </button>
-          <button
-            type='button'
-            className={dialog.mode === 'signup' ? 'active' : ''}
-            onClick={() => setAuthDialogMode('signup')}
-          >
-            注册
-          </button>
-        </div>
 
         <AuthForm onSuccess={handleSuccess} />
       </section>

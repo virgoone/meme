@@ -266,6 +266,16 @@ export function useSiteStats() {
   });
 }
 
+export function useSubscribeNewsletter() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (email: string) => postJson<unknown>('/api/newsletter', { email }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['public', 'site-stats'] });
+    },
+  });
+}
+
 // ---- public page hooks -----------------------------------------------------------
 
 export type PostCardItem = {

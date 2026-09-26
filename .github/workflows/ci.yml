@@ -38,7 +38,7 @@ jobs:
         run: bun test packages/editor/src/block-id.test.ts packages/db/src/migration/sanity-content.test.ts apps/server/src/modules/projects/index.test.ts apps/server/src/modules/reactions/service.test.ts apps/server/src/cloudflare/public-routes.test.ts
 
       - name: Test loading states
-        run: bun test apps/web/tests/loading.test.tsx
+        run: bun test apps/web/tests/loading.test.tsx apps/web/tests/format.test.ts
 
       - name: Test article creation and draft access
         run: bun test apps/server/src/modules/posts/index.test.ts apps/server/src/modules/system/views.test.ts apps/web/tests/slate-post-block.test.tsx
