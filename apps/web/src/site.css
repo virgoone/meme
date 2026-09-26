@@ -40,6 +40,10 @@
   font-size: 15px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  /* Titles, excerpts, guestbook entries and comments all carry user-written
+     text. Break long unbroken runs anywhere so no block can widen the page on
+     phones; code blocks opt back out with overflow-wrap: normal. */
+  overflow-wrap: anywhere;
 }
 
 .site-shell a {
@@ -695,9 +699,13 @@
   min-width: 0;
   font-size: 16.5px;
   line-height: 1.9;
-  /* Long unbroken runs (domain lists, URLs, inline code) must wrap instead of
-     widening the column and letting the whole page scroll sideways on phones. */
   overflow-wrap: anywhere;
+}
+
+.article-body img,
+.article-body video,
+.article-body iframe {
+  max-width: 100%;
 }
 
 .article-body > * + * {
@@ -1637,7 +1645,7 @@ a.blog-pagination-number:hover {
   font-size: 15px;
   line-height: 1.7;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .guest-list__body p {

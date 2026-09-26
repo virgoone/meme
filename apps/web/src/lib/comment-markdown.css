@@ -3,6 +3,10 @@
 /* Markdown rendered by CommentMarkdown: comments, guestbook entries and previews.
    Lives next to the component so every route that renders markdown loads it. */
 
+.comment__message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .comment__message * {
   @apply leading-6;
 }
@@ -35,9 +39,27 @@
   @apply my-1 border-l-4 border-zinc-400 pl-2;
 }
 .comment__message img,
-.comment__message video {
+.comment__message video,
+.comment__message iframe {
   @apply rounded-md;
+  max-width: 100%;
   max-height: 350px;
+}
+/* GFM tables: scroll inside their own box instead of widening the thread. */
+.comment__message .comment__table {
+  @apply my-1.5;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.comment__message table {
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+.comment__message th,
+.comment__message td {
+  @apply border border-zinc-400/30 px-2 py-1 text-left align-top;
+  /* Cells keep words whole; a table with long tokens scrolls inside its box. */
+  overflow-wrap: normal;
 }
 .comment__message pre {
   @apply my-1.5 whitespace-break-spaces;

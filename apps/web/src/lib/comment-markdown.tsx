@@ -8,6 +8,11 @@ export function CommentMarkdown({ children }: { children: string }) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        table: ({ node: _node, ...props }) => (
+          <div className='comment__table'>
+            <table {...props} />
+          </div>
+        ),
         a: ({ children, href }) => {
           const external = !href?.startsWith('/');
           return (
