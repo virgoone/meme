@@ -1,18 +1,12 @@
-import { pageHead } from '../lib/seo';
-import { createFileRoute } from '@tanstack/react-router';
-import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 
-import { homePostsQueryOptions, useHomePosts, type PostCardItem } from '../lib/admin-queries';
-import {
-  GitHubIcon,
-  MailIcon,
-  SparkleIcon,
-  TiltedSendIcon,
-  TwitterIcon,
-} from '../lib/icons';
-import { BlogPostCard, BlogPostCardSkeleton } from '../lib/post-card';
-import { loadPublicQuery } from '../lib/route-query';
+import { homePostsQueryOptions, useHomePosts } from '../lib/admin-queries';
 import { AdBanner } from '../lib/adsense';
+import { formatChineseDate, greetingForHour } from '../lib/format';
+import { PostListSkeleton, PostRow } from '../lib/post-list';
+import { loadPublicQuery } from '../lib/route-query';
+import { pageHead } from '../lib/seo';
 
 export const Route = createFileRoute('/')({
   head: () => pageHead('小全栈的技术实践与开发记录', '记录 Cloudflare 全栈、AI 应用、SaaS 架构与远程开发的真实实践，分享项目设计、实现过程和踩坑经验。', '/'),
@@ -21,90 +15,66 @@ export const Route = createFileRoute('/')({
 });
 
 function HomePage() {
-  const shouldReduceMotion = useReducedMotion();
   const posts = useHomePosts();
 
   return (
-    <motion.div
-      className='legacy-home'
-      initial={shouldReduceMotion ? false : 'hidden'}
-      animate='visible'
-      variants={{
-        hidden: { opacity: 1 },
-        visible: {
-          opacity: 1,
-          transition: { staggerChildren: 0.11, delayChildren: 0.05 },
-        },
-      }}
-    >
-      <motion.section className='legacy-container legacy-home-headline' variants={homeItemVariants}>
-        <Headline />
-      </motion.section>
-      <motion.section className='legacy-container legacy-home-grid' variants={homeItemVariants}>
-        <motion.div className='legacy-recent-posts' variants={homeItemVariants}>
-          <h2 className='legacy-section-heading'>
-            <span aria-hidden='true'>✎</span><span>近期文章</span>
-          </h2>
-          {posts.isPending ? (
-            <div className='legacy-post-stack' role='status' aria-label='文章列表加载中'>
-              {Array.from({ length: 3 }).map((_, i) => (<BlogPostCardSkeleton key={i} />))}
-            </div>
-          ) : posts.isError ? (
-            <p className='state-text state-text--error'>{posts.error instanceof Error ? posts.error.message : String(posts.error)}</p>
-          ) : !posts.data || posts.data.length === 0 ? (
-            <p className='state-text'>还没有导入文章。</p>
-          ) : (
-            <div className='legacy-post-stack'>
-              {posts.data.map((post) => (<BlogPostCard post={post} key={post.id} />))}
-            </div>
-          )}
-        </motion.div>
-        <motion.aside className='legacy-home-aside' variants={homeItemVariants}>
-          <NewsletterSection />
-        </motion.aside>
-      </motion.section>
+    <div className='site-measure'>
+      <Hero />
+      <hr className='site-rule' />
+      <section className='site-section'>
+        <p className='site-kicker'>
+          <span>近期文章</span>
+          <Link to='/blog'>全部文章 →</Link>
+        </p>
+        {posts.isPending ? (
+          <PostListSkeleton count={5} />
+        ) : posts.isError ? (
+          <p className='site-empty site-empty--error'>{errorText(posts.error)}</p>
+        ) : !posts.data || posts.data.length === 0 ? (
+          <p className='site-empty'>还没有文章。</p>
+        ) : (
+          <ul className='site-rows'>
+            {posts.data.map((post) => <PostRow post={post} key={post.id} />)}
+          </ul>
+        )}
+      </section>
       {!!posts.data?.length && <AdBanner placement='home' />}
-    </motion.div>
-  );
-}
-
-const homeItemVariants: Variants = {
-  hidden: { opacity: 1, y: 18, filter: 'blur(6px)' },
-  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] as const } },
-};
-
-function Headline() {
-  return (
-    <div className='legacy-headline'>
-      <div className='legacy-headline-card' aria-hidden='true'>
-        <img src='/portrait.png' alt='' />
-        <span><strong>Koya</strong><small>online, probably coding</small></span>
-      </div>
-      <h1>
-        <span className='developer'><span className='mono'>&lt;</span>小全栈<span className='mono'>/&gt;</span></span>，
-        <span className='designer'>正在搬砖</span>，<span className='headline-break' />
-        <span className='ocd'><SparkleIcon aria-hidden='true' />啥都写点</span>
-      </h1>
-      <p>欢迎来到我的博客。喜欢写代码，也喜欢把想法做成小产品。这里记录全栈开发、AI 应用和日常折腾，也分享一些常用和自己改造的<a href='https://douni.one/' target='_blank' rel='noreferrer'>开源工具</a>。</p>
-      <div className='legacy-socials'>
-        <a href='/twitter' aria-label='我的推特'><TwitterIcon aria-hidden='true' /></a>
-        <a href='/github' aria-label='我的 GitHub'><GitHubIcon aria-hidden='true' /></a>
-        <a href='mailto:w2008second@gmail.com' aria-label='我的邮箱'><MailIcon aria-hidden='true' /></a>
-      </div>
     </div>
   );
 }
 
-function NewsletterSection() {
+function Hero() {
+  // The greeting depends on the reader's clock, so it only renders after hydration.
+  const [today, setToday] = useState<{ date: string; greeting: string } | null>(null);
+  useEffect(() => {
+    const now = new Date();
+    setToday({ date: formatChineseDate(now), greeting: greetingForHour(now.getHours()) });
+  }, []);
+
   return (
-    <section className='legacy-newsletter'>
-      <h2><TiltedSendIcon aria-hidden='true' /><span>动态更新</span></h2>
-      <p><span>喜欢我的内容的话不妨订阅支持一下 🫶</span><br /><span>每月一封，随时可以取消订阅。</span></p>
-      <form>
-        <label className='sr-only' htmlFor='newsletter-email'>邮箱</label>
-        <input id='newsletter-email' name='email' type='email' autoComplete='email' placeholder='你的邮箱' />
-        <button type='submit'>订阅</button>
-      </form>
+    <section className='home-hero'>
+      <p className='site-kicker'>
+        <span>{today?.date ?? ' '}</span>
+      </p>
+      <h1 className='site-title'>
+        {today?.greeting ?? '你好'}，我是 Koya。
+      </h1>
+      <p className='site-lead'>
+        <span className='mono'>&lt;小全栈/&gt;</span>，正在搬砖，啥都写点。喜欢写代码，也喜欢把想法做成小产品。
+        这里记录全栈开发、AI 应用和日常折腾，也分享一些常用和自己改造的
+        <a href='https://douni.one/' target='_blank' rel='noreferrer'>开源工具</a>。
+      </p>
+      <ul className='site-inline-links'>
+        <li><a href='/twitter' target='_blank' rel='noreferrer'>Twitter</a></li>
+        <li><a href='/github' target='_blank' rel='noreferrer'>GitHub</a></li>
+        <li><a href='mailto:w2008second@gmail.com'>Email</a></li>
+        <li><a href='/feed.xml'>RSS</a></li>
+        <li><Link to='/about'>关于我</Link></li>
+      </ul>
     </section>
   );
+}
+
+function errorText(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }

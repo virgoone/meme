@@ -1,7 +1,6 @@
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
 import { useRouterState } from '@tanstack/react-router';
-import { BlogPostCardSkeleton } from './post-card';
-import { BlogPageHeader } from './blog-page-header';
+
+import { PostListSkeleton } from './post-list';
 
 export function BlogPostPageSkeleton() {
   return (
@@ -10,11 +9,11 @@ export function BlogPostPageSkeleton() {
         <span /><span /><span /><span />
       </aside>
       <div className='legacy-article-skeleton__main' aria-hidden='true'>
-        <span className='legacy-article-skeleton__cover' />
         <div className='legacy-article-skeleton__meta'><span /><span /></div>
         <span className='legacy-article-skeleton__title' />
         <span className='legacy-article-skeleton__title short' />
         <span className='legacy-article-skeleton__lead' />
+        <span className='legacy-article-skeleton__cover' />
         <div className='legacy-article-skeleton__body'>
           {Array.from({ length: 8 }, (_, index) => <span key={index} />)}
         </div>
@@ -44,37 +43,19 @@ export function AdminContentSkeleton() {
 
 export function PageSkeleton({ pathname }: { pathname: string }) {
   if (pathname.startsWith('/admin')) return <AdminContentSkeleton />;
-  if (pathname === '/blog') return (
-    <section className='legacy-container legacy-blog-page'>
-      <BlogPageHeader />
-      <div className='legacy-blog-grid' role='status' aria-label='文章列表加载中'>
-        {Array.from({ length: 6 }, (_, index) => <BlogPostCardSkeleton key={index} />)}
-      </div>
-    </section>
-  );
-  if (/^\/blog\/.+/.test(pathname) || /^\/(?!blog$|projects$|guestbook$|login$|register$)[^/]+$/.test(pathname)) {
+  if (/^\/blog\/.+/.test(pathname) || /^\/(?!blog$|projects$|guestbook$|login$|register$|about$|contact$|privacy$|terms$)[^/]+$/.test(pathname)) {
     return <article className='article-page'><BlogPostPageSkeleton /></article>;
   }
   return (
-    <section className='content-page route-skeleton' role='status' aria-label='页面加载中'>
-      <div className='route-skeleton__heading' aria-hidden='true'>
-        <Skeleton className='h-10 w-64 max-w-full' />
-        <Skeleton className='h-4 w-96 max-w-full' />
+    <section className='site-measure' role='status' aria-label='页面加载中'>
+      <div aria-hidden='true'>
+        <span className='skeleton-line skeleton-line--meta' />
+        <span className='skeleton-line skeleton-line--title' style={{ height: 28, marginTop: 12 }} />
+        <span className='skeleton-line skeleton-line--text' />
       </div>
-      {pathname === '/' || pathname === '/blog' ? (
-        <div className='legacy-blog-grid'>
-          {Array.from({ length: 6 }, (_, index) => <BlogPostCardSkeleton key={index} />)}
-        </div>
-      ) : (
-        <div className='route-skeleton__rows' aria-hidden='true'>
-          {Array.from({ length: 4 }, (_, index) => (
-            <div className='route-skeleton__row' key={index}>
-              <Skeleton className='size-10 shrink-0 rounded-full' />
-              <div><Skeleton className='h-4 w-48 max-w-full' /><Skeleton className='h-4 w-full' /></div>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className='site-section'>
+        <PostListSkeleton count={pathname === '/' || pathname === '/blog' ? 6 : 4} />
+      </div>
     </section>
   );
 }
