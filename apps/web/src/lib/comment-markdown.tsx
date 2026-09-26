@@ -1,6 +1,8 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import './comment-markdown.css';
+
 export function CommentMarkdown({ children }: { children: string }) {
   return (
     <ReactMarkdown

@@ -289,23 +289,13 @@ function AdminShell({ pathname }: { pathname: string }) {
   }
   if (user.role !== 'admin') {
     return (
-      <section className='admin-page'>
-        <h1>需要管理员权限</h1>
-        <p className='admin-muted'>
-          当前账号（{user.email}）没有后台访问权限。
-        </p>
-        <p>
-          <button
-            type='button'
-            className='admin-button'
-            onClick={() => {
-              void signOut().finally(() => navigate({ to: '/login' }));
-            }}
-          >
-            切换账号
-          </button>
-        </p>
-      </section>
+      <AdminWorkspace user={user} pathname={pathname} toolbar={<ThemeSwitcher />} onSignOut={() => { void signOut().finally(() => navigate({ to: '/login' })); }}>
+        <section className='mx-auto grid max-w-md gap-3 py-16 text-center'>
+          <h1 className='font-semibold text-xl'>需要管理员权限</h1>
+          <p className='text-muted-foreground text-sm'>当前账号（{user.email}）没有后台访问权限。</p>
+          <button type='button' className='admin-button mx-auto' onClick={() => { void signOut().finally(() => navigate({ to: '/login' })); }}>切换账号</button>
+        </section>
+      </AdminWorkspace>
     );
   }
 
@@ -313,7 +303,7 @@ function AdminShell({ pathname }: { pathname: string }) {
 }
 
 function AdminShellSkeleton() {
-  return <AdminWorkspace pathname='/admin' loading toolbar={<span className='admin-topbar-skeleton-button' aria-hidden='true' />}><AdminContentSkeleton /></AdminWorkspace>;
+  return <AdminWorkspace pathname='/admin' loading toolbar={<span className='block size-8 rounded-full bg-muted' aria-hidden='true' />}><AdminContentSkeleton /></AdminWorkspace>;
 }
 
 function SiteFooter() {

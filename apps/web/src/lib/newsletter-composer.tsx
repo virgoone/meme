@@ -17,7 +17,7 @@ import {
   type NewsletterCampaign,
   type NewsletterDraft,
 } from '@meme/shared';
-import { AdminPageHeader } from './admin-ui';
+import { AdminPage, AdminPageHeader } from './admin-ui';
 import { newsletterRequest, type NewsletterOptions } from './newsletter-client';
 import type { BlogPost } from './admin-queries';
 import './newsletter-composer.css';
@@ -186,7 +186,7 @@ export function NewsletterComposer({
     }
   }
   return (
-    <section className='admin-page newsletter-page'>
+    <AdminPage className='newsletter-page'>
       <AdminPageHeader
         title='发送最近更新'
         description='把新文章整理成一封值得打开的邮件。'
@@ -583,6 +583,6 @@ export function NewsletterComposer({
           </div>
         )}
       </section>
-    </section>
+    </AdminPage>
   );
 }

@@ -1,5 +1,7 @@
 import { useRouterState } from '@tanstack/react-router';
 
+import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+
 import { PostListSkeleton } from './post-list';
 
 export function BlogPostPageSkeleton() {
@@ -27,16 +29,15 @@ export function BlogPostPageSkeleton() {
 
 export function AdminContentSkeleton() {
   return (
-    <section className='admin-page admin-page-loading' role='status' aria-label='后台内容加载中'>
-      <div className='admin-skeleton-header'><span /><span /></div>
-      <div className='admin-stat-grid'>
-        {Array.from({ length: 3 }, (_, index) => (
-          <div className='admin-stat-card admin-stat-card--skeleton' key={index}><span /><strong /></div>
-        ))}
+    <section className='flex w-full flex-col gap-6' role='status' aria-label='后台内容加载中'>
+      <div className='grid gap-2 border-border border-b pb-5' aria-hidden='true'>
+        <Skeleton className='h-7 w-40' />
+        <Skeleton className='h-4 w-64' />
       </div>
-      <div className='admin-skeleton-panel'>
-        {Array.from({ length: 6 }, (_, index) => <span key={index} />)}
+      <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4' aria-hidden='true'>
+        {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className='h-24 w-full' />)}
       </div>
+      <Skeleton className='h-64 w-full' aria-hidden='true' />
     </section>
   );
 }

@@ -1581,6 +1581,11 @@ a.blog-pagination-number:hover {
   margin: 0;
 }
 
+.guest-list__body > * + *,
+.guest-composer__preview > * + * {
+  margin-top: 0.5em;
+}
+
 /* ---- footer -------------------------------------------------------------- */
 
 .site-footer {

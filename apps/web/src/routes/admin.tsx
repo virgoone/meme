@@ -1,24 +1,19 @@
 import { privateHead } from '../lib/seo';
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useRouterState,
-} from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { ArrowUpRight } from 'lucide-react';
 
+import { Badge } from '@bunship-ai/ui/components/badge';
 import {
   useAdminComments,
   useAdminGuestbook,
   useAdminHealth,
   useAdminSubscribers,
 } from '../lib/admin-queries';
-import { AdminPageHeader, StatCard } from '../lib/admin-ui';
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+import { AdminPage, AdminPageHeader, ErrorText, SectionCard, StatCard, StatGrid } from '../lib/admin-ui';
 import { AdminContentSkeleton } from '../lib/page-skeletons';
 
 export const Route = createFileRoute('/admin')({
   head: privateHead,
-
   component: AdminRoute,
 });
 
@@ -33,17 +28,19 @@ function AdminRoute() {
     return <Outlet />;
   }
 
-  return (
-    <AdminPage
-      health={health}
-      comments={comments}
-      subscribers={subscribers}
-      guestbook={guestbook}
-    />
-  );
+  return <AdminPage_ health={health} comments={comments} subscribers={subscribers} guestbook={guestbook} />;
 }
 
-function AdminPage({
+const entries = [
+  { label: '博客文章', description: '撰写、编辑与发布', to: '/admin/content/blog' },
+  { label: '项目', description: '公开项目卡片', to: '/admin/content/project' },
+  { label: '评论', description: '段落评论审阅', to: '/admin/comments' },
+  { label: '订阅者', description: '订阅名单与状态', to: '/admin/subscribers' },
+  { label: '邮件群发', description: '整理更新发给读者', to: '/admin/newsletters' },
+  { label: '站点设置', description: '站点、邮件、存储与广告', to: '/admin/settings' },
+] as const;
+
+function AdminPage_({
   health,
   comments,
   subscribers,
@@ -57,60 +54,54 @@ function AdminPage({
   if (health.isPending || comments.isPending || subscribers.isPending || guestbook.isPending) {
     return <AdminContentSkeleton />;
   }
+
+  const activeSubscribers = subscribers.data ? subscribers.data.filter((s) => s.subscribedAt && !s.unsubscribedAt).length : '-';
+
   return (
-    <section className='admin-page'>
-      <AdminPageHeader title='仪表盘' description='站点内容和迁移数据概览。' />
+    <AdminPage>
+      <AdminPageHeader title='仪表盘' description='站点内容与读者互动概览。' />
 
-      <div className='admin-stat-grid'>
-        <StatCard title='总评论' value={comments.data ? comments.data.length : '-'} />
-        <StatCard
-          title='总订阅'
-          value={
-            subscribers.data
-              ? subscribers.data.filter((s) => s.subscribedAt && !s.unsubscribedAt).length
-              : '-'
-          }
-        />
-        <StatCard title='总留言' value={guestbook.data ? guestbook.data.length : '-'} />
-      </div>
+      <StatGrid>
+        <StatCard title='评论' value={comments.data ? comments.data.length : '-'} />
+        <StatCard title='有效订阅' value={activeSubscribers} hint={subscribers.data ? `共 ${subscribers.data.length} 条记录` : undefined} />
+        <StatCard title='留言' value={guestbook.data ? guestbook.data.length : '-'} />
+        <StatCard title='运行环境' value={health.data?.appEnv ?? '-'} hint={health.data ? `${health.data.runtime} · ${health.data.database}` : undefined} />
+      </StatGrid>
 
-      <div className='admin-grid'>
-        <section className='admin-card'>
-          <div className='admin-card__header'>
-            <h2>服务状态</h2>
-          </div>
-          {health.isPending ? (
-            <Skeleton className='h-20 w-full' />
-          ) : health.isError ? (
-            <p className='admin-error'>
-              {health.error instanceof Error ? health.error.message : String(health.error)}
-            </p>
+      <div className='grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]'>
+        <SectionCard title='内容入口' description='常用的管理页面。' bodyClassName='p-0'>
+          <ul className='divide-y divide-border'>
+            {entries.map((entry) => (
+              <li key={entry.to}>
+                <Link to={entry.to} className='group flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-muted/60'>
+                  <span className='grid gap-0.5'>
+                    <span className='font-medium text-sm'>{entry.label}</span>
+                    <span className='text-muted-foreground text-xs'>{entry.description}</span>
+                  </span>
+                  <ArrowUpRight aria-hidden='true' className='size-4 text-muted-foreground transition-colors group-hover:text-foreground' />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+
+        <SectionCard title='服务状态' description='当前 Worker 运行时与绑定。'>
+          {health.isError ? (
+            <ErrorText error={health.error} />
           ) : health.data ? (
-            <dl className='admin-key-values'>
+            <dl className='grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3'>
               {Object.entries(health.data).map(([key, value]) => (
-                <div key={key}>
-                  <dt>{key}</dt>
-                  <dd>{String(value)}</dd>
+                <div key={key} className='grid gap-1'>
+                  <dt className='text-[11px] text-muted-foreground uppercase tracking-wider'>{key}</dt>
+                  <dd className='font-medium text-sm'>
+                    {typeof value === 'boolean' ? <Badge variant={value ? 'default' : 'destructive'}>{value ? 'ok' : 'down'}</Badge> : String(value)}
+                  </dd>
                 </div>
               ))}
             </dl>
           ) : null}
-        </section>
-
-        <section className='admin-card'>
-          <div className='admin-card__header'>
-            <h2>内容入口</h2>
-          </div>
-          <div className='admin-link-list'>
-            <Link to='/admin/content/blog'>博客内容</Link>
-            <Link to='/admin/content/project'>项目列表</Link>
-            <Link to='/admin/comments'>评论</Link>
-            <Link to='/admin/subscribers'>订阅</Link>
-            <Link to='/admin/newsletters'>邮件记录</Link>
-            <Link to='/admin/settings'>站点设置</Link>
-          </div>
-        </section>
+        </SectionCard>
       </div>
-    </section>
+    </AdminPage>
   );
 }

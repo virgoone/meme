@@ -1,674 +1,635 @@
-/* Admin theme layer: maps the workspace, data tables, forms and the editor onto the
-   same quiet monochrome palette as the public site. Loaded after styles.css, so it
-   only overrides tokens and the surfaces that still carried the old green accent. */
+/* Admin design tokens. The workspace is built from @bunship-ai/ui components and
+   Tailwind utilities; these variables give them the same quiet, monochrome look
+   as the public site. */
 
-:root {
-  --geist-background: #ffffff;
-  --geist-surface: #f6f6f6;
-  --geist-border: #e8e8e8;
-  --geist-border-strong: #d4d4d4;
-  --geist-fg: #1a1a1a;
-  --geist-muted: #6f6f6f;
-  --geist-soft: #a3a3a3;
-  --geist-focus: #1a1a1a;
-}
-
-:root.dark {
-  --geist-background: #111111;
-  --geist-surface: #1a1a1a;
-  --geist-border: #262626;
-  --geist-border-strong: #383838;
-  --geist-fg: #ececec;
-  --geist-muted: #9a9a9a;
-  --geist-soft: #6b6b6b;
-  --geist-focus: #ececec;
-}
-
-.admin-shell--studio,
-.admin-sidebar--studio {
-  --studio-bg: #ffffff;
-  --studio-panel: #fafafa;
-  --studio-ink: #1a1a1a;
-  --studio-muted: #6f6f6f;
-  --studio-line: #e8e8e8;
-  --studio-hover: #f0f0f0;
-  --studio-active: #1a1a1a;
-  --studio-active-ink: #ffffff;
-  --sidebar-ring: #1a1a1a;
+/* Declared on body (not :root) so the remote editor widget's own theme sheet,
+   which redefines :root, cannot override them. */
+:root body {
+  --background: #fafafa;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
   --primary: #1a1a1a;
   --primary-foreground: #ffffff;
-  --accent: #f0f0f0;
+  --secondary: #f0f0f0;
+  --secondary-foreground: #1a1a1a;
+  --muted-surface: #f3f3f3;
+  --muted-foreground: #6f6f6f;
+  --accent: #ececec;
   --accent-foreground: #1a1a1a;
+  --destructive: #c8412c;
+  --destructive-foreground: #ffffff;
+  --success: #2f7d4f;
+  --success-foreground: #ffffff;
+  --warning: #b7791f;
+  --warning-foreground: #ffffff;
+  --border: #e6e6e6;
+  --input: #d6d6d6;
   --ring: #1a1a1a;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", "Noto Sans SC", sans-serif;
+  --radius: 0.375rem;
+  --sidebar: #f4f4f4;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #1a1a1a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e6e6e6;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e4e4e4;
+  --sidebar-ring: #1a1a1a;
+
+  --ui-label-font-family: var(--font-sans);
+  --ui-label-font-weight: 500;
+  --ui-label-transform: none;
+  --ui-label-tracking-sm: 0;
+  --ui-label-tracking-md: 0;
+  --ui-label-tracking-lg: 0.04em;
+  --ui-shortcut-tracking: 0.04em;
+  --ui-body-font-family: var(--font-sans);
+
+  --ui-control-radius: 6px;
+  --ui-control-border-width: 1px;
+  --ui-control-shadow: none;
+  --ui-control-ring-width: 2px;
+  --ui-card-radius: 8px;
+  --ui-card-border-width: 1px;
+  --ui-card-shadow: none;
+  --ui-card-title-font-family: var(--font-sans);
+  --ui-card-title-font-size: 0.9375rem;
+  --ui-card-title-font-weight: 600;
+  --ui-card-title-line-height: 1.5;
+  --ui-card-title-letter-spacing: 0;
+  --ui-overlay-radius: 8px;
+  --ui-overlay-border-width: 1px;
+  --ui-overlay-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  --ui-overlay-inner-shadow: none;
+  --ui-item-border-width: 0px;
+  --ui-divider-border-width: 1px;
+  --ui-divider-strong-border-width: 1px;
+
+  --ui-button-font-family: var(--font-sans);
+  --ui-button-font-size: 0.8125rem;
+  --ui-button-font-weight: 500;
+  --ui-button-line-height: 1.2;
+  --ui-button-letter-spacing: 0;
+  --ui-button-text-transform: none;
+  --ui-button-radius: 999px;
+  --ui-button-border-width: 1px;
+  --ui-button-emphasis-border-width: 1px;
+  --ui-button-shadow: none;
+  --ui-button-emphasis-shadow: none;
+  --ui-button-emphasis-shadow-hover: none;
+  --ui-button-shadow-active: none;
+  --ui-button-hover-translate-x: 0px;
+  --ui-button-hover-translate-y: 0px;
+  --ui-button-active-translate-x: 0px;
+  --ui-button-active-translate-y: 0px;
+  --ui-button-min-height: 2.25rem;
+  --ui-button-padding-x: 0.875rem;
+  --ui-button-padding-y: 0.375rem;
+  --ui-button-default-bg: var(--primary);
+  --ui-button-default-bg-hover: color-mix(in srgb, var(--primary) 86%, transparent);
+  --ui-button-default-bg-active: var(--primary);
+  --ui-button-default-border: var(--primary);
+  --ui-button-default-foreground: var(--primary-foreground);
+  --ui-button-destructive-bg: var(--destructive);
+  --ui-button-destructive-bg-hover: color-mix(in srgb, var(--destructive) 88%, black 12%);
+  --ui-button-destructive-bg-active: color-mix(in srgb, var(--destructive) 80%, black 20%);
+  --ui-button-destructive-border: var(--destructive);
+  --ui-button-destructive-foreground: var(--destructive-foreground);
+  --ui-button-outline-bg: var(--card);
+  --ui-button-outline-bg-hover: var(--muted-surface);
+  --ui-button-outline-border: var(--input);
+  --ui-button-outline-foreground: var(--foreground);
+  --ui-button-secondary-bg: var(--secondary);
+  --ui-button-secondary-bg-hover: var(--accent);
+  --ui-button-secondary-border: var(--secondary);
+  --ui-button-secondary-foreground: var(--secondary-foreground);
+  --ui-button-ghost-foreground: var(--foreground);
+  --ui-button-ghost-bg-hover: var(--muted-surface);
+  --ui-button-ghost-border-hover: transparent;
+  --ui-button-link-color: var(--foreground);
+  --ui-button-link-hover-color: var(--foreground);
+  --ui-button-link-decoration: underline;
+  --ui-button-link-hover-decoration: underline;
+  --ui-button-link-font-family: var(--font-sans);
+  --ui-button-link-font-size: 0.8125rem;
+  --ui-button-link-font-weight: 500;
+  --ui-button-link-letter-spacing: 0;
+  --ui-button-link-text-transform: none;
+
+  --ui-badge-radius: 999px;
+  --ui-badge-border-width: 1px;
+  --ui-badge-font-family: var(--font-sans);
+  --ui-badge-font-size: 0.6875rem;
+  --ui-badge-font-weight: 500;
+  --ui-badge-letter-spacing: 0.01em;
+  --ui-badge-text-transform: none;
+  --ui-badge-default-bg: var(--primary);
+  --ui-badge-default-bg-hover: var(--primary);
+  --ui-badge-default-border: var(--primary);
+  --ui-badge-default-foreground: var(--primary-foreground);
+  --ui-badge-secondary-bg: var(--muted-surface);
+  --ui-badge-secondary-bg-hover: var(--accent);
+  --ui-badge-secondary-border: var(--border);
+  --ui-badge-secondary-foreground: var(--muted-foreground);
+  --ui-badge-outline-bg: transparent;
+  --ui-badge-outline-bg-hover: var(--muted-surface);
+  --ui-badge-outline-border: var(--border);
+  --ui-badge-outline-foreground: var(--muted-foreground);
+  --ui-badge-outline-foreground-hover: var(--foreground);
+  --ui-badge-destructive-bg: var(--destructive);
+  --ui-badge-destructive-bg-hover: var(--destructive);
+  --ui-badge-destructive-border: var(--destructive);
+  --ui-badge-destructive-foreground: var(--destructive-foreground);
+
+  --ui-field-bg: var(--card);
+  --ui-field-border-color: var(--input);
+  --ui-field-border-width: 1px;
+  --ui-field-radius: 6px;
+  --ui-field-shadow: none;
+  --ui-field-min-height: 2.375rem;
+  --ui-field-padding-x: 0.75rem;
+  --ui-field-padding-y: 0.5rem;
+  --ui-field-font-family: var(--font-sans);
+  --ui-field-font-size: 0.875rem;
+  --ui-field-font-weight: 400;
+  --ui-field-line-height: 1.45;
+  --ui-field-foreground: var(--foreground);
+  --ui-field-placeholder: #a3a3a3;
+
+  --ui-menu-radius: 8px;
+  --ui-menu-border-width: 1px;
+  --ui-menu-shadow: var(--ui-overlay-shadow);
+  --ui-menu-item-border-width: 0px;
+  --ui-menu-item-bg-hover: var(--muted-surface);
+  --ui-menu-item-bg-active: var(--muted-surface);
+  --ui-menu-item-border-active: transparent;
+  --ui-menu-item-foreground-active: var(--foreground);
+  --ui-menu-item-font-family: var(--font-sans);
+  --ui-menu-item-font-size: 0.8125rem;
+  --ui-menu-item-font-weight: 400;
+  --ui-menu-label-font-family: var(--font-sans);
+  --ui-menu-label-letter-spacing: 0.04em;
+  --ui-menu-label-text-transform: uppercase;
+  --ui-navigation-item-bg: transparent;
+  --ui-navigation-item-bg-hover: var(--muted-surface);
+  --ui-navigation-item-bg-active: var(--muted-surface);
+  --ui-navigation-item-foreground: var(--muted-foreground);
+  --ui-navigation-item-foreground-active: var(--foreground);
+  --ui-toggle-bg-hover: var(--muted-surface);
+  --ui-toggle-bg-active: var(--accent);
+  --ui-toggle-foreground-hover: var(--foreground);
+  --ui-toggle-foreground-active: var(--foreground);
+  --ui-tabs-trigger-bg-active: var(--card);
+  --ui-tabs-trigger-foreground-active: var(--foreground);
+  --ui-tabs-trigger-shadow-active: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --ui-tooltip-bg: var(--foreground);
+  --ui-tooltip-foreground: var(--background);
+  --ui-tooltip-radius: 6px;
+  --ui-tooltip-border-width: 0px;
+  --ui-tooltip-shadow: none;
+  --ui-dialog-radius: 10px;
+  --ui-dialog-border-width: 1px;
+  --ui-dialog-shadow: var(--ui-overlay-shadow);
+  --ui-dialog-close-radius: 999px;
+  --ui-dialog-close-border-width: 0px;
+  --ui-dialog-close-shadow: none;
+  --ui-sheet-radius: 0px;
+  --ui-sheet-border-width: 1px;
+  --ui-sheet-shadow: var(--ui-overlay-shadow);
+  --ui-sheet-close-radius: 999px;
+  --ui-accordion-divider-width: 1px;
+  --ui-accordion-trigger-border-width: 0px;
+  --ui-accordion-trigger-bg-hover: var(--muted-surface);
+  --ui-accordion-content-bg: transparent;
+
+  --ui-table-row-border-width: 1px;
+  --ui-table-head-font-family: var(--font-sans);
+  --ui-table-head-font-size: 0.6875rem;
+  --ui-table-head-line-height: 1.3;
+  --ui-table-head-letter-spacing: 0.06em;
+  --ui-table-head-text-transform: uppercase;
+  --ui-table-caption-font-family: var(--font-sans);
+  --ui-table-caption-font-size: 0.8125rem;
+  --ui-table-caption-line-height: 1.5;
+  --ui-table-caption-letter-spacing: 0;
+  --ui-table-caption-text-transform: none;
+
+  --ui-sidebar-radius: 0px;
+  --ui-sidebar-border-width: 1px;
+  --ui-sidebar-trigger-radius: 6px;
+  --ui-sidebar-trigger-border-width: 0px;
+  --ui-sidebar-menu-item-border-width: 0px;
+  --ui-sidebar-group-label-font-family: var(--font-sans);
+  --ui-sidebar-group-label-letter-spacing: 0.08em;
+  --ui-sidebar-group-label-text-transform: uppercase;
+  --ui-sidebar-badge-font-family: var(--font-sans);
+
+  --dt-shell-border-width: 1px;
+  --dt-shell-radius: 8px;
+  --dt-shell-bg: var(--card);
+  --dt-shell-shadow: none;
+  --dt-panel-border-width: 1px;
+  --dt-panel-radius: 8px;
+  --dt-panel-bg: var(--card);
+  --dt-panel-shadow: none;
+  --dt-control-border-width: 1px;
+  --dt-control-radius: 6px;
+  --dt-control-shadow: none;
+  --dt-header-bg: color-mix(in srgb, var(--muted-surface) 70%, var(--card));
+  --dt-header-foreground: var(--muted-foreground);
+  --dt-row-bg-hover: color-mix(in srgb, var(--muted-surface) 60%, transparent);
+  --dt-row-bg-selected: var(--accent);
+  --dt-row-bg-selected-hover: var(--accent);
+  --dt-empty-icon-bg: var(--muted-surface);
+  --dt-pagination-bg: var(--card);
+  --dt-page-indicator-bg: var(--card);
+  --dt-selection-bg: var(--accent);
+  --dt-unit-bg: var(--muted-surface);
+  --dt-label-font-family: var(--font-sans);
+  --dt-label-letter-spacing: 0.06em;
+  --dt-label-text-transform: uppercase;
 }
 
-:root.dark .admin-shell--studio,
-:root.dark .admin-sidebar--studio {
-  --studio-bg: #111111;
-  --studio-panel: #161616;
-  --studio-ink: #ececec;
-  --studio-muted: #9a9a9a;
-  --studio-line: #262626;
-  --studio-hover: #222222;
-  --studio-active: #ececec;
-  --studio-active-ink: #111111;
-  --sidebar-ring: #ececec;
+:root.dark body {
+  --background: #111111;
+  --foreground: #ececec;
+  --card: #171717;
+  --card-foreground: #ececec;
+  --popover: #1b1b1b;
+  --popover-foreground: #ececec;
   --primary: #ececec;
   --primary-foreground: #111111;
-  --accent: #222222;
+  --secondary: #222222;
+  --secondary-foreground: #ececec;
+  --muted-surface: #1f1f1f;
+  --muted-foreground: #9a9a9a;
+  --accent: #292929;
   --accent-foreground: #ececec;
+  --destructive: #e0684f;
+  --destructive-foreground: #111111;
+  --success: #6fbf8a;
+  --success-foreground: #111111;
+  --warning: #d9a441;
+  --warning-foreground: #111111;
+  --border: #262626;
+  --input: #383838;
   --ring: #ececec;
+  --sidebar: #151515;
+  --sidebar-foreground: #ececec;
+  --sidebar-primary: #ececec;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #ececec;
+  --sidebar-border: #262626;
+  --sidebar-ring: #ececec;
+  --ui-field-placeholder: #6b6b6b;
+  --ui-overlay-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --ui-tabs-trigger-shadow-active: none;
 }
 
-/* ---- shell -------------------------------------------------------------- */
+/* ---- data table classes consumed by @bunship-ai/data-table ------------------- */
 
-.admin-sidebar--studio [data-sidebar='menu-button'][data-active='true'] {
-  background: var(--studio-active);
-  color: var(--studio-active-ink);
-  font-weight: 500;
+.dt-shell {
+  border: var(--dt-shell-border-width) solid var(--border);
+  border-radius: var(--dt-shell-radius);
+  background: var(--dt-shell-bg);
+  box-shadow: var(--dt-shell-shadow);
 }
 
-.admin-sidebar--studio [data-sidebar='group-label'] {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 10px;
+.dt-panel {
+  border: var(--dt-panel-border-width) solid var(--border);
+  border-radius: var(--dt-panel-radius);
+  background: var(--dt-panel-bg);
+  box-shadow: var(--dt-panel-shadow);
 }
 
-.studio-brand strong {
-  font-family: "Noto Serif SC", "Songti SC", "Source Han Serif SC", Georgia, serif;
-  font-size: 15px;
-  letter-spacing: 0.02em;
+.dt-control {
+  border: var(--dt-control-border-width) solid var(--border);
+  border-radius: var(--dt-control-radius);
+  background: var(--dt-panel-bg);
+  box-shadow: var(--dt-control-shadow);
 }
 
-.studio-create > a {
-  border-radius: 999px;
-  border-color: var(--studio-ink);
-  background: var(--studio-ink);
-  color: var(--studio-bg);
-  font-weight: 500;
+.dt-header {
+  background: var(--dt-header-bg);
 }
 
-.studio-create > a:hover {
-  background: var(--studio-ink);
-  opacity: 0.86;
+.dt-header-cell {
+  color: var(--dt-header-foreground);
 }
 
-.admin-shell--studio .admin-topbar {
-  min-height: 56px;
-  background: var(--studio-bg);
+.dt-row {
+  border-color: var(--border);
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
-.admin-shell--studio .admin-topbar nav {
-  font-size: 12.5px;
-  letter-spacing: 0.02em;
+.dt-row:hover {
+  background: var(--dt-row-bg-hover);
 }
 
-.admin-shell--studio .admin-main {
-  padding: 36px 40px 64px;
+.dt-row[data-state='selected'] {
+  background: var(--dt-row-bg-selected);
 }
 
-.admin-shell--studio .admin-page {
-  width: min(100%, 1120px);
-  gap: 28px;
-}
-
-/* ---- page header ----------------------------------------------------------- */
-
-.admin-shell--studio .admin-page-header {
-  align-items: flex-end;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--geist-border);
-}
-
-.admin-shell--studio .admin-page-header h1 {
-  font-family: "Noto Serif SC", "Songti SC", "Source Han Serif SC", Georgia, serif;
-  font-size: 26px;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-}
-
-.admin-shell--studio .admin-page-header p {
-  margin-top: 4px;
-  color: var(--geist-muted);
-  font-size: 13.5px;
-}
-
-/* ---- buttons, pills, links -------------------------------------------------- */
-
-.admin-shell--studio .admin-button,
-.auth-dialog .admin-button {
-  min-height: 34px;
-  border: 1px solid var(--geist-fg);
-  border-radius: 999px;
-  background: var(--geist-fg);
-  color: var(--geist-background);
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: none;
-  transition: opacity 140ms ease;
-}
-
-.admin-shell--studio .admin-button:hover {
-  opacity: 0.86;
-}
-
-.admin-shell--studio .admin-button:disabled {
-  border-color: var(--geist-border);
-  background: var(--geist-surface);
-  color: var(--geist-soft);
-  opacity: 1;
-}
-
-.admin-shell--studio .admin-button.secondary {
-  border-color: var(--geist-border-strong);
-  background: transparent;
-  color: var(--geist-fg);
-}
-
-.admin-shell--studio .admin-button.secondary:hover {
-  background: var(--geist-surface);
-  opacity: 1;
-}
-
-.admin-shell--studio .admin-row-action {
-  min-height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--geist-muted);
-  padding: 0 8px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.admin-shell--studio .admin-row-action:hover {
-  color: var(--geist-fg);
-  background: var(--geist-surface);
-}
-
-.admin-shell--studio .admin-row-action.is-primary {
-  color: var(--geist-fg);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--geist-border-strong);
-}
-
-.admin-shell--studio .admin-row-action.is-primary:hover {
-  background: transparent;
-  text-decoration-color: currentColor;
-}
-
-.admin-shell--studio .admin-pill {
-  height: 22px;
-  border-color: var(--geist-border);
-  background: transparent;
-  color: var(--geist-muted);
-  font-size: 11.5px;
-}
-
-.admin-shell--studio .admin-pill.is-live {
-  border-color: var(--geist-fg);
-  background: var(--geist-fg);
-  color: var(--geist-background);
-}
-
-.admin-shell--studio .admin-link-list a {
-  border-radius: 6px;
-  color: var(--geist-muted);
-  font-weight: 500;
-}
-
-.admin-shell--studio .admin-link-list a:hover {
-  color: var(--geist-fg);
-  background: var(--geist-surface);
-}
-
-.admin-shell--studio .admin-error {
-  color: #c8412c;
-}
-
-:root.dark .admin-shell--studio .admin-error {
-  color: #e0684f;
-}
-
-/* ---- stat cards + cards ------------------------------------------------------- */
-
-.admin-shell--studio .admin-stat-grid {
-  gap: 0;
-  border-top: 1px solid var(--geist-border);
-  border-bottom: 1px solid var(--geist-border);
-}
-
-.admin-shell--studio .admin-stat-card {
-  min-height: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  padding: 18px 20px 18px 0;
-}
-
-.admin-shell--studio .admin-stat-card + .admin-stat-card {
-  padding-left: 20px;
-  border-left: 1px solid var(--geist-border);
-}
-
-.admin-shell--studio .admin-stat-card span {
-  margin-bottom: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-
-.admin-shell--studio .admin-stat-card strong {
-  font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
-  font-size: 28px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.admin-shell--studio .admin-card,
-.admin-shell--studio .admin-table-card,
-.admin-shell--studio .admin-inspector-card,
-.admin-shell--studio .admin-editor-panel,
-.admin-shell--studio .settings-nav {
-  border: 1px solid var(--geist-border);
-  border-radius: 8px;
-  background: var(--geist-background);
-  box-shadow: none;
-}
-
-.admin-shell--studio .admin-card__header h2,
-.admin-shell--studio .admin-table-card__header h2,
-.admin-shell--studio .admin-inspector-card__header {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
-.admin-shell--studio .admin-table-card__header p {
-  color: var(--geist-muted);
-  font-size: 13px;
-}
-
-.admin-shell--studio .admin-key-values dt {
-  color: var(--geist-soft);
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* ---- data tables ------------------------------------------------------------ */
-
-.admin-shell--studio .dt-shell {
-  border: 0;
-  border-top: 1px solid var(--geist-border);
-  border-radius: 0;
+.dt-header .dt-row:hover {
   background: transparent;
 }
 
-.admin-shell--studio .admin-table-card .dt-shell {
-  border-top: 0;
+.dt-empty-icon {
+  background: var(--dt-empty-icon-bg);
 }
 
-.admin-shell--studio [data-slot='table'] {
-  font-size: 13.5px;
+.dt-pagination {
+  background: var(--dt-pagination-bg);
 }
 
-.admin-shell--studio [data-slot='table-head'] {
-  height: 40px;
-  color: var(--geist-soft);
-  font-size: 11px;
+.dt-page-indicator {
+  border: var(--dt-control-border-width) solid var(--border);
+  border-radius: var(--dt-control-radius);
+  background: var(--dt-page-indicator-bg);
+}
+
+.dt-selection-badge {
+  border: var(--dt-control-border-width) solid var(--border);
+  border-radius: var(--dt-control-radius);
+  background: var(--dt-selection-bg);
+}
+
+.dt-unit-badge {
+  border: 1px solid var(--border);
+  border-radius: var(--dt-control-radius);
+  background: var(--dt-unit-bg);
+}
+
+.dt-label {
+  font-family: var(--dt-label-font-family);
   font-weight: 500;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid var(--geist-border);
+  letter-spacing: var(--dt-label-letter-spacing);
+  text-transform: var(--dt-label-text-transform);
 }
 
-.admin-shell--studio [data-slot='table-row'] {
-  border-bottom: 1px solid var(--geist-border);
+/* ---- remote editor host ---------------------------------------------------------- */
+
+.admin-editor-host {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  /* The widget reports a huge intrinsic width; keep it from inflating the layout. */
+  contain: inline-size;
 }
 
-.admin-shell--studio [data-slot='table-row']:hover {
-  background: color-mix(in srgb, var(--geist-fg) 3%, transparent);
+.admin-editor-host .editor-widget-host,
+.admin-editor-host bunship-editor,
+.admin-editor-host bunship-editor > div,
+.admin-editor-host .bwe-widget-root {
+  min-width: 0;
+  max-width: 100%;
 }
 
-.admin-shell--studio [data-slot='table-cell'] {
-  padding-top: 14px;
-  padding-bottom: 14px;
-  line-height: 1.55;
+.admin-editor-host [data-slate-editor='true'] {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  padding: 24px 28px 48px;
+  font-size: 16px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
-.admin-shell--studio .dt-control,
-.admin-shell--studio .dt-panel {
-  border-color: var(--geist-border);
-  border-radius: 6px;
-  background: var(--geist-background);
-  box-shadow: none;
-  color: var(--geist-fg);
+.admin-editor-host [role='toolbar'] {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
 }
 
-.admin-shell--studio .dt-control:hover {
-  background: var(--geist-surface);
+.admin-editor-host .editor-widget-host {
+  position: relative;
 }
 
-.admin-shell--studio .dt-page-indicator {
-  font-family: inherit;
-  color: var(--geist-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.admin-shell--studio .admin-post-thumb {
-  border-color: var(--geist-border);
-  border-radius: 4px;
-  background: var(--geist-surface);
-}
-
-.admin-shell--studio .admin-blog-title-cell strong {
-  font-weight: 500;
-}
-
-.admin-shell--studio .admin-cell-icon {
-  border-radius: 4px;
-}
-
-/* ---- forms ------------------------------------------------------------------ */
-
-.admin-shell--studio .admin-field > span,
-.admin-shell--studio .settings-field__label,
-.admin-shell--studio .newsletter-field > span {
-  color: var(--geist-muted);
-  font-size: 12.5px;
-  font-weight: 500;
-}
-
-.admin-shell--studio .admin-field input,
-.admin-shell--studio .admin-field textarea,
-.admin-shell--studio .admin-field select,
-.admin-shell--studio .admin-select,
-.admin-shell--studio .settings-input,
-.admin-shell--studio .settings-select,
-.admin-shell--studio .settings-textarea,
-.admin-shell--studio .admin-form input,
-.admin-shell--studio .admin-form textarea,
-.admin-shell--studio .newsletter-field input,
-.admin-shell--studio .newsletter-field textarea {
-  min-height: 38px;
-  border: 1px solid var(--geist-border-strong);
-  border-radius: 6px;
-  background: var(--geist-background);
-  color: var(--geist-fg);
-  font-size: 14px;
-  font-weight: 400;
-  box-shadow: none;
-  transition: border-color 140ms ease;
-}
-
-.admin-shell--studio .admin-field input:focus,
-.admin-shell--studio .admin-field textarea:focus,
-.admin-shell--studio .admin-field select:focus,
-.admin-shell--studio .admin-select:focus,
-.admin-shell--studio .settings-input:focus,
-.admin-shell--studio .settings-select:focus,
-.admin-shell--studio .settings-textarea:focus,
-.admin-shell--studio .admin-form input:focus,
-.admin-shell--studio .admin-form textarea:focus,
-.admin-shell--studio .newsletter-field input:focus,
-.admin-shell--studio .newsletter-field textarea:focus {
-  border-color: var(--geist-fg);
-  outline: none;
-  box-shadow: none;
-}
-
-.admin-shell--studio .admin-field--title input {
-  min-height: 52px;
-  border: 0;
-  border-bottom: 1px solid var(--geist-border-strong);
-  border-radius: 0;
-  padding: 0;
-  font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
-  font-size: 26px;
-  font-weight: 600;
-}
-
-.admin-shell--studio .admin-field--title input:focus {
-  border-bottom-color: var(--geist-fg);
-}
-
-.admin-shell--studio .admin-field--title > span {
+.admin-editor-host .editor-widget-host[aria-busy='false'] .editor-widget-loading,
+.admin-editor-host .editor-widget-host:not([aria-busy='true']) .editor-widget-loading {
   display: none;
 }
 
-/* ---- settings --------------------------------------------------------------- */
-
-.admin-shell--studio .settings-nav {
-  border: 0;
-  border-right: 1px solid var(--geist-border);
-  border-radius: 0;
-  background: transparent;
-  padding: 0 16px 0 0;
+.editor-widget-loading {
+  position: absolute;
+  inset: 0;
+  padding: 20px 24px;
+  background: var(--card);
 }
 
-.admin-shell--studio .settings-nav__item {
-  min-height: 0;
-  border-radius: 6px;
-  padding: 9px 12px;
-  font-weight: 500;
+.editor-widget-skeleton {
+  display: grid;
+  gap: 22px;
+  align-content: start;
 }
 
-.admin-shell--studio .settings-nav__item small {
-  color: var(--geist-soft);
-  font-weight: 400;
+.editor-widget-skeleton__toolbar {
+  display: flex;
+  gap: 8px;
 }
 
-.admin-shell--studio .settings-nav__item.active {
-  background: var(--geist-surface);
-  color: var(--geist-fg);
-}
-
-.admin-shell--studio .settings-field-grid {
-  padding: 0;
-  gap: 20px 24px;
-}
-
-.admin-shell--studio .settings-field--switch input[type='checkbox'],
-.admin-shell--studio .newsletter-page input[type='checkbox'],
-.admin-shell--studio .newsletter-page input[type='radio'] {
-  accent-color: var(--geist-fg);
-}
-
-/* ---- editor ----------------------------------------------------------------- */
-
-.admin-shell--studio .admin-editor-page .admin-page-header h1 {
-  font-size: 22px;
-}
-
-.admin-shell--studio .admin-editor-panel {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
-}
-
-.admin-shell--studio .admin-editor-card {
-  border-color: var(--geist-border);
-}
-
-.admin-shell--studio .admin-editor-card > .admin-card__header {
-  border-bottom: 1px solid var(--geist-border);
-}
-
-.admin-shell--studio .admin-editor-card > .admin-card__header p {
-  color: var(--geist-muted);
-  font-size: 12.5px;
-}
-
-.admin-shell--studio .admin-plate-editor {
-  background: var(--geist-background);
-}
-
-.admin-shell--studio .admin-plate-editor [role='toolbar'] {
-  border-bottom: 1px solid var(--geist-border);
-  background: var(--geist-background);
-}
-
-.admin-shell--studio .admin-plate-editor [data-slate-editor='true'] {
-  font-size: 16px;
-  line-height: 1.85;
-}
-
-.admin-shell--studio .admin-inspector-card {
-  padding: 16px;
-}
-
-.admin-shell--studio .admin-inspector-card__header {
-  color: var(--geist-muted);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.admin-shell--studio .admin-save-note {
-  color: var(--geist-muted);
-  font-size: 12.5px;
-}
-
-.admin-shell--studio .editor-widget-skeleton span,
-.admin-shell--studio .admin-inline-skeleton span,
-.admin-shell--studio .admin-skeleton-header span,
-.admin-shell--studio .admin-skeleton-panel span,
-.admin-shell--studio .admin-stat-card--skeleton span,
-.admin-shell--studio .admin-stat-card--skeleton strong {
-  background: var(--geist-surface);
-}
-
-/* ---- newsletter composer ---------------------------------------------------- */
-
-.admin-shell--studio .newsletter-template.is-selected {
-  border-color: var(--geist-fg);
-  background: transparent;
-}
-
-.admin-shell--studio .newsletter-mini i,
-.admin-shell--studio .newsletter-mini--featured i {
-  background: #9a9a9a;
-}
-
-.admin-shell--studio .newsletter-mini b {
-  background: #6f6f6f;
-}
-
-.admin-shell--studio .newsletter-mini em {
-  background: #d4d4d4;
-}
-
-.admin-shell--studio .newsletter-mini--visual i {
-  background: #e8e8e8;
-}
-
-.admin-shell--studio .newsletter-mini--featured {
-  background: linear-gradient(#1a1a1a 0 34px, #fff 34px);
-}
-
-.admin-shell--studio .newsletter-preview-toolbar button[aria-pressed='true'] {
-  background: var(--geist-surface);
-}
-
-.admin-shell--studio .newsletter-confirm,
-.admin-shell--studio .newsletter-envelope {
-  background: var(--geist-surface);
-  border-color: var(--geist-border);
-}
-
-.admin-shell--studio .newsletter-suggestions button {
+.editor-widget-skeleton__toolbar span,
+.editor-widget-skeleton__body span {
+  display: block;
+  height: 12px;
   border-radius: 999px;
+  background: var(--skeleton-base);
+  animation: editor-skeleton-pulse 1.6s ease-in-out infinite;
 }
 
-/* ---- main image uploader ---------------------------------------------------- */
-
-.admin-shell--studio .main-image-uploader__drop {
-  border: 1px dashed var(--geist-border-strong);
+.editor-widget-skeleton__toolbar span {
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
-  background: var(--geist-surface);
-  color: var(--geist-muted);
 }
 
-@media (max-width: 760px) {
-  .admin-shell--studio .admin-main {
-    padding: 24px 18px 48px;
+.editor-widget-skeleton__body {
+  display: grid;
+  gap: 14px;
+}
+
+.editor-widget-skeleton__body span { width: 88%; }
+.editor-widget-skeleton__body span.wide { width: 100%; }
+.editor-widget-skeleton__body span.medium { width: 70%; }
+.editor-widget-skeleton__body span.short { width: 46%; }
+
+.editor-json-fallback {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--input);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.editor-json-error {
+  margin-top: 8px;
+  color: var(--destructive);
+  font-size: 13px;
+}
+
+@keyframes editor-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-widget-skeleton__toolbar span,
+  .editor-widget-skeleton__body span {
+    animation: none;
   }
-
-  .admin-shell--studio .admin-stat-card + .admin-stat-card {
-    padding-left: 0;
-    border-left: 0;
-    border-top: 1px solid var(--geist-border);
-  }
-
-  .admin-shell--studio .settings-nav {
-    border-right: 0;
-    border-bottom: 1px solid var(--geist-border);
-    padding: 0 0 12px;
-  }
 }
 
-/* ---- residual accent cleanup ---------------------------------------------- */
+/* ---- uploads --------------------------------------------------------------------- */
 
-:root {
-  --accent: #1a1a1a;
-  --accent-strong: #1a1a1a;
-}
-
-:root.dark {
-  --accent: #ececec;
-  --accent-strong: #ececec;
-}
-
-.admin-shell--studio .settings-panel {
+.upload-dropzone {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  border: 1px dashed var(--input);
   border-radius: 8px;
-  box-shadow: none;
+  background: var(--muted-surface);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
 }
 
-.admin-shell--studio .settings-panel__eyebrow {
-  color: var(--geist-soft);
+.upload-dropzone:hover,
+.upload-dropzone.is-focused {
+  border-color: var(--foreground);
+}
+
+.upload-dropzone.is-accepting {
+  border-color: var(--foreground);
+  background: var(--accent);
+}
+
+.upload-dropzone.is-rejecting {
+  border-color: var(--destructive);
+}
+
+.upload-dropzone > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.paste-upload-area {
+  display: grid;
+  gap: 8px;
+}
+
+.paste-upload-area__hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.paste-upload-area__hint svg {
+  width: 14px;
+  height: 14px;
+}
+
+.upload-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.upload-progress__item {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.upload-progress__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.upload-progress__track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--muted-surface);
+}
+
+.upload-progress__track span {
+  display: block;
+  height: 100%;
+  background: var(--foreground);
+  transition: width 160ms ease;
+}
+
+/* ---- legacy hooks still used by the newsletter composer -------------------------- */
+
+.admin-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 2.25rem;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: opacity 140ms ease, background 140ms ease;
 }
 
-.admin-shell--studio .settings-panel__header h2 {
-  font-size: 16px;
-  font-weight: 600;
+.admin-button:hover {
+  opacity: 0.86;
 }
 
-.admin-shell--studio .settings-field {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  padding: 0;
-  font-weight: 500;
+.admin-button:disabled {
+  border-color: var(--border);
+  background: var(--muted-surface);
+  color: var(--muted-foreground);
+  opacity: 1;
+  cursor: default;
 }
 
-.admin-shell--studio .settings-field__description {
-  color: var(--geist-soft);
-  font-weight: 400;
+.admin-button.secondary {
+  border-color: var(--input);
+  background: var(--card);
+  color: var(--foreground);
 }
 
-.admin-shell--studio .settings-field--switch {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--geist-border);
+.admin-button.secondary:hover {
+  background: var(--muted-surface);
+  opacity: 1;
 }
 
-.admin-shell--studio .settings-switch input:checked + span {
-  background: var(--geist-fg);
+.admin-button svg {
+  width: 15px;
+  height: 15px;
 }
 
-.admin-shell--studio .settings-switch input:focus-visible + span {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--geist-fg) 18%, transparent);
+.admin-error {
+  color: var(--destructive);
+  font-size: 13px;
 }
 
-.admin-shell--studio .admin-pill.is-live,
-.admin-shell--studio .admin-post-thumb {
-  background-image: none;
+.admin-muted {
+  color: var(--muted-foreground);
+  font-size: 13px;
 }

@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
+import { Button } from '@bunship-ai/ui/components/button';
+
 type UploadFileState = FileUploadInfo<UploadStatus>;
 
 type UploadButtonProps = {
@@ -70,15 +72,17 @@ export function UploadButton({
 
   return (
     <>
-      <button
+      <Button
         type='button'
-        className='admin-button secondary upload-button'
+        variant='outline'
+        size='sm'
+        className='w-full'
         disabled={disabled}
         onClick={() => inputRef.current?.click()}
       >
         <Upload aria-hidden='true' />
         {label}
-      </button>
+      </Button>
       <input
         ref={inputRef}
         className='sr-only'

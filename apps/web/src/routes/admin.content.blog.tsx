@@ -1,19 +1,12 @@
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useRouterState,
-} from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { Plus } from 'lucide-react';
 
 import { DataTableSkeleton } from '@bunship-ai/data-table';
+import { Badge } from '@bunship-ai/ui/components/badge';
+import { Button } from '@bunship-ai/ui/components/button';
 
 import { useAdminBlogPosts, type BlogPost } from '../lib/admin-queries';
-import {
-  AdminPageHeader,
-  type DataTableColumn,
-  SimpleDataTable,
-  StatCard,
-} from '../lib/admin-ui';
+import { AdminPage, AdminPageHeader, type DataTableColumn, ErrorText, SimpleDataTable, StatCard, StatGrid } from '../lib/admin-ui';
 import { formatDate, moodLabel } from '../lib/format';
 
 export const Route = createFileRoute('/admin/content/blog')({
@@ -27,13 +20,15 @@ const columns: DataTableColumn<BlogPost>[] = [
     size: 520,
     minSize: 360,
     cell: (post) => (
-      <div className='admin-blog-title-cell'>
-        <span className='admin-post-thumb' aria-hidden='true'>
-          {post.coverImageUrl ? <img src={post.coverImageUrl} alt='' /> : null}
+      <div className='flex min-w-0 items-center gap-3'>
+        <span className='block h-10 w-14 shrink-0 overflow-hidden rounded border border-border bg-muted' aria-hidden='true'>
+          {post.coverImageUrl ? <img src={post.coverImageUrl} alt='' className='size-full object-cover' /> : null}
         </span>
-        <span className='admin-blog-title-cell__content'>
-          <strong>{post.title}</strong>
-          <span>{post.description ?? post.slug}</span>
+        <span className='grid min-w-0 gap-0.5'>
+          <Link to='/admin/content/blog/$slug' params={{ slug: post.slug }} className='truncate font-medium text-sm hover:underline'>
+            {post.title}
+          </Link>
+          <span className='truncate text-muted-foreground text-xs'>{post.description ?? post.slug}</span>
         </span>
       </div>
     ),
@@ -41,42 +36,35 @@ const columns: DataTableColumn<BlogPost>[] = [
   {
     id: 'status',
     header: '状态',
-    size: 96,
+    size: 100,
     cell: (post) => (
-      <span className={`admin-pill${post.publishedAt ? ' is-live' : ''}`}>
-        {post.publishedAt ? '已发布' : '草稿'}
-      </span>
+      <Badge variant={post.publishedAt ? 'default' : 'outline'}>{post.publishedAt ? '已发布' : '草稿'}</Badge>
     ),
   },
   {
     id: 'publishedAt',
     header: '发布时间',
-    size: 148,
-    cell: (post) => formatDate(post.publishedAt),
+    size: 150,
+    cell: (post) => <span className='text-muted-foreground text-sm'>{formatDate(post.publishedAt)}</span>,
   },
   {
     id: 'meta',
     header: '信息',
-    size: 150,
-    cell: (post) =>
-      `${moodLabel(post.mood)} · ${Math.round(post.readingTime ?? 0)} 分钟`,
+    size: 140,
+    cell: (post) => <span className='text-muted-foreground text-sm'>{moodLabel(post.mood)} · {Math.round(post.readingTime ?? 0)} 分钟</span>,
   },
   {
     id: 'actions',
-    header: '操作',
-    size: 132,
+    header: '',
+    size: 140,
     cell: (post) => (
-      <div className='admin-table-actions'>
-        <Link className='admin-row-action' to='/$slug' params={{ slug: post.slug }}>
-          查看
-        </Link>
-        <Link
-          className='admin-row-action is-primary'
-          to='/admin/content/blog/$slug'
-          params={{ slug: post.slug }}
-        >
-          编辑
-        </Link>
+      <div className='flex justify-end gap-1'>
+        <Button asChild variant='ghost' size='sm'>
+          <Link to='/$slug' params={{ slug: post.slug }}>查看</Link>
+        </Button>
+        <Button asChild variant='outline' size='sm'>
+          <Link to='/admin/content/blog/$slug' params={{ slug: post.slug }}>编辑</Link>
+        </Button>
       </div>
     ),
   },
@@ -91,46 +79,32 @@ function AdminBlogContentPage() {
   }
 
   return (
-    <section className='admin-page'>
+    <AdminPage>
       <AdminPageHeader
-        title='博客内容'
+        title='博客文章'
         description='撰写新文章，管理正文、封面和发布时间。'
-        action={<Link className='admin-button' to='/admin/content/blog/new'>新增文章</Link>}
+        action={
+          <Button asChild>
+            <Link to='/admin/content/blog/new'><Plus aria-hidden='true' />新增文章</Link>
+          </Button>
+        }
       />
 
       {posts.isPending ? (
         <DataTableSkeleton columnCount={5} rowCount={10} />
       ) : posts.isError ? (
-        <p className='admin-error'>
-          {posts.error instanceof Error ? posts.error.message : String(posts.error)}
-        </p>
+        <ErrorText error={posts.error} />
       ) : posts.data ? (
         <>
-          <div className='admin-stat-grid'>
+          <StatGrid>
             <StatCard title='文章总数' value={posts.data.length} />
-            <StatCard
-              title='已发布'
-              value={posts.data.filter((post) => post.publishedAt).length}
-            />
-            <StatCard title='数据源' value='D1' />
-          </div>
-
-          <div className='admin-table-card'>
-            <div className='admin-table-card__header'>
-              <div>
-                <h2>内容列表</h2>
-                <p>按发布日期维护文章，封面、摘要和阅读信息会同步到前台卡片。</p>
-              </div>
-            </div>
-            <SimpleDataTable
-              columns={columns}
-              data={posts.data}
-              getRowId={(post) => post.id}
-              empty='还没有文章，点击“新增文章”开始撰写。'
-            />
-          </div>
+            <StatCard title='已发布' value={posts.data.filter((post) => post.publishedAt).length} />
+            <StatCard title='草稿' value={posts.data.filter((post) => !post.publishedAt).length} />
+            <StatCard title='最近发布' value={formatDate(posts.data.find((post) => post.publishedAt)?.publishedAt ?? null)} />
+          </StatGrid>
+          <SimpleDataTable columns={columns} data={posts.data} getRowId={(post) => post.id} pageSize={20} />
         </>
       ) : null}
-    </section>
+    </AdminPage>
   );
 }
