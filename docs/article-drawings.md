@@ -2,6 +2,8 @@
 
 编辑器的插入菜单中选择 **Code Drawing**，或在空段落输入 `/mermaid` 后选择 Code Drawing。格式菜单提供 Mermaid、PlantUml、Graphviz、Flowchart；视图菜单提供「源码与图表」「仅源码」「仅图表」。
 
+文章显示方式、编辑器格式和视图均使用项目的 Select 组件，不使用浏览器原生下拉。菜单支持方向键选择、Enter 确认、Esc 关闭并返回焦点，跟随当前页面或编辑器的深浅色主题；弹层独立于图表的裁切容器。
+
 输入 `/excalidraw` 或从插入菜单选择 **Excalidraw** 可打开手绘画布。保存文章会保留图形、画布背景及嵌入图片，重新编辑时仍可继续修改。文章页显示静态图，并提供 SVG 和 `.excalidraw` 源文件下载。
 
 普通代码块的语言设为 `mermaid`、`plantuml` / `puml`、`graphviz` / `dot` 或 `flowchart`，文章页也会识别为图表。其他代码语言继续语法高亮。普通文本/ASCII 箭头不会自动转换；需改写成对应语法。

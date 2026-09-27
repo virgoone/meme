@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@bunship-ai/ui/components/select';
 import { drawingRendererUrl } from './editor-widget-url';
 import type { DrawingMode, DrawingType, ExcalidrawData } from './article-drawing-data';
 import './article-drawing.css';
@@ -60,9 +61,14 @@ export function ArticleDrawing({ type, code = '', data, blockId, initialMode = '
   return <figure ref={container} className='article-drawing' data-block-id={blockId} data-drawing-type={type}>
     <figcaption className='article-drawing__header'>
       <span>{type === 'PlantUml' ? 'PlantUML' : type}</span>
-      {type !== 'Excalidraw' && <select aria-label='图表显示方式' value={mode} onChange={event => setMode(event.target.value as DrawingMode)}>
-        <option value='Image'>图表</option><option value='Both'>源码与图表</option><option value='Code'>源码</option>
-      </select>}
+      {type !== 'Excalidraw' && <Select value={mode} onValueChange={value => setMode(value as DrawingMode)}>
+        <SelectTrigger className='article-drawing__mode' aria-label='图表显示方式'><SelectValue /></SelectTrigger>
+        <SelectContent className='article-drawing__menu' align='end' collisionPadding={12}>
+          <SelectItem className='article-drawing__option' value='Image'>图表</SelectItem>
+          <SelectItem className='article-drawing__option' value='Both'>源码与图表</SelectItem>
+          <SelectItem className='article-drawing__option' value='Code'>源码</SelectItem>
+        </SelectContent>
+      </Select>}
       {type !== 'Excalidraw' && <button type='button' onClick={async () => {
         try { await navigator.clipboard.writeText(code); setCopyState('已复制'); }
         catch { setCopyState('请手动复制'); setMode('Code'); }
