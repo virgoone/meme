@@ -26,7 +26,8 @@ test('Sanity codeBlock uses the original code including indentation and blank li
   const html = renderToStaticMarkup(<SlatePostBlock blockId={value.blockId ?? ''} value={value} />);
   expect(value.blockId).toBe('old-code');
   expect(value.type).toBe('code_block');
-  expect(html).toContain(`<code>${code}</code>`);
+  expect(html.replace(/<\/?span\b[^>]*>/g, '')).toContain(`<code>${code}</code>`);
+  expect(html).toContain('hljs-keyword');
   expect(html).toContain('typescript');
 });
 

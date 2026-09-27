@@ -1,7 +1,34 @@
-import { useState } from 'react';
+import { common, createLowlight } from 'lowlight';
+import { useMemo, useState, type ReactNode } from 'react';
+import './article-code-block.css';
+
+const highlighter = createLowlight(common);
+highlighter.registerAlias({ javascript: ['jsx'], typescript: ['tsx'] });
+type HighlightNode = ReturnType<typeof highlighter.highlight>['children'][number];
+
+function renderTokens(nodes: HighlightNode[]): ReactNode[] {
+  return nodes.map((node, index) => {
+    if (node.type === 'text') return node.value;
+    if (node.type !== 'element') return null;
+    const className = Array.isArray(node.properties.className) ? node.properties.className.join(' ') : undefined;
+    return <span key={index} className={className}>{renderTokens(node.children)}</span>;
+  });
+}
+
+function highlightCode(code: string, language?: string): ReactNode {
+  const name = language?.trim().toLowerCase().replace(/^language-/, '');
+  if (!name || !highlighter.registered(name) || code.length > 100_000) return code;
+  try {
+    return renderTokens(highlighter.highlight(name, code).children);
+  } catch {
+    // An unsupported or malformed snippet must still display its original source.
+    return code;
+  }
+}
 
 export function ArticleCodeBlock({ code, language, blockId }: { code: string; language?: string; blockId?: string }) {
   const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'error'>('idle');
+  const highlighted = useMemo(() => highlightCode(code, language), [code, language]);
   return (
     <figure className='article-code' data-block-id={blockId}>
       <figcaption className='article-code__header'>
@@ -18,7 +45,7 @@ export function ArticleCodeBlock({ code, language, blockId }: { code: string; la
         }} aria-label='复制代码'>{copyState === 'copied' ? '已复制' : copyState === 'copying' ? '复制中' : copyState === 'error' ? '请手动复制' : '复制'}</button>
       </figcaption>
       {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Long code needs keyboard horizontal scrolling. */}
-      <pre tabIndex={0}><code>{code}</code></pre>
+      <pre tabIndex={0}><code>{highlighted}</code></pre>
     </figure>
   );
 }
