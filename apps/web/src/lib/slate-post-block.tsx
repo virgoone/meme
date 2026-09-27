@@ -1,6 +1,8 @@
 import { Fragment, type ReactNode } from 'react';
 import { LoadingImage } from './loading-image';
 import { ArticleCodeBlock } from './article-code-block';
+import { ArticleDrawing } from './article-drawing';
+import { codeDrawingData, excalidrawData } from './article-drawing-data';
 
 type Node = { type?: string; text?: string; children?: Node[]; [key: string]: unknown };
 
@@ -27,6 +29,11 @@ function renderNode(node: Node, blockId?: string): ReactNode {
     return <Heading id={blockId} {...props}>{children}</Heading>;
   }
   switch (node.type) {
+    case 'code_drawing': {
+      const data = codeDrawingData(node.data);
+      return data.type ? <ArticleDrawing type={data.type} code={data.code} initialMode={data.mode} blockId={blockId} /> : <ArticleCodeBlock code={data.code} blockId={blockId} />;
+    }
+    case 'excalidraw': return <ArticleDrawing type='Excalidraw' data={excalidrawData(node.data)} blockId={blockId} />;
     case 'a': return <a href={safeUrl(node.url)} target='_blank' rel='noreferrer'>{children}</a>;
     case 'img': case 'image': {
       const url = safeUrl(node.url);

@@ -46,6 +46,24 @@ function request(path: string, method = 'GET', body?: unknown) {
 const paragraph = { type: 'p', children: [{ text: '保存后应保留的正文', bold: true }] };
 
 describe('post creation and persistence', () => {
+  test('persists all diagram formats and Excalidraw files through create, update and public reload', async () => {
+    const drawings = ['Mermaid', 'PlantUml', 'Graphviz', 'Flowchart'].map(drawingType => ({
+      type: 'code_drawing', children: [{ text: '' }], data: { drawingType, drawingMode: 'Both', code: `source for ${drawingType}` },
+    }));
+    const scene = { type: 'excalidraw', children: [{ text: '' }], data: { elements: [{ id: 'image', type: 'image', fileId: 'file1' }], state: { viewBackgroundColor: '#fff' }, files: { file1: { dataURL: 'data:image/png;base64,aGVsbG8=' } } } };
+    const response = await request('/posts', 'POST', { title: 'Diagram persistence', slateJson: [...drawings, scene] });
+    expect(response.status).toBe(201);
+    const created = await response.json();
+    const reopened = await (await request(`/admin/posts/${created.slug}`)).json();
+    expect(reopened.slateJson.map((node: { data: unknown }) => node.data)).toEqual([...drawings, scene].map(node => node.data));
+    reopened.slateJson[0].data.code = 'graph TD; A-->B';
+    expect((await request(`/posts/${created.slug}`, 'PUT', { slateJson: reopened.slateJson, publishedAt: '2026-09-27T00:00:00Z' })).status).toBe(200);
+    const published = await (await request(`/posts/${created.slug}`)).json();
+    expect(published.blocks.map((block: { blockId: string }) => block.blockId)).toEqual(created.blocks.map((block: { blockId: string }) => block.blockId));
+    expect(published.blocks[0].slateJson.data.code).toBe('graph TD; A-->B');
+    expect(published.blocks[4].slateJson.data).toEqual(scene.data);
+    expect(published.blocks.every((block: { portableTextJson: { _type: string } }) => block.portableTextJson._type === 'slate')).toBe(true);
+  });
   test('paginates published posts with stable boundaries, totals and view counts', async () => {
     const insert = sqlite.prepare('INSERT INTO imported_posts (id, sanity_id, slug, title, published_at, portable_text_json) VALUES (?, ?, ?, ?, ?, ?)');
     for (let i = 1; i <= 23; i++) {

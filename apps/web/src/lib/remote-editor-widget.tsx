@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { editorWidgetUrl } from './editor-widget-url';
 
 export type RemoteEditorLeaf = {
   text?: string;
@@ -25,10 +26,6 @@ type RemoteEditorChangeEvent = CustomEvent<{
 }>;
 
 const EDITOR_WIDGET_TAG = 'bunship-editor';
-const DEFAULT_EDITOR_WIDGET_SCRIPT_SRC =
-  'https://cdn.jsdelivr.net/gh/virgoone/editor-widget@7a101873918c7d1b07219b1a64c18168c3e5c426/dist/web-component.js';
-const EDITOR_WIDGET_SCRIPT_SRC =
-  import.meta.env.VITE_EDITOR_WIDGET_URL ?? DEFAULT_EDITOR_WIDGET_SCRIPT_SRC;
 const EDITOR_UPLOAD_API = `${
   import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') ?? ''
 }/api/admin/s3/upload`;
@@ -86,7 +83,7 @@ function loadEditorWidget() {
 
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = EDITOR_WIDGET_SCRIPT_SRC;
+    script.src = editorWidgetUrl;
     script.async = true;
     script.dataset.editorWidget = EDITOR_WIDGET_TAG;
     script.addEventListener(
@@ -259,7 +256,7 @@ export function RemoteEditorWidget({
     } else {
       element.removeAttribute('readonly');
     }
-  }, [readOnly]);
+  }, [readOnly, status]);
 
   if (status === 'error') {
     return (

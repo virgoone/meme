@@ -1,6 +1,8 @@
 import { common, createLowlight } from 'lowlight';
 import { useMemo, useState, type ReactNode } from 'react';
 import './article-code-block.css';
+import { drawingType } from './article-drawing-data';
+import { ArticleDrawing } from './article-drawing';
 
 const highlighter = createLowlight(common);
 highlighter.registerAlias({ javascript: ['jsx'], typescript: ['tsx'] });
@@ -27,6 +29,11 @@ function highlightCode(code: string, language?: string): ReactNode {
 }
 
 export function ArticleCodeBlock({ code, language, blockId }: { code: string; language?: string; blockId?: string }) {
+  const type = drawingType(language);
+  return type ? <ArticleDrawing type={type} code={code} blockId={blockId} /> : <HighlightedCodeBlock code={code} language={language} blockId={blockId} />;
+}
+
+function HighlightedCodeBlock({ code, language, blockId }: { code: string; language?: string; blockId?: string }) {
   const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'error'>('idle');
   const highlighted = useMemo(() => highlightCode(code, language), [code, language]);
   return (
