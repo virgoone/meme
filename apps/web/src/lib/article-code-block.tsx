@@ -3,6 +3,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import './article-code-block.css';
 import { drawingType } from './article-drawing-data';
 import { ArticleDrawing } from './article-drawing';
+import { highlightShell } from './article-shell-highlight';
 
 const highlighter = createLowlight(common);
 highlighter.registerAlias({ javascript: ['jsx'], typescript: ['tsx'] });
@@ -19,8 +20,10 @@ function renderTokens(nodes: HighlightNode[]): ReactNode[] {
 
 function highlightCode(code: string, language?: string): ReactNode {
   const name = language?.trim().toLowerCase().replace(/^language-/, '');
-  if (!name || !highlighter.registered(name) || code.length > 100_000) return code;
+  if (!name || code.length > 100_000) return code;
   try {
+    if (['bash', 'sh', 'zsh', 'shell', 'shellscript'].includes(name)) return highlightShell(code);
+    if (!highlighter.registered(name)) return code;
     return renderTokens(highlighter.highlight(name, code).children);
   } catch {
     // An unsupported or malformed snippet must still display its original source.

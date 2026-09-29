@@ -18,32 +18,6 @@
   border-bottom: 1px solid var(--line);
 }
 
-/* Match the loaded article columns without applying its outer margin twice. */
-.article-page .legacy-article-skeleton {
-  width: 100%;
-  margin: 0;
-  grid-template-columns: minmax(0, 672px);
-  justify-content: start;
-  gap: 0;
-}
-
-.legacy-article-skeleton__toc,
-.legacy-article-skeleton__reactions {
-  display: none;
-}
-
-.legacy-article-skeleton__cover {
-  display: block;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  margin-bottom: 28px;
-  border-radius: 8px;
-}
-
-.legacy-article-skeleton__main {
-  min-width: 0;
-}
-
 .loading-image {
   position: relative;
   display: block;
@@ -123,26 +97,6 @@
 .loading-image__error button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-
-@media (min-width: 768px) {
-  .legacy-article-skeleton__cover {
-    width: 120%;
-    margin-left: -10%;
-    margin-bottom: 48px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .article-page .legacy-article-skeleton {
-    grid-template-columns: 160px minmax(0, 672px) 90px;
-    justify-content: space-between;
-  }
-
-  .legacy-article-skeleton__toc,
-  .legacy-article-skeleton__reactions {
-    display: grid;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
