@@ -8,7 +8,7 @@ test.each([
   [' TS ', 'const count: number = 42;', 'hljs-keyword'],
   ['jsx', 'const view = <button title="hello">Hi</button>;', 'hljs-tag'],
   ['tsx', 'const view = <button title="hello">Hi</button>;', 'hljs-tag'],
-  ['sh', 'echo "$HOME"', 'hljs-string'],
+  ['sh', 'echo "$HOME"', 'article-code__shell-token'],
   ['json', '{"hello": true}', 'hljs-attr'],
   ['yaml', 'enabled: true', 'hljs-attr'],
   ['sql', 'SELECT * FROM posts;', 'hljs-keyword'],
@@ -41,4 +41,30 @@ test('saved Slate code blocks receive the same highlighting as imported code', (
   }} />);
   expect(html).toContain('hljs-keyword');
   expect(html).toContain('hljs-number');
+});
+
+test.each(['bash', 'sh', 'zsh', 'shell', 'shellscript', ' language-BASH '])('colors CLI commands and options in %s', language => {
+  const html = renderToStaticMarkup(<ArticleCodeBlock code={'claude mcp add --scope user --transport http figma https://mcp.figma.com/mcp\ncodex mcp get figma\nmy-custom-cli --config ./settings.json'} language={language} />);
+  const styleFor = (value: string) => html.match(new RegExp(`style="([^"]+)">${value}</span>`))?.[1];
+  const command = styleFor('claude');
+  const flag = styleFor('--scope');
+  const argument = styleFor('user');
+  expect(command).toContain('--shell-light:');
+  expect(command).toContain('--shell-dark:');
+  expect(flag).toBeDefined();
+  expect(argument).toBeDefined();
+  expect(command).not.toBe(flag);
+  expect(flag).not.toBe(argument);
+  expect(styleFor('codex')).toBe(command);
+  expect(styleFor('my-custom-cli')).toBe(command);
+});
+
+test('shell highlighting preserves multiline source, comments, heredocs and HTML-like strings', () => {
+  const code = '# claude --scope user\r\nAPI_KEY="$TOKEN" custom-cli \\\r\n  --config ./config.json | tee out.txt\r\n\r\ncat <<\'EOF\'\r\n<script>alert("hello")</script>\r\nEOF\r\n';
+  const html = renderToStaticMarkup(<ArticleCodeBlock code={code} language='bash' />);
+  const markup = html.match(/<code>([\s\S]*?)<\/code>/)?.[1] ?? '';
+  const source = markup.replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&amp;/g, '&');
+  expect(source).toBe(code);
+  expect(markup).not.toContain('<script>');
+  expect(markup).toMatch(/>#[^<]*claude --scope user<\/span>/);
 });

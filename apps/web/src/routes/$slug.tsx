@@ -5,7 +5,7 @@ import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useS
 
 import { postQueryOptions, usePost, usePostComments, usePostReactions, type PostDetail } from '../lib/admin-queries';
 import { AdBanner } from '../lib/adsense';
-import { articleAdIndex } from '../lib/article-ad-placement';
+import { articleAdIndexes } from '../lib/article-ad-placement';
 import { ArticleCodeBlock } from '../lib/article-code-block';
 import { blogPostState, selectCommentPost, setPostComments } from '../lib/blog-post-state';
 import { Commentable } from '../lib/commentable';
@@ -58,7 +58,7 @@ export function PostContent({ post }: { post: PostDetail }) {
   const archivePage = useRouterState({ select: (state) => normalizePage((state.location.state as { blogArchivePage?: unknown }).blogArchivePage) });
   const views = usePostViews(post.id, post.slug);
   const blocks = post.blocks ?? [];
-  const inlineAdIndex = articleAdIndex(blocks);
+  const inlineAdIndexes = new Set(articleAdIndexes(blocks));
   const listFormats = legacyListFormats(blocks.map((block) => block.portableTextJson));
   const outline = useMemo(() => getOutline(blocks), [blocks]);
   const comments = usePostComments(post.id);
@@ -125,7 +125,7 @@ export function PostContent({ post }: { post: PostDetail }) {
                 <PostBlockView block={block} listFormat={listFormats[index]} />
                 {commentsEnabled && <Commentable postId={post.id} blockId={block.blockId} />}
               </div>
-              {index === inlineAdIndex && <AdBanner placement='article' format='in-article' instanceKey={post.id} />}
+              {inlineAdIndexes.has(index) && <AdBanner placement='article' format='in-article' instanceKey={`${post.id}:${block.blockId}`} />}
             </Fragment>
           ))}
         </div>

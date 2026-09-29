@@ -42,7 +42,8 @@ test('editing a migrated article retains links, marks, lists, code and images', 
   expect(html).toContain('<ul');
   expect(html).toContain('href="https://example.com"');
   expect(html).toContain('<strong>原文链接</strong>');
-  expect(html).toContain('first\nsecond');
+  const codeText = html.match(/<code>([\s\S]*?)<\/code>/)?.[1].replace(/<[^>]*>/g, '');
+  expect(codeText).toBe('first\nsecond');
   expect(html).toContain('https://cdn.sanity.io/images/gynhwdlh/production/abcdef-1600x900.png');
   expect(html).toContain('alt="配图"');
   const reloaded = postToEditorValue({ blocks: values.map(slateJson => ({ slateJson, portableTextJson: { _type: 'slate' } })) } as unknown as PostDetail);
