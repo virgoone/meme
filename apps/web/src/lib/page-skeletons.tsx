@@ -7,10 +7,11 @@ import { PostListSkeleton } from './post-list';
 export function BlogPostPageSkeleton() {
   return (
     <div className='legacy-article-skeleton' role='status' aria-label='文章加载中'>
-      <aside className='legacy-article-skeleton__toc' aria-hidden='true'>
+      <aside className='legacy-article-skeleton__toc article-aside article-aside--toc' aria-hidden='true'>
         <span /><span /><span /><span />
       </aside>
       <div className='legacy-article-skeleton__main' aria-hidden='true'>
+        <span className='legacy-article-skeleton__back' />
         <div className='legacy-article-skeleton__meta'><span /><span /></div>
         <span className='legacy-article-skeleton__title' />
         <span className='legacy-article-skeleton__title short' />
@@ -20,7 +21,7 @@ export function BlogPostPageSkeleton() {
           {Array.from({ length: 8 }, (_, index) => <span key={index} />)}
         </div>
       </div>
-      <aside className='legacy-article-skeleton__reactions' aria-hidden='true'>
+      <aside className='legacy-article-skeleton__reactions article-aside article-aside--reactions' aria-hidden='true'>
         <span /><span /><span /><span />
       </aside>
     </div>
