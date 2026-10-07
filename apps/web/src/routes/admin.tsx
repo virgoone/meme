@@ -1,11 +1,13 @@
 import { privateHead } from '../lib/seo';
 import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { ArrowUpRight } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge } from '@bunship-ai/ui/components/badge';
 import { Skeleton } from '@bunship-ai/ui/components/skeleton';
-import { DailyAreaChart, DailyBarChart, DailyLineChart, MonthlyBarChart, StatValue, TopPostsChart } from '../lib/admin-charts';
+import { DailyBarChart, DailyLineChart, MonthlyBarChart, StatValue, TopPostsChart } from '../lib/admin-charts';
 import { useAdminHealth, useAdminStats } from '../lib/admin-queries';
+import { TodayComposition, type ViewRange, ViewsByArticle } from '../lib/admin-views-breakdown';
 import { AdminPage, AdminPageHeader, ErrorText, SectionCard, StatCard, StatGrid } from '../lib/admin-ui';
 import { AdminContentSkeleton } from '../lib/page-skeletons';
 
@@ -34,6 +36,7 @@ const entries = [
 function DashboardPage() {
   const stats = useAdminStats();
   const health = useAdminHealth();
+  const [viewRange, setViewRange] = useState<ViewRange>(30);
 
   if (stats.isPending) return <AdminContentSkeleton />;
   if (stats.isError) {
@@ -46,7 +49,6 @@ function DashboardPage() {
   }
 
   const data = stats.data;
-  const trackedDays = data.views.daily.filter((point) => point.value > 0).length;
 
   return (
     <AdminPage>
@@ -56,15 +58,13 @@ function DashboardPage() {
       />
 
       <StatGrid>
-        <StatCard title='今日浏览' value={<StatValue value={data.views.today} />} />
+        <StatCard title='今日浏览' value={<StatValue value={data.views.today} />} extra={<TodayComposition byPost={data.views.byPost} range={viewRange} />} />
         <StatCard title='近 7 天浏览' value={<StatValue value={data.views.week} />} />
         <StatCard title='本月浏览' value={<StatValue value={data.views.month} />} />
         <StatCard title='累计浏览' value={<StatValue value={data.views.total} />} hint='含迁移前的历史计数' />
       </StatGrid>
 
-      <SectionCard title='近 30 天浏览量' description={trackedDays === 0 ? '还没有按天的数据，读者访问后这里会开始出现曲线。' : '每天的页面浏览次数，按北京时间计日。'}>
-        <DailyAreaChart data={data.views.daily} label='浏览量' />
-      </SectionCard>
+      <ViewsByArticle byPost={data.views.byPost} range={viewRange} onRangeChange={setViewRange} />
 
       <div className='grid gap-4 xl:grid-cols-2'>
         <SectionCard title='文章浏览 Top 10' description='按累计浏览量排序，悬停查看完整标题。'>

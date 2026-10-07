@@ -14,6 +14,12 @@ export type AdminStats = {
     daily: DailyPoint[];
     /** First day that has a daily counter, or null before any were written. */
     trackedSince: string | null;
+    /** The same 30 days split by article. `pages` is the rest of the day's total
+     *  (home, lists, about…), so `pages + Σ posts` always equals the daily value. */
+    byPost: {
+      posts: Array<{ id: string; title: string; slug: string }>;
+      days: Array<{ day: string; pages: number; posts: Record<string, number> }>;
+    };
   };
   topPosts: Array<{ id: string; title: string; slug: string; views: number; last7: number; last30: number }>;
   subscribers: {
@@ -55,6 +61,20 @@ export async function getAdminStats(env: WorkerEnv, now = new Date()): Promise<A
   const dailyViews = last30.map((day) => ({ day, value: counters.get(dayViewsKey(day)) ?? 0 }));
   const trackedDays = [...counters.keys()].filter((key) => key.startsWith('analytics:views:day:')).map((key) => key.slice('analytics:views:day:'.length)).sort();
   const sumDays = (days: string[]) => days.reduce((sum, day) => sum + (counters.get(dayViewsKey(day)) ?? 0), 0);
+  // Per-article days, zero entries omitted; only articles read in the window are listed.
+  const breakdownDays = dailyViews.map(({ day, value }) => {
+    const posts: Record<string, number> = {};
+    let articleViews = 0;
+    for (const post of postRows.results) {
+      const count = counters.get(postDayViewsKey(post.id, day)) ?? 0;
+      if (count > 0) {
+        posts[post.id] = count;
+        articleViews += count;
+      }
+    }
+    return { day, pages: Math.max(0, value - articleViews), posts };
+  });
+  const readIds = new Set(breakdownDays.flatMap((day) => Object.keys(day.posts)));
   const views = {
     total: counters.get(totalViewsKey) ?? 0,
     today: counters.get(dayViewsKey(today)) ?? 0,
@@ -62,6 +82,10 @@ export async function getAdminStats(env: WorkerEnv, now = new Date()): Promise<A
     month: [...counters.entries()].filter(([key]) => key.startsWith(dayViewsKey(monthPrefix))).reduce((sum, [, value]) => sum + value, 0),
     daily: dailyViews,
     trackedSince: trackedDays[0] ?? null,
+    byPost: {
+      posts: postRows.results.filter((post) => readIds.has(post.id)).map(({ id, title, slug }) => ({ id, title, slug })),
+      days: breakdownDays,
+    },
   };
 
   // ---- posts ---------------------------------------------------------------------

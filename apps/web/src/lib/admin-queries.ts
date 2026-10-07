@@ -92,7 +92,19 @@ export type DailyPoint = { day: string; value: number };
 
 export type AdminStats = {
   generatedAt: string;
-  views: { total: number; today: number; week: number; month: number; daily: DailyPoint[]; trackedSince: string | null };
+  views: {
+    total: number;
+    today: number;
+    week: number;
+    month: number;
+    daily: DailyPoint[];
+    trackedSince: string | null;
+    /** Same days as `daily`; `pages` (home, lists…) + Σ posts = that day's value. */
+    byPost: {
+      posts: Array<{ id: string; title: string; slug: string }>;
+      days: Array<{ day: string; pages: number; posts: Record<string, number> }>;
+    };
+  };
   topPosts: Array<{ id: string; title: string; slug: string; views: number; last7: number; last30: number }>;
   subscribers: { active: number; total: number; today: number; month: number; daily: DailyPoint[] };
   comments: { total: number; month: number; daily: DailyPoint[] };

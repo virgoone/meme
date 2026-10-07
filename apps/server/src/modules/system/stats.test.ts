@@ -59,6 +59,25 @@ test('page views roll up totals, today, week and a zero-filled 30 day series', a
   expect(stats.views.trackedSince).toBe('2026-08-01');
 });
 
+test('daily views split by article; the remainder is home and list pages', async () => {
+  const stats = await getAdminStats(env, now);
+  const { posts, days } = stats.views.byPost;
+  expect(days).toHaveLength(30);
+  expect(days.map((day) => day.day)).toEqual(stats.views.daily.map((point) => point.day));
+  expect(days.at(-1)).toEqual({ day: today, pages: 5, posts: { a: 7 } });
+  expect(days.at(-2)).toEqual({ day: yesterday, pages: 6, posts: { a: 2 } });
+  // 2026-09-01 has article views but no day counter (tracked separately): never negative.
+  expect(days.find((day) => day.day === '2026-09-01')).toEqual({ day: '2026-09-01', pages: 0, posts: { b: 4 } });
+  for (const day of days) {
+    const articleViews = Object.values(day.posts).reduce((sum, value) => sum + value, 0);
+    const total = stats.views.daily.find((point) => point.day === day.day)?.value ?? 0;
+    expect(day.pages).toBe(Math.max(0, total - articleViews));
+  }
+  // Only published articles read in the window, never drafts.
+  expect(posts.map((post) => post.id).sort()).toEqual(['a', 'b']);
+  expect(posts.find((post) => post.id === 'a')).toEqual({ id: 'a', title: 'First', slug: 'first' });
+});
+
 test('top posts exclude drafts and carry recent windows', async () => {
   const stats = await getAdminStats(env, now);
   expect(stats.topPosts.map((post) => post.slug)).toEqual(['second', 'first']);
