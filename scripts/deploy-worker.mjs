@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { writeSync } from 'node:fs';
 import { appendFile } from 'node:fs/promises';
 import { stripVTControlCharacters } from 'node:util';
 
@@ -118,7 +119,8 @@ async function deploy() {
     id = uploadedVersion(upload.output, upload.status, accountId);
     verifyUploadedVersion(await read(`/versions/${id}`), id, message, sha);
   } catch (error) {
-    process.stderr.write(upload.output);
+    // Flush large Wrangler diagnostics before an uncaught error terminates Bun.
+    writeSync(2, upload.output);
     throw error;
   }
   console.log(`Verified uploaded version ${id} for ${sha}`);
@@ -134,7 +136,7 @@ async function deploy() {
     '--message',
     message,
   ]);
-  process.stdout.write(release.output);
+  writeSync(1, release.output);
   assert.equal(release.status, 0, 'Worker version deployment failed');
   verifyDeployment((await read('/deployments')).deployments[0], id);
   console.log(`Verified production version ${id} at 100% traffic`);
