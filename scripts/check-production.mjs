@@ -15,6 +15,11 @@ async function check(origin, path, verify) {
         signal: AbortSignal.timeout(15_000),
       });
       assert.equal(response.status, 200, `HTTP ${response.status}`);
+      if (new URL(origin).hostname === 'blog.douni.one') {
+        for (const header of ['x-vercel-id', 'x-vercel-cache', 'x-vercel-error']) {
+          assert.equal(response.headers.has(header), false, `Unexpected Vercel proxy header: ${header}`);
+        }
+      }
       await verify(response);
       console.log(`PASS ${url}`);
       return;

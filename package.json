@@ -14,6 +14,7 @@
     "build:web": "bun --cwd apps/web build",
     "cf:d1:migrate:prod": "bun --cwd apps/server db:migrate:prod",
     "cf:deploy": "bun --cwd apps/server deploy",
+    "cf:triggers": "bun --cwd apps/server deploy:triggers",
     "check-types": "bun run check-types:web && bun run check-types:server && bun run check-types:editor",
     "check-types:editor": "bun run --cwd packages/editor check-types",
     "check-types:server": "bun run --cwd apps/server check-types",
