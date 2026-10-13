@@ -683,11 +683,6 @@
 
 .article-cover {
   margin: 28px 0 0;
-  overflow: hidden;
-  border-radius: 6px;
-  border: 1px solid var(--site-hair);
-  background: var(--site-wash);
-  aspect-ratio: 16 / 9;
 }
 
 .article-cover .loading-image {
@@ -856,11 +851,17 @@
 
 .article-body figure.image-block {
   margin: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.article-body > .article-block:has(> .image-block):not(:first-child),
+.article-body > .article-block:has(> .image-block) + .article-block {
+  margin-top: 24px;
 }
 
 .article-body figure.image-block .loading-image {
-  border: 1px solid var(--site-hair);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .article-body figure.image-block figcaption {

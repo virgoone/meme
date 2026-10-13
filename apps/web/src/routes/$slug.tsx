@@ -106,7 +106,7 @@ export function PostContent({ post }: { post: PostDetail }) {
           {post.description && <p className='site-lead'>{post.description}</p>}
           {post.coverImageUrl && (
             <div className='article-cover'>
-              <LoadingImage src={post.coverImageUrl} alt={post.title} loading='eager' fill />
+              <LoadingImage src={post.coverImageUrl} alt={post.title} loading='eager' />
             </div>
           )}
         </header>

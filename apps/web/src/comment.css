@@ -62,7 +62,8 @@
   color: #09090b !important;
 }
 
-@media (max-width: 760px) {
+/* A 720px article needs room on both sides for the offset comment trigger. */
+@media (max-width: 820px) {
   .comment-block-trigger {
     right: 0.15rem;
     transform: translateX(0);

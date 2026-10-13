@@ -7,7 +7,6 @@ type LoadingImageProps = {
   width?: number;
   height?: number;
   className?: string;
-  fill?: boolean;
   loading?: 'lazy' | 'eager';
 };
 
@@ -24,13 +23,15 @@ export function LoadingImage(props: LoadingImageProps) {
   return <ImageState key={props.src} {...props} />;
 }
 
-function ImageState({ src, alt, width, height, className = '', fill, loading = 'lazy' }: LoadingImageProps) {
+function ImageState({ src, alt, width, height, className = '', loading = 'lazy' }: LoadingImageProps) {
   const imageRef = useRef<HTMLImageElement>(null);
   const [state, setState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
   const [naturalSize, setNaturalSize] = useState<{ width: number; height: number }>();
-  const dimensions = width && height ? { width, height } : imageDimensions(src) ?? naturalSize;
-  const style: CSSProperties = fill ? {} : {
+  // Metadata reserves space before download. The decoded image is authoritative:
+  // a CDN transformation can change the dimensions encoded in its source URL.
+  const dimensions = naturalSize ?? (width && height ? { width, height } : imageDimensions(src));
+  const style: CSSProperties | undefined = state === 'loaded' ? undefined : {
     aspectRatio: dimensions ? `${dimensions.width} / ${dimensions.height}` : '16 / 9',
   };
 
@@ -52,7 +53,7 @@ function ImageState({ src, alt, width, height, className = '', fill, loading = '
 
   return (
     <span
-      className={`loading-image${fill ? ' loading-image--fill' : ''} ${className}`}
+      className={`loading-image ${className}`}
       data-state={state}
       aria-busy={state === 'loading'}
       style={style}

@@ -15,12 +15,20 @@ describe('loading image', () => {
     expect(html).toContain('loading="lazy"');
   });
 
-  test('keeps cover sizing with an eager image and a loading surface', () => {
-    const html = renderToStaticMarkup(<LoadingImage src='/cover.png' alt='Cover' fill loading='eager' />);
-    expect(html).toContain('loading-image--fill');
+  test('reserves the original panoramic cover ratio rather than a cropped 16:9 frame', () => {
+    const html = renderToStaticMarkup(<LoadingImage src='/cover-1549x199.png' alt='Cover' loading='eager' />);
     expect(html).toContain('loading="eager"');
-    expect(html).not.toContain('aspect-ratio:');
+    expect(html).toContain('aspect-ratio:1549 / 199');
+    expect(html).toContain('width="1549"');
+    expect(html).toContain('height="199"');
     expect(html).toContain('aria-busy="true"');
+  });
+
+  test('reserves the full height of a portrait screenshot', () => {
+    const html = renderToStaticMarkup(<LoadingImage src='/screenshot-447x937.png' alt='设置步骤' />);
+    expect(html).toContain('aspect-ratio:447 / 937');
+    expect(html).toContain('width="447"');
+    expect(html).toContain('height="937"');
   });
 
   test('reserves a fallback ratio for images without metadata', () => {

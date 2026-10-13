@@ -27,28 +27,20 @@
   isolation: isolate;
 }
 
-.loading-image--fill {
-  height: 100%;
-}
-
 .loading-image > img,
 .image-block .loading-image > img {
-  position: absolute;
+  /* Keep images in flow so their intrinsic ratio determines the height. */
+  position: relative;
   z-index: 0;
-  inset: 0;
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   margin: 0;
   object-fit: contain;
   opacity: 0;
   transition: opacity 180ms ease-out;
   border-radius: inherit;
   box-shadow: none;
-}
-
-.loading-image--fill > img {
-  object-fit: cover;
 }
 
 .loading-image[data-state='loaded'] > img {
