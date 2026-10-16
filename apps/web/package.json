@@ -12,6 +12,7 @@
     "@better-upload/client": "^3.0.4",
     "@bunship-ai/data-table": "workspace:*",
     "@bunship-ai/ui": "workspace:*",
+    "@evumi/tracker": "0.1.15",
     "@meme/auth": "workspace:*",
     "@meme/editor": "workspace:*",
     "@meme/shared": "workspace:*",

@@ -37,6 +37,7 @@
         "@better-upload/client": "^3.0.4",
         "@bunship-ai/data-table": "workspace:*",
         "@bunship-ai/ui": "workspace:*",
+        "@evumi/tracker": "0.1.15",
         "@meme/auth": "workspace:*",
         "@meme/editor": "workspace:*",
         "@meme/shared": "workspace:*",
@@ -414,6 +415,8 @@
     "@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.25.12", "", { "os": "win32", "cpu": "ia32" }, "sha512-HkqnmmBoCbCwxUKKNPBixiWDGCpQGVsrQfJoVGYLPT41XWF8lHuE5N6WhVia2n4o5QK5M4tYr21827fNhi4byQ=="],
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.12", "", { "os": "win32", "cpu": "x64" }, "sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA=="],
+
+    "@evumi/tracker": ["@evumi/tracker@0.1.15", "", { "peerDependencies": { "@tanstack/react-router": "^1.170.41", "next": ">=14 <17", "react": ">=18 <20", "vue": "^3.5.0", "vue-router": "^4.0.0 || ^5.0.0" }, "optionalPeers": ["@tanstack/react-router", "next", "react", "vue", "vue-router"] }, "sha512-hgvhU90v46TGw1jY7pOU1Wh5zRRNBIxvGAdLx+XUGexVk2IkphyRY2WXuqzeDMoWsn1aAr5tSGmEiFhn1xyXzQ=="],
 
     "@floating-ui/core": ["@floating-ui/core@1.7.5", "", { "dependencies": { "@floating-ui/utils": "0.2.11" } }, "sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ=="],
 

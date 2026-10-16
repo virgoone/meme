@@ -17,6 +17,7 @@ import { publicConfigQueryOptions, useSiteStats, useSubscribeNewsletter } from '
 import { AdminWorkspace } from '../lib/admin-workspace';
 import { AuthDialogHost } from '../lib/auth-dialog';
 import { openAuthDialog } from '../lib/auth-dialog-store';
+import { EvumiAnalytics } from '../lib/evumi-analytics';
 import { formatTotalViews } from '../lib/format-views';
 import { GoogleAnalytics } from '../lib/google-analytics';
 import { AdminContentSkeleton } from '../lib/page-skeletons';
@@ -199,6 +200,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <body>
         <QueryClientProvider client={queryClient}>
           {children}
+          <EvumiAnalytics />
           <GoogleAnalytics measurementId={config?.gaMeasurementId ?? null} />
         </QueryClientProvider>
         <Scripts />

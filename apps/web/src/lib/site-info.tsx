@@ -47,13 +47,14 @@ export function ContactPage() {
 
 export function PrivacyPage() {
   return <SiteInfoPage title='隐私政策' introduction='这份说明介绍 blog.douni.one 在阅读、登录、互动和订阅时如何使用数据。'>
-    <p className='site-info-updated'>更新日期：<time dateTime='2026-09-25'>2026 年 9 月 25 日</time></p>
+    <p className='site-info-updated'>更新日期：<time dateTime='2026-10-16'>2026 年 10 月 16 日</time></p>
     <section><h2>阅读、登录与公开互动</h2>
       <p>阅读公开文章不需要创建账号。登录时，站点使用邮箱验证码，并保存账号邮箱、昵称、头像及会话信息，以识别登录状态和管理权限。验证邮件通过 Resend 发送。</p>
       <p>发表评论或留言后，你的昵称、头像、内容及发布时间会向其他读者公开。登录邮箱不会作为评论署名公开展示。请不要在公开内容中提交个人敏感信息。</p>
     </section>
     <section><h2>访问统计与最近访客</h2>
       <p>站点统计页面和文章浏览次数，并使用 Cloudflare 随请求提供的大致城市与国家信息，在页脚展示最近访客地区。这不是设备 GPS 定位，公开的最近访客记录不包含 IP 地址。</p>
+      <p>站点使用自托管的 Evumi 统计公开页面访问、来源和大致地区，采用无 Cookie 模式，不创建持久浏览器标识。Evumi 不接收登录邮箱、订阅邮箱或确认链接中的令牌；后台、登录、订阅确认和邮件预览页面不发送页面访问统计。</p>
       <p>站点还接入 Google Analytics 4，用于了解页面访问与来源。Google 可能通过 Cookie 等技术收集访问数据。服务器、托管服务和登录会话也可能处理 IP 地址、浏览器信息及请求日志，用于提供服务、会话管理和安全排查。</p>
     </section>
     <section><h2>广告与 Cookie</h2>

@@ -2,8 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouterState } from '@tanstack/react-router';
 import { siteUrl } from './seo';
 import { normalizePage } from '@meme/shared';
-
-export const isPrivateAnalyticsPath = (path: string) => /^\/(admin|login|confirm|newsletters)(\/|$)/.test(path);
+import { isPrivateAnalyticsPath } from './analytics-path';
 
 /** Manual page views. Keep enhanced history measurement OFF in this GA stream. */
 export function GoogleAnalytics({ measurementId }: { measurementId: string | null }) {
