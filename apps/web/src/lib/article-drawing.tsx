@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@bunship-ai/ui/components/select';
 import { drawingRendererUrl } from './editor-widget-url';
 import type { DrawingMode, DrawingType, ExcalidrawData } from './article-drawing-data';
+import { renderMermaidImage } from './article-mermaid';
 import './article-drawing.css';
 
 type Renderer = {
@@ -44,9 +45,11 @@ export function ArticleDrawing({ type, code = '', data, blockId, initialMode = '
     if (!visible || mode === 'Code' || empty) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
-    const render = loadRenderer().then(renderer => type === 'Excalidraw'
-      ? renderer.renderExcalidraw(JSON.parse(serializedData))
-      : renderer.renderDiagram(type, code));
+    const render = type === 'Mermaid'
+      ? renderMermaidImage(code)
+      : loadRenderer().then(renderer => type === 'Excalidraw'
+        ? renderer.renderExcalidraw(JSON.parse(serializedData))
+        : renderer.renderDiagram(type, code));
     Promise.race([render, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('Diagram timed out')), 25000); })])
       .then(result => {
         // Display SVG as an image, never as executable markup in the article DOM.
