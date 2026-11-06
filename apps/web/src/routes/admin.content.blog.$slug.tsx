@@ -18,6 +18,7 @@ import { AdminPage, ErrorText, SectionCard } from '../lib/admin-ui';
 import { MainImageUploader } from '../lib/main-image-uploader';
 import { postToEditorValue } from '../lib/post-editor-value';
 import { RemoteEditorWidget, type RemoteEditorValue } from '../lib/remote-editor-widget';
+import '../lib/post-editor.css';
 
 export const Route = createFileRoute('/admin/content/blog/$slug')({
   component: () => <AdminBlogEditorPage slug={Route.useParams().slug} />,
@@ -91,9 +92,9 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
 
   if (!isNew && post.isPending) {
     return (
-      <AdminPage>
+      <AdminPage className='admin-post-editor'>
         <EditorToolbar isNew={false} title='' saving={false} onSave={() => undefined} />
-        <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
+        <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
           <div className='grid gap-6'>
             <Skeleton className='h-12 w-3/4' />
             <Skeleton className='h-10 w-1/2' />
@@ -111,7 +112,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
 
   if (!isNew && (post.isError || !post.data)) {
     return (
-      <AdminPage>
+      <AdminPage className='admin-post-editor'>
         <EditorToolbar isNew={false} title='编辑文章' saving={false} onSave={() => undefined} />
         <ErrorText error={post.error ?? new Error('文章不存在')} />
       </AdminPage>
@@ -122,7 +123,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
   const status = saveMutation.isSuccess ? '已保存' : saveMutation.isError ? null : null;
 
   return (
-    <AdminPage>
+    <AdminPage className='admin-post-editor'>
       <EditorToolbar
         isNew={isNew}
         title={title}
@@ -133,35 +134,35 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
         error={saveMutation.isError ? saveMutation.error : null}
       />
 
-      <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
-        <div className='grid min-w-0 gap-6'>
+      <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
+        <div className='grid min-w-0 content-start gap-6'>
           <div className='grid gap-4'>
-            <div className='grid gap-1.5'>
+            <div className='grid min-w-0 content-start gap-1.5'>
               <Label htmlFor='post-title' className='sr-only'>标题</Label>
               <Input
                 id='post-title'
                 value={title}
                 placeholder='文章标题'
-                className='h-auto min-h-0 rounded-none border-0 border-border border-b bg-transparent px-0 py-2 font-semibold text-2xl leading-snug shadow-none focus-visible:border-foreground focus-visible:ring-0'
+                className='admin-post-title'
                 onChange={(event) => {
                   setTitle(event.target.value);
                   if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
                 }}
               />
             </div>
-            <div className='grid gap-4 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)]'>
-              <div className='grid gap-1.5'>
+            <div className='grid items-start gap-4 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)]'>
+              <div className='grid min-w-0 content-start gap-1.5'>
                 <Label htmlFor='post-slug' className='text-muted-foreground text-xs'>Slug</Label>
                 <Input
                   id='post-slug'
                   value={nextSlug}
-                  className='font-mono text-[13px]'
+                  className='admin-post-slug'
                   placeholder='url-friendly-slug'
                   onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }}
                 />
-                <span className='text-muted-foreground text-xs'>公开地址：/{nextSlug || '…'}</span>
+                <span className='break-all text-muted-foreground text-xs'>公开地址：/{nextSlug || '…'}</span>
               </div>
-              <div className='grid gap-1.5'>
+              <div className='grid min-w-0 content-start gap-1.5'>
                 <Label htmlFor='post-description' className='text-muted-foreground text-xs'>摘要</Label>
                 <Textarea
                   id='post-description'
@@ -175,7 +176,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
             </div>
           </div>
 
-          <SectionCard title='正文' description='段落会以稳定的 block ID 保存，用作评论锚点。' bodyClassName='p-0'>
+          <SectionCard title='正文' className='min-w-0' bodyClassName='min-w-0 p-0'>
             {isNew || contentReadySlug === post.data?.slug ? (
               <RemoteEditorWidget value={content} onChange={setContent} className='admin-editor-host' minHeight={640} />
             ) : (
@@ -191,10 +192,10 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
           </SectionCard>
         </div>
 
-        <aside className='grid content-start gap-4' aria-label='文章设置'>
+        <aside className='grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-4' aria-label='文章设置'>
           <SectionCard title='发布' action={<Badge variant={publishedAt ? 'default' : 'outline'}>{publishedAt ? '已发布' : '草稿'}</Badge>}>
             <div className='grid gap-3'>
-              <div className='grid gap-1.5'>
+              <div className='grid min-w-0 content-start gap-1.5'>
                 <Label htmlFor='post-published-at' className='text-muted-foreground text-xs'>发布时间</Label>
                 <Input id='post-published-at' type='datetime-local' value={publishedAt} onChange={(event) => setPublishedAt(event.target.value)} />
                 <span className='text-muted-foreground text-xs'>留空保存为草稿，前台不会展示。</span>
@@ -213,7 +214,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
 
           <SectionCard title='元信息'>
             <div className='grid gap-4'>
-              <div className='grid gap-1.5'>
+              <div className='grid min-w-0 content-start gap-1.5'>
                 <Label htmlFor='post-mood' className='text-muted-foreground text-xs'>心情</Label>
                 <Select value={mood} onValueChange={(value) => setMood(value as Mood)}>
                   <SelectTrigger id='post-mood'><SelectValue /></SelectTrigger>
@@ -224,7 +225,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
                   </SelectContent>
                 </Select>
               </div>
-              <div className='grid gap-1.5'>
+              <div className='grid min-w-0 content-start gap-1.5'>
                 <Label htmlFor='post-reading-time' className='text-muted-foreground text-xs'>阅读时长（分钟）</Label>
                 <Input id='post-reading-time' inputMode='numeric' value={readingTime} onChange={(event) => setReadingTime(event.target.value)} />
               </div>

@@ -421,10 +421,44 @@
 
 .admin-editor-host [role='toolbar'] {
   max-width: 100%;
-  overflow-x: auto;
   padding: 6px 12px;
   border-bottom: 1px solid var(--border);
   background: var(--card);
+}
+
+/* The remote toolbar wraps an inner flex row. Wrap that row and keep related
+   controls together instead of letting the widget clip the last buttons. */
+.admin-editor-host [role='toolbar'].sticky {
+  overflow: visible;
+}
+
+.admin-editor-host [role='toolbar'].sticky > div {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 4px;
+}
+
+.admin-editor-host [role='toolbar'].sticky [class~='group/toolbar-group'] {
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.admin-editor-host [role='toolbar'].sticky [class~='group/toolbar-group'] > div:first-child {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .admin-editor-host [role='toolbar'] {
+    padding-inline: 8px;
+  }
+
+  .admin-editor-host [data-slate-editor='true'] {
+    padding: 20px 16px 40px;
+  }
 }
 
 .admin-editor-host .editor-widget-host {
