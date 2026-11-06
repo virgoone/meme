@@ -36,6 +36,7 @@ for (const origin of origins) {
     const health = await response.json();
     assert.equal(health.ok, true);
     assert.equal(health.runtime, 'cloudflare-workers');
+    assert.equal(health.database, 'libsql');
     assert.equal(health.appEnv, 'production');
   });
   await check(origin, '/blog', async (response) => {

@@ -1,4 +1,4 @@
-import { categories, createD1Database } from '@meme/db';
+import { categories, createDatabase } from '@meme/db';
 import { desc, like } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
@@ -23,7 +23,7 @@ export async function listCategories(
   env: WorkerEnv,
   options: ListTaxonomyOptions,
 ) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const page = clampPage(options.page);
   const pageSize = clampPageSize(options.pageSize);
   const title = options.title?.trim();

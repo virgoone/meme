@@ -5,6 +5,10 @@ export type WorkerEnv = {
   MEDIA_BUCKET: R2Bucket;
   MEME_KV: KVNamespace;
   APP_ENV?: string;
+  DATABASE_PROVIDER?: 'd1' | 'libsql';
+  TURSO_DB_URL?: string;
+  TURSO_DB_AUTH_TOKEN?: string;
+  DATABASE_MIGRATION_READ_ONLY?: string;
   LINK_PREVIEW_API_BASE_URL?: string;
   CLERK_SECRET_KEY?: string;
   CLERK_PUBLISHABLE_KEY?: string;
@@ -39,3 +43,6 @@ export type WorkerEnv = {
   SITE_URL?: string;
   TRUSTED_ORIGINS?: string;
 };
+
+/** Raw platform bindings; production libSQL has no D1 binding. */
+export type WorkerBindings = Omit<WorkerEnv, 'DB'> & { DB?: D1Database };

@@ -217,7 +217,7 @@ export async function sendCampaignStep(
       if (!recipients) throw AppError.badRequest('还没有已确认订阅的用户');
       if (recipients !== expectedRecipients)
         throw new AppError('订阅人数已变化，请刷新后重新确认发送范围。', 409);
-      // D1 batch is atomic: freeze the audience and lock the content together.
+      // Database batch is atomic: freeze the audience and lock the content together.
       await env.DB.batch([
         env.DB.prepare(
           `INSERT INTO newsletter_deliveries (campaign_id, subscriber_id, email, unsubscribe_token) SELECT ?, id, email, lower(hex(randomblob(24))) FROM (${eligible}) WHERE (SELECT count(*) FROM (${eligible})) = ?`,

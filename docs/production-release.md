@@ -3,7 +3,7 @@
 ## Hosting
 
 - Cloudflare Worker `meme` directly owns the Custom Domain `blog.douni.one`; `wrangler.jsonc` declares the entire hostname with `custom_domain: true`.
-- The same Worker serves the TanStack Start app, assets, and API using the existing `meme-prod` D1 database, `MEME_KV` namespace, and `meme-assets` R2 bucket.
+- The same Worker serves the TanStack Start app, assets, and API using the Turso `meme` libSQL database, `MEME_KV` namespace, and `meme-assets` R2 bucket. Production has no D1 binding.
 - `https://meme.moss-dev.workers.dev` remains the direct diagnostic origin.
 - Worker secrets remain on Cloudflare. Preserve `BETTER_AUTH_SECRET` so existing sessions remain valid. `SITE_URL` is the canonical public origin, which must remain in `TRUSTED_ORIGINS`.
 - The legacy Vercel proxy build has been removed. `vercel.json` disables Git deployments; no Vercel deployment is required for production releases.
@@ -39,7 +39,7 @@ Cloudflare manages the Custom Domain DNS record and certificate. Do not recreate
 
 ## Data changes
 
-Schema migrations and imports are explicit operator steps with a separate backup and review. Before applying them, export D1 with `wrangler d1 export meme-prod --remote --config wrangler.jsonc --output=data/release-backups/<timestamp>/d1.sql` and verify the intended changes. Normal releases never apply D1 migrations, replay imports, reset KV, rotate auth secrets, or recreate storage resources.
+Schema migrations and imports are explicit operator steps with a separate backup and review. Before applying them, back up Turso (schema and every application table) as described in [d1-to-libsql.md](d1-to-libsql.md) and verify the intended changes. Normal releases never apply database migrations, replay imports, reset KV, rotate auth secrets, or recreate storage resources.
 
 The original content migration checklist remains in [cloudflare-stack-migration-plan.md](cloudflare-stack-migration-plan.md).
 
@@ -49,3 +49,5 @@ The original content migration checklist remains in [cloudflare-stack-migration-
 - For a domain-only mistake, restore the previously recorded Worker domain/route configuration. Reverting a local file alone does not revert live triggers.
 - A code rollback must not restore an older database dump over newer writes. Retain old source data resources unless their deletion is separately authorized.
 - The retired Vercel deployment is not an operational fallback: it returned `402 DEPLOYMENT_DISABLED` before the direct Cloudflare cutover.
+
+After the libSQL cutover, do not roll back to a D1-backed Worker version: it would lose visibility of new Turso writes. Roll back only to another libSQL version, or perform a separately planned reverse migration. The archived D1 configuration is `wrangler.d1-archive.jsonc`.

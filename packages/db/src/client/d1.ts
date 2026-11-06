@@ -3,8 +3,8 @@ import { drizzle } from 'drizzle-orm/d1';
 
 import * as schema from '../schema';
 
-export function createD1Database(db: D1Database) {
+export function createDatabase(db: D1Database) {
   return drizzle(db, { schema });
 }
 
-export type MemeD1Database = ReturnType<typeof createD1Database>;
+export type MemeDatabase = ReturnType<typeof createDatabase>;

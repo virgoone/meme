@@ -1,11 +1,12 @@
-import { createD1Database, importedPosts, postBlocks, settings } from '@meme/db';
+import { createDatabase, importedPosts, postBlocks, settings } from '@meme/db';
 import {
   type EditorBlockNode,
   getBlockId,
   withStableBlockIds,
 } from '@meme/editor';
 import { BLOG_PAGE_SIZE, createPostSlug, isValidPostSlug, normalizePage, type PostPage } from '@meme/shared';
-import { and, asc, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNotNull, sql } from 'drizzle-orm';
+import { normalizeStoredImageUrl, resolvePostCover } from '@meme/db/cover';
 import { AppError } from '../../middleware/errorHandler';
 
 import type { WorkerEnv } from '../../env';
@@ -54,7 +55,7 @@ export async function listImportedPosts(
   env: WorkerEnv,
   options?: { limit?: number; offset?: number; includeDrafts?: boolean },
 ): Promise<PostListItem[]> {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const limit = Math.min(Math.max(options?.limit ?? 20, 1), 100);
 
   const posts = await db
@@ -66,6 +67,7 @@ export async function listImportedPosts(
       slug: importedPosts.slug,
       description: importedPosts.description,
       mainImageUrl: importedPosts.mainImageUrl,
+      coverImageUrl: importedPosts.coverImageUrl,
       mood: importedPosts.mood,
       readingTime: importedPosts.readingTime,
       publishedAt: importedPosts.publishedAt,
@@ -79,41 +81,19 @@ export async function listImportedPosts(
 
   if (posts.length === 0) return [];
 
-  const imageBlocks = await db
-    .select({
-      postId: postBlocks.postId,
-      sortIndex: postBlocks.sortIndex,
-      portableTextJson: postBlocks.portableTextJson,
-    })
-    .from(postBlocks)
-    .where(
-      inArray(
-        postBlocks.postId,
-        posts.map((post) => post.id),
-      ),
-    )
-    .orderBy(asc(postBlocks.sortIndex));
-
-  const coverByPost = new Map<string, string>();
-  for (const block of imageBlocks) {
-    if (coverByPost.has(block.postId)) continue;
-    const imageUrl = sanityImageUrl(block.portableTextJson);
-    if (imageUrl) coverByPost.set(block.postId, imageUrl);
-  }
-
   return posts.map((post) => {
     const mainImageUrl = normalizeStoredImageUrl(post.mainImageUrl);
     return {
       ...post,
       views: Number.isSafeInteger(post.views) && post.views >= 0 ? post.views : 0,
       mainImageUrl,
-      coverImageUrl: mainImageUrl ?? coverByPost.get(post.id) ?? null,
+      coverImageUrl: normalizeStoredImageUrl(post.coverImageUrl),
     };
   });
 }
 
 export async function listPublishedPostPage(env: WorkerEnv, requestedPage: unknown): Promise<PostPage<PostListItem>> {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [count] = await db.select({ total: sql<number>`count(*)` }).from(importedPosts).where(isNotNull(importedPosts.publishedAt));
   const total = Number(count?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(total / BLOG_PAGE_SIZE));
@@ -127,7 +107,7 @@ export async function getImportedPostBySlug(
   slug: string,
   options?: { includeDrafts?: boolean },
 ): Promise<PostDetail | null> {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [post] = await db
     .select()
     .from(importedPosts)
@@ -161,12 +141,7 @@ export async function getImportedPostBySlug(
     readingTime: post.readingTime,
     publishedAt: post.publishedAt,
     updatedAt: post.updatedAt,
-    coverImageUrl:
-      normalizeStoredImageUrl(post.mainImageUrl) ??
-      blocks
-        .map((block) => sanityImageUrl(block.portableTextJson))
-        .find(Boolean) ??
-      null,
+    coverImageUrl: normalizeStoredImageUrl(post.coverImageUrl),
     portableTextJson: post.portableTextJson,
     slateJson: post.slateJson,
     blocks,
@@ -182,7 +157,7 @@ export async function updateImportedPostBySlug(
   const existing = await getImportedPostBySlug(env, slug, { includeDrafts: true });
   if (!existing) return null;
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const slateBlocks = normalizeSlateBlocks(
     input.slateJson ?? existing.slateJson,
   );
@@ -212,6 +187,7 @@ export async function updateImportedPostBySlug(
       slug: nextSlug,
       description: nextDescription,
       mainImageUrl: nextMainImageUrl,
+      coverImageUrl: resolvePostCover(nextMainImageUrl, slateBlocks.map((block, index) => slateBlockToPortableText(block, getBlockId(block) ?? `block_${index}`))),
       mood: nextMood,
       readingTime: nextReadingTime,
       publishedAt:
@@ -237,7 +213,7 @@ export async function createPost(env: WorkerEnv, input: UpdatePostInput): Promis
   const slug = input.slug?.trim() || createPostSlug(title);
   validateSlug(slug);
   await ensureAvailableSlug(env, slug);
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const id = `post_${crypto.randomUUID()}`;
   const blocks = normalizeSlateBlocks(input.slateJson);
   const now = new Date().toISOString();
@@ -247,6 +223,7 @@ export async function createPost(env: WorkerEnv, input: UpdatePostInput): Promis
         id, sanityId: id, title, slug,
         description: input.description ?? null,
         mainImageUrl: normalizeStoredImageUrl(input.mainImageUrl),
+        coverImageUrl: resolvePostCover(input.mainImageUrl, blocks.map((block, index) => slateBlockToPortableText(block, getBlockId(block) ?? `block_${index}`))),
         mood: input.mood ?? 'neutral',
         readingTime: input.readingTime ?? estimateReadingTime(blocks),
         publishedAt: input.publishedAt ?? null,
@@ -265,7 +242,7 @@ export async function createPost(env: WorkerEnv, input: UpdatePostInput): Promis
   return created;
 }
 
-function blockInserts(db: ReturnType<typeof createD1Database>, postId: string, blocks: EditorBlockNode[]) {
+function blockInserts(db: ReturnType<typeof createDatabase>, postId: string, blocks: EditorBlockNode[]) {
   return blocks.map((block, index) => {
     const blockId = getBlockId(block) ?? `block_${index}`;
     return db.insert(postBlocks).values({
@@ -299,41 +276,6 @@ function nodeText(node: unknown): string {
   if (!node || typeof node !== 'object') return '';
   const value = node as { text?: unknown; children?: unknown[] };
   return typeof value.text === 'string' ? value.text : Array.isArray(value.children) ? value.children.map(nodeText).join('\n') : '';
-}
-
-function sanityImageUrl(value: unknown): string | null {
-  if (!value || typeof value !== 'object') return null;
-  const asset = (value as { asset?: { _ref?: unknown; url?: unknown } }).asset;
-  const directUrl =
-    typeof asset?.url === 'string'
-      ? asset.url.trim()
-      : typeof (value as { url?: unknown }).url === 'string'
-        ? String((value as { url?: unknown }).url).trim()
-        : '';
-  if (directUrl) return directUrl;
-
-  const ref =
-    typeof asset?._ref === 'string'
-      ? asset._ref
-      : typeof (value as { _ref?: unknown })._ref === 'string'
-        ? String((value as { _ref?: unknown })._ref)
-        : null;
-  if (!ref?.startsWith('image-')) return null;
-
-  const match = /^image-([a-f0-9]+)-(\d+x\d+)-([a-z0-9]+)$/i.exec(ref);
-  if (!match) return null;
-
-  const [, id, dimensions, format] = match;
-  return `https://cdn.sanity.io/images/gynhwdlh/production/${id}-${dimensions}.${format}`;
-}
-
-function normalizeStoredImageUrl(
-  value: string | null | undefined,
-): string | null {
-  const trimmed = value?.trim();
-  if (!trimmed) return null;
-  if (trimmed === 'main_image_url') return null;
-  return trimmed;
 }
 
 function normalizeSlateBlocks(value: unknown): EditorBlockNode[] {

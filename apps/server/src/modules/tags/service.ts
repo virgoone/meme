@@ -1,4 +1,4 @@
-import { createD1Database, tags } from '@meme/db';
+import { createDatabase, tags } from '@meme/db';
 import { desc, like } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
@@ -20,7 +20,7 @@ function clampPageSize(value: number | undefined): number {
 }
 
 export async function listTags(env: WorkerEnv, options: ListTagsOptions) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const page = clampPage(options.page);
   const pageSize = clampPageSize(options.pageSize);
   const title = options.title?.trim();

@@ -1,4 +1,4 @@
-import { createD1Database, newsletters, subscribers } from '@meme/db';
+import { createDatabase, newsletters, subscribers } from '@meme/db';
 import { desc, eq, sql } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
@@ -20,7 +20,7 @@ export type NewsletterDetail = {
 };
 
 export async function listNewsletters(env: WorkerEnv, limit = 100) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   return db
     .select({
@@ -39,7 +39,7 @@ export async function listNewsletters(env: WorkerEnv, limit = 100) {
 }
 
 export async function listSubscribers(env: WorkerEnv, limit = 100) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   return db
     .select({
@@ -68,7 +68,7 @@ export async function subscribeToNewsletter(
   input: NewsletterInput,
 ) {
   const email = normalizeEmail(input);
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [existing] = await db
     .select()
     .from(subscribers)
@@ -101,7 +101,7 @@ export async function subscribeToNewsletter(
 export async function confirmNewsletterToken(env: WorkerEnv, token: string) {
   if (!token.trim()) throw new Error('token is required');
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [subscriber] = await db
     .select()
     .from(subscribers)
@@ -128,7 +128,7 @@ export async function getNewsletterById(
 ): Promise<NewsletterDetail | null> {
   if (!Number.isInteger(id) || id <= 0) return null;
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [newsletter] = await db
     .select({
       id: newsletters.id,

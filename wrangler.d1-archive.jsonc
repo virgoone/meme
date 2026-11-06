@@ -1,0 +1,11 @@
+{
+  "name": "meme-d1-archive",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "meme-prod",
+      "database_id": "bbc33e62-7322-4513-8188-87699d95cd46",
+      "migrations_dir": "packages/db/drizzle"
+    }
+  ]
+}

@@ -22,6 +22,7 @@ beforeEach(() => {
   sqlite?.close();
   sqlite = new Database(':memory:');
   sqlite.exec(readFileSync(new URL('../../../../../packages/db/drizzle/0000_content_migration_control.sql', import.meta.url), 'utf8'));
+  sqlite.exec(readFileSync(new URL('../../../../../packages/db/drizzle/0006_stored_post_covers.sql', import.meta.url), 'utf8'));
   sqlite.exec('CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT, updated_at TEXT);');
   class Statement {
     values: (string | number | null)[] = [];
@@ -46,6 +47,22 @@ function request(path: string, method = 'GET', body?: unknown) {
 const paragraph = { type: 'p', children: [{ text: '保存后应保留的正文', bold: true }] };
 
 describe('post creation and persistence', () => {
+  test('stores covers on save, updates and clears them, and lists without reading any blocks', async () => {
+    const image = { type: 'img', url: 'https://example.com/first.png', children: [{ text: '' }] };
+    const created = await (await request('/posts', 'POST', { title: 'Stored cover', publishedAt: '2026-11-06', slateJson: [paragraph, image] })).json();
+    expect(created.coverImageUrl).toBe(image.url);
+    const saved = await (await request(`/posts/${created.slug}`, 'PUT', { mainImageUrl: 'https://example.com/manual.png' })).json();
+    expect(saved.coverImageUrl).toBe('https://example.com/manual.png');
+    const fallback = await (await request(`/posts/${created.slug}`, 'PUT', { mainImageUrl: null })).json();
+    expect(fallback.coverImageUrl).toBe(image.url);
+    const cleared = await (await request(`/posts/${created.slug}`, 'PUT', { slateJson: [paragraph] })).json();
+    expect(cleared.coverImageUrl).toBeNull();
+    await request(`/posts/${created.slug}`, 'PUT', { slateJson: [image] });
+    sqlite.exec('DROP TABLE post_blocks');
+    const response = await request('/posts?limit=100');
+    expect(response.status).toBe(200);
+    expect((await response.json())[0].coverImageUrl).toBe(image.url);
+  });
   test('persists all diagram formats and Excalidraw files through create, update and public reload', async () => {
     const drawings = ['Mermaid', 'PlantUml', 'Graphviz', 'Flowchart'].map(drawingType => ({
       type: 'code_drawing', children: [{ text: '' }], data: { drawingType, drawingMode: 'Both', code: `source for ${drawingType}` },

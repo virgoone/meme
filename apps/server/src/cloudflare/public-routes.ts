@@ -1,4 +1,4 @@
-import { createD1Database, importedPosts } from '@meme/db';
+import { createDatabase, importedPosts } from '@meme/db';
 import { desc, isNotNull } from 'drizzle-orm';
 import type { WorkerEnv } from '../env';
 import { listImportedPosts } from '../modules/posts/service';
@@ -97,7 +97,7 @@ function siteOrigin(env: WorkerEnv): string {
 
 async function buildSitemapXml(env: WorkerEnv): Promise<string> {
   const origin = siteOrigin(env);
-  const posts = await createD1Database(env.DB)
+  const posts = await createDatabase(env.DB)
     .select({ slug: importedPosts.slug, publishedAt: importedPosts.publishedAt, updatedAt: importedPosts.updatedAt })
     .from(importedPosts).where(isNotNull(importedPosts.publishedAt))
     .orderBy(desc(importedPosts.publishedAt));
@@ -131,7 +131,7 @@ ${entry.lastmod ? `    <lastmod>${escapeXml(entry.lastmod.slice(0, 10))}</lastmo
 async function buildLlmsTxt(env: WorkerEnv): Promise<string> {
   const origin = siteOrigin(env);
   // Read all published entries, independent of archive pagination and the RSS limit.
-  const posts = await createD1Database(env.DB)
+  const posts = await createDatabase(env.DB)
     .select({ title: importedPosts.title, slug: importedPosts.slug, description: importedPosts.description })
     .from(importedPosts).where(isNotNull(importedPosts.publishedAt))
     .orderBy(desc(importedPosts.publishedAt));

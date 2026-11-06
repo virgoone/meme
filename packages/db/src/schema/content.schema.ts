@@ -17,6 +17,7 @@ export const importedPosts = sqliteTable(
     slug: text('slug').notNull(),
     description: text('description'),
     mainImageUrl: text('main_image_url'),
+    coverImageUrl: text('cover_image_url'),
     mood: text('mood', { enum: ['happy', 'sad', 'neutral'] }).default(
       'neutral',
     ),
@@ -30,6 +31,7 @@ export const importedPosts = sqliteTable(
   (table) => ({
     sanityIdIdx: uniqueIndex('imported_posts_sanity_id_idx').on(table.sanityId),
     slugIdx: uniqueIndex('imported_posts_slug_idx').on(table.slug),
+    publishedIdx: index('imported_posts_published_idx').on(table.publishedAt, table.createdAt, table.id),
   }),
 );
 

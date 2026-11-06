@@ -1,6 +1,6 @@
 import { ALL_SETTINGS_KEYS, SETTINGS_DEFAULTS, validateAdSenseSettings } from '@meme/shared';
 import {
-  createD1Database,
+  createDatabase,
   settings,
   type SettingInsert,
 } from '@meme/db';
@@ -10,7 +10,7 @@ import type { WorkerEnv } from '../../env';
 import { AppError } from '../../middleware/errorHandler';
 
 export async function getAllSettings(env: WorkerEnv): Promise<Record<string, unknown>> {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   const rows = await db.select().from(settings);
 
@@ -30,7 +30,7 @@ export async function upsertSettings(
 ): Promise<Record<string, unknown>> {
   const adsenseError = validateAdSenseSettings(input);
   if (adsenseError) throw AppError.badRequest(adsenseError);
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const known = new Set<string>(ALL_SETTINGS_KEYS);
 
   const entries = Object.entries(input).filter(([key]) => known.has(key));

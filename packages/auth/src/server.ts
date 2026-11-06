@@ -3,7 +3,7 @@ import {
   authSession,
   authUser,
   authVerification,
-  createD1Database,
+  createDatabase,
 } from '@meme/db';
 import {
   DEFAULT_SITE_URL,
@@ -69,10 +69,10 @@ async function sendOtpEmail(
 /**
  * Build the Better Auth instance for a given runtime env. Passwordless
  * email-OTP sign-in (auto-creates the user on first sign-in), cookie sessions,
- * a `role` field for admin gating, drizzle adapter on D1.
+ * a `role` field for admin gating, drizzle adapter on SQLite.
  */
 export function createAuth(env: AuthEnv) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const baseURL =
     getOrigin(env.BETTER_AUTH_URL ?? env.SITE_URL) ?? DEFAULT_SITE_URL;
 

@@ -70,6 +70,7 @@ beforeEach(() => {
     '0001_legacy_turso_tables',
     '0004_settings',
     '0005_newsletter_campaigns',
+    '0006_stored_post_covers',
   ])
     sqlite.exec(
       readFileSync(

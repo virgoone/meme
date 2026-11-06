@@ -1,4 +1,4 @@
-import { comments, createD1Database, importedPosts, postBlocks } from '@meme/db';
+import { comments, createDatabase, importedPosts, postBlocks } from '@meme/db';
 import { and, asc, desc, eq, inArray, isNotNull, or } from 'drizzle-orm';
 import { AppError } from '../../middleware/errorHandler';
 
@@ -13,7 +13,7 @@ export type CommentInput = {
 };
 
 async function resolveCommentPost(env: WorkerEnv, postId: string) {
-  const [post] = await createD1Database(env.DB).select({ id: importedPosts.id, sanityId: importedPosts.sanityId })
+  const [post] = await createDatabase(env.DB).select({ id: importedPosts.id, sanityId: importedPosts.sanityId })
     .from(importedPosts)
     .where(and(or(eq(importedPosts.id, postId), eq(importedPosts.sanityId, postId)), isNotNull(importedPosts.publishedAt)))
     .limit(1);
@@ -32,7 +32,7 @@ function publicComment(row: typeof comments.$inferSelect, postId: string) {
 }
 
 export async function listComments(env: WorkerEnv, limit = 100) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   return db
     .select()
@@ -52,7 +52,7 @@ export async function listCommentsByPostAsc(env: WorkerEnv, postId: string) {
 async function readPostComments(env: WorkerEnv, postId: string, order: 'asc' | 'desc') {
   const post = await resolveCommentPost(env, postId);
   if (!post) return [];
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   // Migration preserved the Sanity IDs on historical comments. Read both
   // identities without rewriting the original records or reply relationships.
   const rows = await db
@@ -72,7 +72,7 @@ export async function createComment(env: WorkerEnv, input: CommentInput) {
   if (!body || typeof body.text !== 'string' || !body.text.trim() || body.text.length > 999) throw AppError.badRequest('评论内容需为 1 到 999 个字符');
   if (body.blockId !== undefined && typeof body.blockId !== 'string') throw AppError.badRequest('段落编号无效');
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   if (body.blockId) {
     const [block] = await db.select({ id: postBlocks.id }).from(postBlocks).where(and(eq(postBlocks.postId, post.id), eq(postBlocks.blockId, body.blockId))).limit(1);
     if (!block) throw AppError.badRequest('该段落已变化，请刷新文章后再评论');

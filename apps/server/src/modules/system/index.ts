@@ -2,7 +2,7 @@ import { Elysia } from 'elysia';
 import { count, isNotNull } from 'drizzle-orm';
 
 import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
-import { createD1Database, subscribers } from '@meme/db';
+import { createDatabase, subscribers } from '@meme/db';
 import { isAllowedOrigin } from '@meme/shared';
 import { AppError } from '../../middleware/errorHandler';
 import { readViews, recordPageView, totalViewsKey } from './views';
@@ -19,7 +19,7 @@ export const systemModule = new Elysia()
     return {
       ok: true,
       runtime: 'cloudflare-workers',
-      database: 'd1',
+      database: env.DATABASE_PROVIDER ?? 'd1',
       cache: 'kv',
       storage: 'r2',
       appEnv: env.APP_ENV ?? 'development',
@@ -29,7 +29,7 @@ export const systemModule = new Elysia()
     mode: 'single-worker',
     frontend: 'TanStack Start via Worker',
     api: 'Elysia on Cloudflare Worker',
-    database: 'Cloudflare D1',
+    database: getCloudflareRuntimeEnv().DATABASE_PROVIDER === 'libsql' ? 'Turso libSQL' : 'Cloudflare D1',
     cache: 'Cloudflare KV',
     storage: 'Cloudflare R2',
   }))
@@ -45,7 +45,7 @@ export const systemModule = new Elysia()
   .get('/site-stats', async ({ set }) => {
     set.headers['cache-control'] = 'no-store';
     const env = getCloudflareRuntimeEnv();
-    const db = createD1Database(env.DB);
+    const db = createDatabase(env.DB);
     const [subscribersCount] = await db
       .select({ count: count() })
       .from(subscribers)

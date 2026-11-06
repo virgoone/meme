@@ -1,4 +1,4 @@
-import { createD1Database, project } from '@meme/db';
+import { createDatabase, project } from '@meme/db';
 import { desc, eq } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
@@ -50,7 +50,7 @@ function validateNewProjectInput(input: ProjectInput) {
 }
 
 export async function listProjects(env: WorkerEnv, limit = 200) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   return db
     .select()
@@ -61,7 +61,7 @@ export async function listProjects(env: WorkerEnv, limit = 200) {
 
 export async function createProject(env: WorkerEnv, input: ProjectInput) {
   const values = validateNewProjectInput(input);
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [created] = await db
     .insert(project)
     .values({
@@ -94,7 +94,7 @@ export async function updateProject(
     throw new Error('No project fields to update');
   }
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [updated] = await db
     .update(project)
     .set(updateValues)
@@ -106,7 +106,7 @@ export async function updateProject(
 
 export async function deleteProject(env: WorkerEnv, idValue: string) {
   const id = parseId(idValue);
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [deleted] = await db
     .delete(project)
     .where(eq(project.id, id))

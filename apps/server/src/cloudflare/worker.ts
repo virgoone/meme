@@ -1,4 +1,4 @@
-import type { WorkerEnv } from '../env';
+import type { WorkerBindings, WorkerEnv } from '../env';
 import { exposeCloudflareRuntime } from './runtime';
 
 let appPromise: Promise<typeof import('../server').app> | null = null;
@@ -45,7 +45,11 @@ function loadPublicRouteHandler() {
 }
 
 export default {
-  async fetch(request: Request, env: WorkerEnv): Promise<Response> {
+  async fetch(request: Request, bindings: WorkerBindings): Promise<Response> {
+    const env = exposeCloudflareRuntime(bindings);
+    if (env.DATABASE_MIGRATION_READ_ONLY === '1' && new URL(request.url).pathname !== '/api/health') {
+      return Response.json({ error: 'database_migration' }, { status: 503, headers: { 'retry-after': '60', 'cache-control': 'no-store' } });
+    }
     const url = new URL(request.url);
     exposeCloudflareRuntime(env);
 

@@ -1,4 +1,4 @@
-import { authUser, createD1Database, guestbook } from '@meme/db';
+import { authUser, createDatabase, guestbook } from '@meme/db';
 import { desc, eq } from 'drizzle-orm';
 
 import type { WorkerEnv } from '../../env';
@@ -10,7 +10,7 @@ export type GuestbookInput = {
 };
 
 export async function listGuestbookEntries(env: WorkerEnv, limit = 50) {
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
 
   const entries = await db
     .select({ entry: guestbook, name: authUser.name, image: authUser.image })
@@ -44,7 +44,7 @@ export async function createGuestbookEntry(
     throw new Error('Guestbook message is required');
   }
 
-  const db = createD1Database(env.DB);
+  const db = createDatabase(env.DB);
   const [created] = await db
     .insert(guestbook)
     .values({

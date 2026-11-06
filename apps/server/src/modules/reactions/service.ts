@@ -1,4 +1,4 @@
-import { createD1Database, importedPosts } from '@meme/db';
+import { createDatabase, importedPosts } from '@meme/db';
 import { eq, or } from 'drizzle-orm';
 import type { WorkerEnv } from '../../env';
 
@@ -26,7 +26,7 @@ function parseReactions(value: string | null): number[] {
 }
 
 async function readReactionState(env: WorkerEnv, id: string) {
-  const [post] = await createD1Database(env.DB)
+  const [post] = await createDatabase(env.DB)
     .select({ id: importedPosts.id, sanityId: importedPosts.sanityId })
     .from(importedPosts)
     .where(or(eq(importedPosts.id, id), eq(importedPosts.sanityId, id)))

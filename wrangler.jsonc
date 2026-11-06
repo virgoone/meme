@@ -2,24 +2,24 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "meme",
   "workers_dev": true,
-  "routes": [{ "pattern": "blog.douni.one", "custom_domain": true, "zone_name": "douni.one" }],
+  "routes": [
+    {
+      "pattern": "blog.douni.one",
+      "custom_domain": true,
+      "zone_name": "douni.one"
+    }
+  ],
   "main": "apps/server/src/cloudflare/worker.ts",
   "compatibility_date": "2026-06-17",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "./apps/web/dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
     "run_worker_first": true
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "meme-prod",
-      "database_id": "bbc33e62-7322-4513-8188-87699d95cd46",
-      "migrations_dir": "packages/db/drizzle"
-    }
-  ],
   "kv_namespaces": [
     {
       "binding": "MEME_KV",
@@ -37,7 +37,9 @@
   "vars": {
     "APP_ENV": "production",
     "SITE_URL": "https://blog.douni.one",
-    "TRUSTED_ORIGINS": "https://blog.douni.one,https://meme-zeta.vercel.app,https://meme-larks-projects-aafa7a73.vercel.app,https://meme-git-main-larks-projects-aafa7a73.vercel.app,https://meme.moss-dev.workers.dev"
+    "TRUSTED_ORIGINS": "https://blog.douni.one,https://meme-zeta.vercel.app,https://meme-larks-projects-aafa7a73.vercel.app,https://meme-git-main-larks-projects-aafa7a73.vercel.app,https://meme.moss-dev.workers.dev",
+    "DATABASE_PROVIDER": "libsql",
+    "TURSO_DB_URL": "libsql://meme-moss.aws-ap-northeast-1.turso.io"
   },
   "observability": {
     "enabled": true,

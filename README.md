@@ -1,12 +1,12 @@
 # Meme blog
 
-Personal blog at https://blog.douni.one, deployed entirely on Cloudflare.
+Personal blog at https://blog.douni.one, served by Cloudflare Workers with its database on Turso.
 
 ## Architecture
 
 - `apps/web`: TanStack Start frontend and server-rendered pages.
 - `apps/server`: Cloudflare Worker `meme`, serving the frontend, assets, and API.
-- `packages/db`: Drizzle schema and Cloudflare D1 access.
+- `packages/db`: Drizzle schema and Turso libSQL access (D1 is used only by local development).
 - Cloudflare KV provides cache and rate limits; R2 stores media.
 - `blog.douni.one` is a Worker Custom Domain configured in `wrangler.jsonc`.
 
@@ -31,3 +31,5 @@ After deployment, verify one pageview per completed navigation (including back n
 Pushes to `main` run validation and deploy through [Cloudflare Deploy](.github/workflows/deploy-cloudflare.yml). Domain and route changes are applied separately with `bun run cf:triggers`. See [the release guide](docs/production-release.md) for checks and rollback.
 
 `vercel.json` only disables legacy Vercel Git deployments. Production traffic does not use a Vercel proxy.
+
+Production database migration and rollback: [D1 to libSQL](docs/d1-to-libsql.md). Article covers are stored on `imported_posts.cover_image_url`, backfilled during migration and updated on article saves; list reads never scan `post_blocks`.

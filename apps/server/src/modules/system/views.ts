@@ -39,7 +39,7 @@ export async function recordPageView(env: WorkerEnv, path: unknown, visitor?: Vi
   // The first two counters are read back below; the daily counters just accumulate.
   const keys = [totalViewsKey, ...(postId ? [postViewsKey(postId)] : []), dayViewsKey(day), ...(postId ? [postDayViewsKey(postId, day)] : [])];
   // Increment in SQLite, not KV read/modify/write, so concurrent visits cannot
-  // overwrite each other. Both counters commit in one D1 batch transaction.
+  // overwrite each other. Both counters commit in one Database batch transaction.
   const statements = keys.map(key => env.DB.prepare(`
     INSERT INTO settings (key, value, updated_at) VALUES (?, '1', CURRENT_TIMESTAMP)
     ON CONFLICT(key) DO UPDATE SET value = CAST(settings.value AS INTEGER) + 1, updated_at = CURRENT_TIMESTAMP
