@@ -58,6 +58,17 @@ export function verifyDeployment(deployment, id) {
   );
 }
 
+export function verifyRuntimeBindings(version) {
+  const bindings = version.resources?.bindings ?? [];
+  const binding = (name) => bindings.find((entry) => entry.name === name);
+  assert.equal(binding('DATABASE_PROVIDER')?.text, 'libsql', 'Production must use libSQL');
+  assert.equal(binding('TURSO_DB_URL')?.text, 'libsql://meme-moss.aws-ap-northeast-1.turso.io', 'Unexpected production database');
+  assert.equal(binding('TURSO_DB_AUTH_TOKEN')?.type, 'secret_text', 'Missing Turso token secret');
+  assert.equal(binding('BETTER_AUTH_SECRET')?.type, 'secret_text', 'Missing existing auth secret');
+  assert.equal(bindings.some((entry) => entry.type === 'd1'), false, 'Production must not bind D1');
+  assert.notEqual(binding('DATABASE_MIGRATION_READ_ONLY')?.text, '1', 'Refusing to deploy maintenance mode');
+}
+
 async function deploy() {
   const {
     CLOUDFLARE_API_TOKEN: token,
@@ -108,7 +119,6 @@ async function deploy() {
   }
 
   const upload = wrangler('version:upload', [
-    '--keep-vars',
     '--message',
     message,
     '--tag',
@@ -117,7 +127,9 @@ async function deploy() {
   let id;
   try {
     id = uploadedVersion(upload.output, upload.status, accountId);
-    verifyUploadedVersion(await read(`/versions/${id}`), id, message, sha);
+    const version = await read(`/versions/${id}`);
+    verifyUploadedVersion(version, id, message, sha);
+    verifyRuntimeBindings(version);
   } catch (error) {
     // Flush large Wrangler diagnostics before an uncaught error terminates Bun.
     writeSync(2, upload.output);
