@@ -3,6 +3,7 @@ export type WorkerEnv = {
   ASSETS?: Fetcher;
   DB: D1Database;
   MEDIA_BUCKET: R2Bucket;
+  PUBLIC_MEDIA_BUCKET?: R2Bucket;
   MEME_KV: KVNamespace;
   APP_ENV?: string;
   DATABASE_PROVIDER?: 'd1' | 'libsql';
@@ -49,6 +50,7 @@ export type WorkerEnv = {
   SLUICE_IMAGE_MODEL?: string;
   /** Resolution tier or WxH sent as `size`; default 2K. */
   SLUICE_IMAGE_SIZE?: string;
+  SLUICE_IMAGE_OUTPUT_FORMAT?: 'webp';
   /** Default cover aspect ratio; default 16:9. */
   SLUICE_IMAGE_ASPECT_RATIO?: string;
   SLUICE_TIMEOUT_MS?: string;

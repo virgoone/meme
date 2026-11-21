@@ -1,3 +1,4 @@
+import { displayImageUrl } from './media-url';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -27,7 +28,7 @@ const toDigest = (post: BlogPost): DigestPost => ({
   slug: post.slug,
   title: post.title,
   description: post.description ?? '',
-  coverImageUrl: post.coverImageUrl,
+  coverImageUrl: post.coverImageUrl ? displayImageUrl(post.coverImageUrl) : post.coverImageUrl,
   publishedAt: post.publishedAt,
 });
 

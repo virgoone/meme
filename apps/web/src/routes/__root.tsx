@@ -62,12 +62,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: 'apple-touch-icon',
         href: '/apple-touch-icon.png',
       },
-      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&display=swap',
-      },
     ],
     scripts: [siteEntityScript()],
   }),
@@ -75,6 +69,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootLayout() {
+  useEffect(() => {
+    const font = document.createElement('link');
+    font.rel = 'stylesheet';
+    font.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&display=swap';
+    document.head.append(font);
+    return () => font.remove();
+  }, []);
+
   return (
     <RootDocument>
       <AppShell />

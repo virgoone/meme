@@ -1,3 +1,4 @@
+import { displayImageUrl } from './media-url';
 import { ImageOff, RotateCcw } from 'lucide-react';
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -20,7 +21,7 @@ export function imageDimensions(src: string) {
 
 export function LoadingImage(props: LoadingImageProps) {
   // Remount on source changes so the previous image's loaded state cannot leak.
-  return <ImageState key={props.src} {...props} />;
+  return <ImageState key={props.src} {...props} src={displayImageUrl(props.src)} />;
 }
 
 function ImageState({ src, alt, width, height, className = '', loading = 'lazy' }: LoadingImageProps) {

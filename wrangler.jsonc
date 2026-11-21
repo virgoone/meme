@@ -32,10 +32,16 @@
       "binding": "MEDIA_BUCKET",
       "bucket_name": "meme-assets",
       "preview_bucket_name": "meme-assets-preview"
+    },
+    {
+      "binding": "PUBLIC_MEDIA_BUCKET",
+      "bucket_name": "meme"
     }
   ],
   "vars": {
     "APP_ENV": "production",
+    "SLUICE_IMAGE_OUTPUT_FORMAT": "webp",
+    "BETTER_UPLOAD_CLOUDFLARE_ACCOUNT_ID": "e918b42cb368fee208f6648ecbb9dd20",
     "SITE_URL": "https://blog.douni.one",
     "TRUSTED_ORIGINS": "https://blog.douni.one,https://meme-zeta.vercel.app,https://meme-larks-projects-aafa7a73.vercel.app,https://meme-git-main-larks-projects-aafa7a73.vercel.app,https://meme.moss-dev.workers.dev",
     "DATABASE_PROVIDER": "libsql",

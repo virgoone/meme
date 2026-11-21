@@ -51,15 +51,27 @@ describe('Sluice cover generation', () => {
     expect(JSON.stringify(cover)).not.toContain('sk-server-only');
   });
 
-  test('serves downloaded covers from the site Worker even when a separate S3 base is configured', async () => {
-    const { env, stored } = setup({ S3_URL_BASE: 'https://media.example/', SITE_URL: 'https://blog.example/' });
+  test('requests compressed WebP when configured and serves it with the matching MIME type', async () => {
+    const { env } = setup({ SLUICE_IMAGE_OUTPUT_FORMAT: 'webp' });
+    const calls: { url: string; init?: RequestInit }[] = [];
+    const fetcher = sluiceReturning(200, { data: [{ b64_json: btoa('RIFF0000WEBP') }], output_format: 'webp' }, calls);
+    const result = await generateCover(env, { prompt: 'cover' }, fetcher);
+    expect(JSON.parse(String(calls[0]?.init?.body))).toMatchObject({ output_format: 'webp', output_compression: 82 });
+    expect(result.contentType).toBe('image/webp');
+    expect(result.key.endsWith('.webp')).toBe(true);
+  });
+
+  test('writes downloaded covers into the bucket behind the public R2 domain', async () => {
+    const publicStorage = setup();
+    const { env, stored } = setup({ PUBLIC_MEDIA_BUCKET: publicStorage.env.MEDIA_BUCKET, S3_URL_BASE: 'https://media.example/' });
     const fetcher = (async (url: string | URL | Request) => String(url).includes('/images/generations')
       ? new Response(JSON.stringify({ data: [{ url: 'https://bucket.example/signed.png' }] }))
       : new Response(PNG)) as typeof fetch;
     const cover = await generateCover(env, { prompt: 'x' }, fetcher);
-    expect(cover.url).toBe(`https://blog.example/api/media/object/${cover.key}`);
+    expect(cover.url).toBe(`https://media.example/${cover.key}`);
+    expect(publicStorage.stored.has(cover.key)).toBe(true);
     expect(cover.aspectRatio).toBe('16:9');
-    expect(stored.size).toBe(1);
+    expect(stored.size).toBe(0);
   });
 
   test('upstream failures, timeouts and non-images store nothing and report a readable error', async () => {

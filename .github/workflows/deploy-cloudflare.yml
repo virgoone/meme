@@ -47,6 +47,9 @@ jobs:
         run: bash scripts/test-ci.sh
 
       - name: Build Cloudflare web app
+        env:
+          VITE_LEGACY_MEDIA_URL_BASE: https://meme-assets.douni.one
+          VITE_PUBLIC_S3_URL_BASE: https://meme-static.douni.one
         run: bun run build:web
 
       - name: Build Cloudflare server

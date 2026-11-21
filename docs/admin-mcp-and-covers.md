@@ -48,7 +48,7 @@ Clients with remote MCP support use `{ "url": "https://blog.douni.one/api/mcp" }
 
 ## Covers generated through Sluice
 
-The editor's **生成封面** card sends a prompt and aspect ratio to `POST /api/admin/covers/generate` (admin session, 20 per 10 minutes per IP). The Worker calls Sluice's OpenAI-compatible `POST {SLUICE_API_BASE_URL}/v1/images/generations` with `{model, prompt, n: 1, size, aspect_ratio, response_format: "b64_json"}` and an `Idempotency-Key` per click, so a retried request reattaches to the same Sluice task. A `url` delivery is downloaded instead. The bytes must be PNG, JPEG or WebP; they are stored in `MEDIA_BUCKET` under `meme-uploads/admin/covers/` and served from `S3_URL_BASE` (default `/api/media/object`).
+The editor's **生成封面** card sends a prompt and aspect ratio to `POST /api/admin/covers/generate` (admin session, 20 per 10 minutes per IP). The Worker calls Sluice's OpenAI-compatible `POST {SLUICE_API_BASE_URL}/v1/images/generations` with `{model, prompt, n: 1, size, aspect_ratio, response_format: "b64_json"}` and an `Idempotency-Key` per click, so a retried request reattaches to the same Sluice task. A `url` delivery is downloaded instead. The bytes must be PNG, JPEG or WebP; production writes them to `PUBLIC_MEDIA_BUCKET` (the `meme` R2 bucket) under `meme-uploads/admin/covers/` and returns its custom domain from `S3_URL_BASE`. Local development without that binding uses `MEDIA_BUCKET` and `/api/media/object`.
 
 The result is only a candidate. The article's `mainImageUrl` changes when the author clicks **采用** and saves; `cover_image_url` is then derived by the existing save path. A failed, timed-out or discarded generation leaves the cover untouched. The API key never reaches the browser.
 
@@ -57,6 +57,7 @@ The result is only a candidate. The article's `mainImageUrl` changes when the au
 | `SLUICE_API_BASE_URL` | var | — | Sluice gateway origin, with or without `/v1` |
 | `SLUICE_API_KEY` | **secret** | — | Sluice API key (`wrangler secret put SLUICE_API_KEY`) |
 | `SLUICE_IMAGE_MODEL` | var | — | Image model ID the key can call (see `GET /v1/images/models`) |
+| `SLUICE_IMAGE_OUTPUT_FORMAT` | var | provider default | Production requests WebP at quality 82. Leave unset for models without WebP support. |
 | `SLUICE_IMAGE_SIZE` | var | `2K` | Resolution tier or `WxH` |
 | `SLUICE_IMAGE_ASPECT_RATIO` | var | `16:9` | Default ratio; the editor offers 16:9, 3:2, 4:3, 1:1, 21:9 (the model must support the chosen one) |
 | `SLUICE_TIMEOUT_MS` | var | `120000` | Request timeout |

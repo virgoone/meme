@@ -1,3 +1,4 @@
+import { displayImageUrl } from '../src/lib/media-url';
 import { describe, expect, test } from 'bun:test';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
@@ -69,4 +70,16 @@ describe('page loading surfaces', () => {
     expect(render()).toBe('<p>cached content</p>');
     client.clear();
   });
+});
+
+test('legacy Meme images resolve against their own R2 domain without changing other URLs', () => {
+  const base = 'https://meme-assets.douni.one/';
+  const path = '/api/media/object/posts/foo/image.png?v=2#zoom';
+  for (const origin of ['', 'https://blog.douni.one', 'https://meme.moss-dev.workers.dev']) {
+    expect(displayImageUrl(origin + path, base)).toBe('https://meme-assets.douni.one/posts/foo/image.png?v=2#zoom');
+  }
+  for (const src of ['https://meme-static.douni.one/meme-uploads/a.webp', 'https://other.example' + path, '/portrait.png']) {
+    expect(displayImageUrl(src, base)).toBe(src);
+  }
+  expect(displayImageUrl(path, '')).toBe(path);
 });

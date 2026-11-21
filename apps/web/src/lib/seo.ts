@@ -1,3 +1,4 @@
+import { displayImageUrl } from './media-url';
 import type { PostDetail } from './admin-queries';
 import { siteIdentity } from '@meme/shared';
 
@@ -45,7 +46,7 @@ export function infoPageHead(title: string, description: string, path: string, t
 
 export function pageHead(title: string, description: string, path: string, image?: string | null) {
   const url = new URL(path, siteUrl).href;
-  const cover = image ? new URL(image, siteUrl).href : `${siteUrl}/apple-touch-icon.png`;
+  const cover = image ? new URL(displayImageUrl(image), siteUrl).href : `${siteUrl}/apple-touch-icon.png`;
   return {
     meta: [
       { title: `${title} | ${siteName}` },
@@ -90,7 +91,7 @@ export function articleHead(post: PostDetail) {
       author: { '@type': 'Person', '@id': authorId, name: siteIdentity.author, url: `${siteUrl}/about` },
       publisher: { '@id': authorId },
       isPartOf: { '@id': websiteId },
-      ...(post.coverImageUrl ? { image: [new URL(post.coverImageUrl, siteUrl).href] } : {}),
+      ...(post.coverImageUrl ? { image: [new URL(displayImageUrl(post.coverImageUrl), siteUrl).href] } : {}),
       ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
       ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
     })],

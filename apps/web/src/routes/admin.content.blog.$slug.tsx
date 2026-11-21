@@ -1,3 +1,4 @@
+import { displayImageUrl } from '../lib/media-url';
 import { withStableBlockIds, type EditorBlockNode } from '@meme/editor';
 import { createPostSlug, isValidPostSlug } from '@meme/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -62,7 +63,7 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
           title,
           slug: nextSlug,
           description: description.trim() || null,
-          mainImageUrl: mainImageUrl.trim() || null,
+          mainImageUrl: displayImageUrl(mainImageUrl.trim()) || null,
           publishedAt: fromDateTimeLocal(publishedAt),
           readingTime: Number(readingTime) || null,
           mood,

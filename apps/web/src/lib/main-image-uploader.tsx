@@ -1,3 +1,4 @@
+import { displayImageUrl } from './media-url';
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -38,7 +39,7 @@ export function MainImageUploader({ value, onChange }: { value: string; onChange
         <UploadDropzone disabled={uploading} onSelectFiles={upload}>
           {value ? (
             <div className='relative w-full overflow-hidden rounded-md'>
-              <img src={value} alt='' className='block aspect-video w-full object-cover' />
+              <img src={displayImageUrl(value)} alt='' className='block aspect-video w-full object-cover' />
               <span className='absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-background/85 py-1.5 text-xs backdrop-blur'>
                 <UploadCloud aria-hidden='true' className='size-3.5' />
                 拖拽、点击或粘贴图片替换

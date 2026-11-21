@@ -1,3 +1,4 @@
+import { displayImageUrl } from '../lib/media-url';
 /**
  * Article list in Sluice's list pattern (sluice/web/src/pages/admin/upstreams.tsx):
  * PageHeader with one primary action; a TableCard holding the ListToolbar (search +
@@ -44,7 +45,7 @@ function ArticleList() {
       cell: (post) => (
         <div className='flex min-w-0 items-center gap-3'>
           <span className='hidden h-9 w-14 shrink-0 overflow-hidden rounded-ui-xs border border-border-light bg-fill-weak sm:block' aria-hidden='true'>
-            {post.coverImageUrl ? <img src={post.coverImageUrl} alt='' loading='lazy' className='size-full object-cover' /> : null}
+            {post.coverImageUrl ? <img src={displayImageUrl(post.coverImageUrl)} alt='' loading='lazy' className='size-full object-cover' /> : null}
           </span>
           <div className='min-w-0'>
             <Link to='/admin/content/blog/$slug' params={{ slug: post.slug }} className='block truncate font-medium text-title hover:underline'>
