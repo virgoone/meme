@@ -32,10 +32,6 @@
       "binding": "MEDIA_BUCKET",
       "bucket_name": "meme-assets",
       "preview_bucket_name": "meme-assets-preview"
-    },
-    {
-      "binding": "PUBLIC_MEDIA_BUCKET",
-      "bucket_name": "meme"
     }
   ],
   "vars": {

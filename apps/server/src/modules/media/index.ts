@@ -101,7 +101,7 @@ async function createUploadRouter(
   let bucketName: string;
 
   try {
-    const resolved = await resolveUploadClient(env, userId);
+    const resolved = await resolveUploadClient(env);
     client = resolved.client as ReturnType<typeof custom>;
     bucketName = resolved.bucketName;
   } catch {

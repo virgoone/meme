@@ -4,14 +4,14 @@ import { nanoid } from 'nanoid';
 
 import { getCloudflareRuntimeEnv } from '../../cloudflare/runtime';
 import { AuthPlugin, type SessionUser } from '../../plugins/auth';
-import { resolveUploadTargetForUser } from '../../services/upload/provider';
+import { resolveUploadTarget } from '../../services/upload/provider';
 
 function fileExtension(fileName: string) {
   return fileName.split('.').pop()?.toLowerCase() || 'bin';
 }
 
 function createUploadRouter(
-  target: Awaited<ReturnType<typeof resolveUploadTargetForUser>>,
+  target: Awaited<ReturnType<typeof resolveUploadTarget>>,
   user: SessionUser,
   scope: 'user' | 'admin',
 ): Router {
@@ -49,7 +49,7 @@ export const s3Module = new Elysia({ name: 's3', prefix: '/s3' })
     '/upload',
     async ({ request, user }) => {
       const env = getCloudflareRuntimeEnv();
-      const target = await resolveUploadTargetForUser(env, user.id);
+      const target = await resolveUploadTarget(env);
       return handleRequest(request, createUploadRouter(target, user, 'user'));
     },
     { auth: true, parse: 'none' },
@@ -64,7 +64,7 @@ export const adminS3Module = new Elysia({
     '/upload',
     async ({ request, user }) => {
       const env = getCloudflareRuntimeEnv();
-      const target = await resolveUploadTargetForUser(env, user.id);
+      const target = await resolveUploadTarget(env);
       return handleRequest(request, createUploadRouter(target, user, 'admin'));
     },
     { admin: true, parse: 'none' },

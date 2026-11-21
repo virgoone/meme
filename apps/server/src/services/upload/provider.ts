@@ -188,9 +188,8 @@ function buildClient(
   return factory(Object.keys(config).length > 0 ? config : undefined);
 }
 
-export async function resolveUploadTargetForUser(
+export async function resolveUploadTarget(
   env: WorkerEnv,
-  _userId: string,
 ): Promise<{ provider: UploadProvider; bucketName: string; client: Client }> {
   const settings = await readUploadSettings(env);
   const provider = resolveProvider(settings, env);

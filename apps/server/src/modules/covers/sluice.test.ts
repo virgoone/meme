@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, spyOn, test } from 'bun:test';
 import type { WorkerEnv } from '../../env';
 import { AppError } from '../../middleware/errorHandler';
 import { generateCover, readCoverConfig } from './sluice';
@@ -62,16 +62,30 @@ describe('Sluice cover generation', () => {
   });
 
   test('writes downloaded covers into the bucket behind the public R2 domain', async () => {
-    const publicStorage = setup();
-    const { env, stored } = setup({ PUBLIC_MEDIA_BUCKET: publicStorage.env.MEDIA_BUCKET, S3_URL_BASE: 'https://media.example/' });
+    const { env, stored } = setup({
+      S3_BUCKET: 'public-images', S3_URL_BASE: 'https://media.example/', BETTER_UPLOAD_CLOUDFLARE_ACCOUNT_ID: 'test',
+      S3_ACCESS_KEY: 'test-access', S3_SECRET_KEY: 'test-secret',
+    });
     const fetcher = (async (url: string | URL | Request) => String(url).includes('/images/generations')
       ? new Response(JSON.stringify({ data: [{ url: 'https://bucket.example/signed.png' }] }))
       : new Response(PNG)) as typeof fetch;
-    const cover = await generateCover(env, { prompt: 'x' }, fetcher);
-    expect(cover.url).toBe(`https://media.example/${cover.key}`);
-    expect(publicStorage.stored.has(cover.key)).toBe(true);
-    expect(cover.aspectRatio).toBe('16:9');
-    expect(stored.size).toBe(0);
+    let put: Request | undefined;
+    const outbound = spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+      put = new Request(input, init);
+      return new Response(null, { status: 200 });
+    });
+    try {
+      const cover = await generateCover(env, { prompt: 'x' }, fetcher);
+      expect(cover.url).toBe(`https://media.example/${cover.key}`);
+      expect(put?.method).toBe('PUT');
+      const destination = new URL(put!.url);
+      expect(destination.hostname).toBe('public-images.test.r2.cloudflarestorage.com');
+      expect(destination.pathname).toBe(`/${cover.key}`);
+      expect(put?.headers.get('content-type')).toBe('image/png');
+      expect(stored.size).toBe(0);
+    } finally {
+      outbound.mockRestore();
+    }
   });
 
   test('upstream failures, timeouts and non-images store nothing and report a readable error', async () => {

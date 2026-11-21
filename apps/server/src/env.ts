@@ -3,7 +3,6 @@ export type WorkerEnv = {
   ASSETS?: Fetcher;
   DB: D1Database;
   MEDIA_BUCKET: R2Bucket;
-  PUBLIC_MEDIA_BUCKET?: R2Bucket;
   MEME_KV: KVNamespace;
   APP_ENV?: string;
   DATABASE_PROVIDER?: 'd1' | 'libsql';

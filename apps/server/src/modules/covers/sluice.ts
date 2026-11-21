@@ -1,4 +1,6 @@
+import { putObject } from '@better-upload/server/helpers';
 import { nanoid } from 'nanoid';
+import { resolveUploadTarget } from '../../services/upload/provider';
 
 import { putMediaObject } from '../../cloudflare/r2';
 import type { WorkerEnv } from '../../env';
@@ -59,9 +61,8 @@ export async function generateCover(
     throw new AppError('封面生成未配置：请在 Worker 设置 SLUICE_API_BASE_URL、SLUICE_API_KEY 和 SLUICE_IMAGE_MODEL', 503);
   }
   const publicBase = env.S3_URL_BASE?.trim().replace(/\/+$/, '');
-  if (env.PUBLIC_MEDIA_BUCKET && !publicBase) {
-    throw new AppError('公开媒体桶缺少 S3_URL_BASE', 503);
-  }
+  if (env.APP_ENV === 'production' && !publicBase) throw new AppError('公开媒体桶缺少 S3_URL_BASE', 503);
+  const upload = publicBase ? await resolveUploadTarget(env) : null;
   const prompt = typeof input.prompt === 'string' ? input.prompt.trim() : '';
   if (!prompt) throw AppError.badRequest('请输入封面描述');
   if (prompt.length > MAX_PROMPT_LENGTH) throw AppError.badRequest(`封面描述不能超过 ${MAX_PROMPT_LENGTH} 个字符`);
@@ -119,11 +120,18 @@ export async function generateCover(
 
   const extension = contentType === 'image/jpeg' ? 'jpg' : contentType.split('/')[1] ?? 'png';
   const key = `meme-uploads/admin/covers/${nanoid(12)}.${extension}`;
-  await putMediaObject(env.PUBLIC_MEDIA_BUCKET ?? env.MEDIA_BUCKET, key, bytes, { contentType });
+  if (upload) {
+    await putObject(upload.client, {
+      bucket: upload.bucketName, key, body: new Blob([new Uint8Array(bytes)]), contentLength: bytes.byteLength,
+      contentType, cacheControl: 'public, max-age=31536000, immutable',
+    });
+  } else {
+    await putMediaObject(env.MEDIA_BUCKET, key, bytes, { contentType });
+  }
   const mediaPath = `/api/media/object/${key}`;
   const workerUrl = env.SITE_URL ? new URL(mediaPath, env.SITE_URL).href : mediaPath;
   return {
-    url: env.PUBLIC_MEDIA_BUCKET ? `${publicBase}/${key}` : workerUrl,
+    url: publicBase ? `${publicBase}/${key}` : workerUrl,
     key,
     contentType,
     bytes: bytes.byteLength,

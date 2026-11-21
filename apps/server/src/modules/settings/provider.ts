@@ -1,4 +1,4 @@
 export {
-  resolveUploadTargetForUser as resolveUploadClient,
+  resolveUploadTarget as resolveUploadClient,
   type UploadProvider as StorageProvider,
 } from '../../services/upload/provider';
