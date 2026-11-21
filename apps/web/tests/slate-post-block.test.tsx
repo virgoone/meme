@@ -64,3 +64,15 @@ test('wide imported tables keep all columns and expose horizontal scrolling guid
   expect(compact).not.toContain('data-wide');
   expect(compact).not.toContain('左右滑动查看完整表格');
 });
+
+test('article images honor the editor width and alignment within the reading column', () => {
+  const render = (width?: number | string, align?: string) => renderToStaticMarkup(
+    <SlatePostBlock blockId='photo' value={{ type: 'img', url: '/photo.jpg', width, align, children: [{ text: '' }] }} />,
+  ).split('</figure>')[0].split('<figure')[1].split('>')[0];
+  expect(render(222, 'center')).toContain('width:222px;max-width:100%;margin-left:auto;margin-right:auto');
+  expect(render('50%', 'right')).toContain('width:50%;max-width:100%;margin-left:auto;margin-right:0');
+  expect(render('180px', 'left')).toContain('margin-left:0;margin-right:auto');
+  expect(render(222)).toBe(render(222, 'center'));
+  expect(render(-2)).toBe(render());
+  expect(render('invalid')).toBe(render());
+});

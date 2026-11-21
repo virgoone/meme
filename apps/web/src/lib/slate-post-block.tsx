@@ -12,6 +12,20 @@ function safeUrl(value: unknown): string | undefined {
   return /^(https?:\/\/|\/[^/]|#)/i.test(url) ? url : undefined;
 }
 
+function imageLayout({ width, align }: Node) {
+  if (typeof width === 'number') {
+    if (!Number.isFinite(width) || width <= 0) return undefined;
+  } else if (typeof width !== 'string' || !/^(?:\d+(?:\.\d+)?|\.\d+)(?:px|%)$/.test(width) || Number.parseFloat(width) <= 0) {
+    return undefined;
+  }
+  return {
+    width,
+    maxWidth: '100%',
+    marginLeft: align === 'left' ? 0 : 'auto',
+    marginRight: align === 'right' ? 0 : 'auto',
+  };
+}
+
 function renderNode(node: Node, blockId?: string): ReactNode {
   if (typeof node.text === 'string') {
     let text: ReactNode = node.text;
@@ -38,7 +52,12 @@ function renderNode(node: Node, blockId?: string): ReactNode {
     case 'img': case 'image': {
       const url = safeUrl(node.url);
       const caption = Array.isArray(node.caption) ? (node.caption as Node[]).map((part) => part.text ?? '').join('') : '';
-      return <figure className='image-block' {...props}>{url && <LoadingImage src={url} alt={typeof node.alt === 'string' ? node.alt : caption} />}{caption && <figcaption>{caption}</figcaption>}</figure>;
+      return (
+        <figure className='image-block' {...props} style={{ ...props.style, ...imageLayout(node) }}>
+          {url && <LoadingImage src={url} alt={typeof node.alt === 'string' ? node.alt : caption} />}
+          {caption && <figcaption>{caption}</figcaption>}
+        </figure>
+      );
     }
     case 'code_block': case 'code': return <ArticleCodeBlock blockId={blockId} language={typeof node.lang === 'string' ? node.lang : undefined} code={node.children?.map((line) => plainText(line)).join('\n') ?? ''} />;
     case 'blockquote': return <blockquote {...props}>{children}</blockquote>;
