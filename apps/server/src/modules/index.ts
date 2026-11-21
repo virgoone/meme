@@ -7,9 +7,11 @@ import { activityModule } from './activity';
 import { adminModule } from './admin';
 import { categoriesModule, categoryModule } from './categories';
 import { commentsModule } from './comments';
+import { coversModule } from './covers';
 import { faviconModule } from './favicon';
 import { guestbookModule } from './guestbook';
 import { linkPreviewModule } from './link-preview';
+import { mcpModule } from './mcp';
 import { mediaModule } from './media';
 import { newsletterModule, newslettersModule } from './newsletter';
 import { newsletterAdminModule } from './newsletter/admin';
@@ -50,4 +52,6 @@ export const apiModule = new Elysia({ prefix: '/api', aot: false })
   .use(linkPreviewModule)
   .use(s3Module)
   .use(adminS3Module)
-  .use(mediaModule);
+  .use(mediaModule)
+  .use(coversModule)
+  .use(mcpModule);

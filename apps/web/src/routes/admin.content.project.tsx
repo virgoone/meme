@@ -144,7 +144,7 @@ function AdminProjectsPage() {
                   <Label htmlFor='project-description' className='text-muted-foreground text-xs'>描述</Label>
                   <Textarea id='project-description' name='description' defaultValue={formProject.description} rows={3} placeholder='项目简介' />
                 </div>
-                <div className='flex items-center justify-end gap-2 md:col-span-2'>
+                <div className='flex flex-wrap items-center justify-end gap-2 md:col-span-2'>
                   {mutation.isError ? <ErrorText error={mutation.error} className='mr-auto text-xs' /> : null}
                   <Button type='button' variant='outline' onClick={closeForm}>取消</Button>
                   <Button type='submit' disabled={mutation.isPending}>{mutation.isPending ? '保存中…' : '保存'}</Button>

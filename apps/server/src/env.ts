@@ -41,6 +41,17 @@ export type WorkerEnv = {
   S3_SECRET_KEY?: string;
   S3_URL_BASE?: string;
   SITE_URL?: string;
+  /** Sluice gateway base URL, e.g. https://sluice.example.com (with or without /v1). */
+  SLUICE_API_BASE_URL?: string;
+  /** Sluice API key (Worker secret). Never sent to the browser. */
+  SLUICE_API_KEY?: string;
+  /** Image model ID served by Sluice, e.g. gpt-image-2 or seedream-5-0-pro. */
+  SLUICE_IMAGE_MODEL?: string;
+  /** Resolution tier or WxH sent as `size`; default 2K. */
+  SLUICE_IMAGE_SIZE?: string;
+  /** Default cover aspect ratio; default 16:9. */
+  SLUICE_IMAGE_ASPECT_RATIO?: string;
+  SLUICE_TIMEOUT_MS?: string;
   TRUSTED_ORIGINS?: string;
 };
 

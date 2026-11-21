@@ -1,6 +1,5 @@
 import { DataTable } from '@bunship-ai/data-table/components/data-table';
 import { DataTableProvider } from '@bunship-ai/data-table/components/data-table-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@bunship-ai/ui/components/card';
 import { Skeleton } from '@bunship-ai/ui/components/skeleton';
 import { cn } from '@bunship-ai/ui/lib/utils';
 import {
@@ -18,32 +17,29 @@ export function AdminPage({ children, className }: { children: ReactNode; classN
 
 export function AdminPageHeader({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
   return (
-    <header className='flex flex-wrap items-end justify-between gap-4 border-border border-b pb-5'>
-      <div className='min-w-0'>
-        <h1 className='font-semibold text-2xl leading-tight tracking-tight'>{title}</h1>
-        {description ? <p className='mt-1 text-muted-foreground text-sm'>{description}</p> : null}
+    <header className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
+      <div className='flex min-w-0 flex-1 flex-col gap-1'>
+        <h1 className='min-w-0 truncate font-medium text-2xl leading-8 tracking-[-0.01em] max-sm:text-xl'>{title}</h1>
+        {description ? <p className='max-w-2xl text-pretty text-muted-foreground text-sm'>{description}</p> : null}
       </div>
-      {action ? <div className='flex shrink-0 flex-wrap items-center gap-2'>{action}</div> : null}
+      {action ? <div className='flex shrink-0 flex-wrap items-center gap-2 sm:pt-0.5'>{action}</div> : null}
     </header>
   );
 }
 
 export function StatGrid({ children }: { children: ReactNode }) {
-  return <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>{children}</div>;
+  return <div className='grid grid-cols-2 gap-3 xl:grid-cols-4'>{children}</div>;
 }
 
+/** Sluice stat tile: hairline box, quiet label, medium-weight tabular number. */
 export function StatCard({ title, value, hint, extra }: { title: string; value: ReactNode; hint?: string; extra?: ReactNode }) {
   return (
-    <Card className='gap-2 py-4'>
-      <CardHeader className='px-5'>
-        <CardDescription className='text-xs'>{title}</CardDescription>
-      </CardHeader>
-      <CardContent className='px-5'>
-        <strong className='block font-semibold text-2xl tabular-nums tracking-tight'>{value}</strong>
-        {hint ? <span className='mt-1 block text-muted-foreground text-xs'>{hint}</span> : null}
-        {extra}
-      </CardContent>
-    </Card>
+    <div className='flex min-w-0 flex-col gap-1 rounded-xl border border-border bg-card p-4'>
+      <span className='text-muted-foreground text-[13px]'>{title}</span>
+      <strong className='truncate font-medium text-2xl tabular-nums tracking-tight'>{value}</strong>
+      {hint ? <span className='text-muted-foreground text-xs'>{hint}</span> : null}
+      {extra}
+    </div>
   );
 }
 
@@ -56,18 +52,18 @@ export function SectionCard({ title, description, action, children, className, b
   bodyClassName?: string;
 }) {
   return (
-    <Card className={cn('gap-0 py-0', className)}>
+    <section className={cn('min-w-0 rounded-xl border border-border bg-card', className)}>
       {title ? (
-        <CardHeader className='flex flex-row flex-wrap items-start justify-between gap-3 border-border border-b px-5 py-4'>
-          <div className='grid gap-1'>
-            <CardTitle>{title}</CardTitle>
-            {description ? <CardDescription>{description}</CardDescription> : null}
+        <header className='flex min-h-12 flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pt-4'>
+          <div className='grid min-w-0 gap-0.5'>
+            <h2 className='font-medium text-[15px] leading-[22px]'>{title}</h2>
+            {description ? <p className='text-muted-foreground text-[13px]'>{description}</p> : null}
           </div>
-          {action}
-        </CardHeader>
+          {action ? <div className='flex shrink-0 flex-wrap items-center gap-1.5'>{action}</div> : null}
+        </header>
       ) : null}
-      <CardContent className={cn('px-5 py-5', bodyClassName)}>{children}</CardContent>
-    </Card>
+      <div className={cn('px-5 pt-3 pb-5', !title && 'pt-5', bodyClassName)}>{children}</div>
+    </section>
   );
 }
 

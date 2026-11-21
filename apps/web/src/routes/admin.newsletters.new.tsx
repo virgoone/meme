@@ -33,7 +33,7 @@ function NewNewsletterPage() {
   const error = posts.error ?? options.error ?? (campaign ? saved.error : null);
   if (error)
     return (
-      <p className='admin-error' role='alert'>
+      <p className='admin-note admin-note--danger text-sm' role='alert'>
         {error.message}
       </p>
     );

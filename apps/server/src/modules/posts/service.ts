@@ -5,7 +5,7 @@ import {
   withStableBlockIds,
 } from '@meme/editor';
 import { BLOG_PAGE_SIZE, createPostSlug, isValidPostSlug, normalizePage, type PostPage } from '@meme/shared';
-import { and, asc, desc, eq, isNotNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { normalizeStoredImageUrl, resolvePostCover } from '@meme/db/cover';
 import { AppError } from '../../middleware/errorHandler';
 
@@ -53,7 +53,7 @@ export type UpdatePostInput = {
 
 export async function listImportedPosts(
   env: WorkerEnv,
-  options?: { limit?: number; offset?: number; includeDrafts?: boolean },
+  options?: { limit?: number; offset?: number; includeDrafts?: boolean; status?: 'all' | 'published' | 'draft'; query?: string },
 ): Promise<PostListItem[]> {
   const db = createDatabase(env.DB);
   const limit = Math.min(Math.max(options?.limit ?? 20, 1), 100);
@@ -74,7 +74,7 @@ export async function listImportedPosts(
     })
     .from(importedPosts)
     .leftJoin(settings, eq(settings.key, sql`'analytics:views:post:' || ${importedPosts.id}`))
-    .where(options?.includeDrafts ? undefined : isNotNull(importedPosts.publishedAt))
+    .where(postListFilter(options))
     .orderBy(desc(importedPosts.publishedAt), desc(importedPosts.createdAt), desc(importedPosts.id))
     .limit(limit)
     .offset(options?.offset ?? 0);
@@ -90,6 +90,23 @@ export async function listImportedPosts(
       coverImageUrl: normalizeStoredImageUrl(post.coverImageUrl),
     };
   });
+}
+
+function postListFilter(options?: { includeDrafts?: boolean; status?: 'all' | 'published' | 'draft'; query?: string }) {
+  const status = options?.status ?? (options?.includeDrafts ? 'all' : 'published');
+  const conditions = [
+    status === 'published' ? isNotNull(importedPosts.publishedAt) : status === 'draft' ? isNull(importedPosts.publishedAt) : undefined,
+  ];
+  const query = options?.query?.trim().toLowerCase();
+  if (query) {
+    const pattern = `%${query.replace(/[\\%_]/g, (char) => `\\${char}`)}%`;
+    conditions.push(or(
+      sql`lower(${importedPosts.title}) like ${pattern} escape '\\'`,
+      sql`lower(${importedPosts.slug}) like ${pattern} escape '\\'`,
+      sql`lower(coalesce(${importedPosts.description}, '')) like ${pattern} escape '\\'`,
+    ));
+  }
+  return and(...conditions);
 }
 
 export async function listPublishedPostPage(env: WorkerEnv, requestedPage: unknown): Promise<PostPage<PostListItem>> {

@@ -15,6 +15,7 @@ import { Textarea } from '@bunship-ai/ui/components/textarea';
 
 import { useAdminPost, type PostDetail } from '../lib/admin-queries';
 import { AdminPage, ErrorText, SectionCard } from '../lib/admin-ui';
+import { CoverGenerator } from '../lib/cover-generator';
 import { MainImageUploader } from '../lib/main-image-uploader';
 import { postToEditorValue } from '../lib/post-editor-value';
 import { RemoteEditorWidget, type RemoteEditorValue } from '../lib/remote-editor-widget';
@@ -120,6 +121,8 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
   }
 
   const saving = saveMutation.isPending;
+  const savedCover = isNew ? '' : (post.data?.mainImageUrl ?? post.data?.coverImageUrl ?? '');
+  const coverChanged = mainImageUrl.trim() !== savedCover;
   const status = saveMutation.isSuccess ? '已保存' : saveMutation.isError ? null : null;
 
   return (
@@ -208,8 +211,15 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
             </div>
           </SectionCard>
 
-          <SectionCard title='封面图'>
+          <SectionCard
+            title='封面图'
+            action={coverChanged ? <span className='status-dot' data-tone='pending'>未保存</span> : null}
+          >
             <MainImageUploader value={mainImageUrl} onChange={setMainImageUrl} />
+          </SectionCard>
+
+          <SectionCard title='生成封面' description='提示词发送到 Sluice，图片存入站点媒体库。'>
+            <CoverGenerator title={title} description={description} currentCover={mainImageUrl} onAdopt={setMainImageUrl} />
           </SectionCard>
 
           <SectionCard title='元信息'>

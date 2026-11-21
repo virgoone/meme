@@ -16,7 +16,8 @@ export async function getAllSettings(env: WorkerEnv): Promise<Record<string, unk
 
   const merged = { ...SETTINGS_DEFAULTS };
   for (const row of rows) {
-    if (row.key != null) {
+    // MCP token hashes are managed by their own endpoints and never listed here.
+    if (row.key != null && !row.key.startsWith('mcp:')) {
       merged[row.key] = row.value;
     }
   }

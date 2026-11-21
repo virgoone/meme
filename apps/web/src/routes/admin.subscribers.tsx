@@ -2,7 +2,6 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Send } from 'lucide-react';
 
 import { DataTableSkeleton } from '@bunship-ai/data-table';
-import { Badge } from '@bunship-ai/ui/components/badge';
 import { Button } from '@bunship-ai/ui/components/button';
 
 import { useAdminSubscribers, type Subscriber } from '../lib/admin-queries';
@@ -25,9 +24,9 @@ const columns: DataTableColumn<Subscriber>[] = [
     header: '状态',
     size: 120,
     cell: (subscriber) =>
-      subscriber.unsubscribedAt ? <Badge variant='outline'>已退订</Badge>
-        : subscriber.subscribedAt ? <Badge>已订阅</Badge>
-          : <Badge variant='secondary'>待确认</Badge>,
+      subscriber.unsubscribedAt ? <span className='status-dot' data-tone='idle'>已退订</span>
+        : subscriber.subscribedAt ? <span className='status-dot' data-tone='success'>已订阅</span>
+          : <span className='status-dot' data-tone='pending'>待确认</span>,
   },
   {
     id: 'time',

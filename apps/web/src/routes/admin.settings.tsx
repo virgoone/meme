@@ -43,7 +43,7 @@ function AdminSettingsPage() {
         title='站点设置'
         description='站点、邮件、存储、广告与第三方服务配置。修改后点击保存生效。'
         action={
-          <div className='flex items-center gap-3'>
+          <div className='flex flex-wrap items-center gap-3'>
             {mutation.isSuccess && !dirty ? <span className='text-muted-foreground text-xs'>已保存</span> : dirty ? <span className='text-muted-foreground text-xs'>有未保存的修改</span> : null}
             <Button type='button' disabled={mutation.isPending || isPending} onClick={handleSave}>
               {mutation.isPending ? '保存中…' : '保存'}
@@ -63,8 +63,10 @@ function AdminSettingsPage() {
               type='button'
               aria-current={index === activeTab ? 'page' : undefined}
               className={cn(
-                'shrink-0 rounded-md px-3 py-2 text-left text-sm transition-colors',
-                index === activeTab ? 'bg-muted font-medium text-foreground' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                'shrink-0 whitespace-nowrap rounded-[10px] border border-transparent px-3 py-2 text-left text-sm transition-colors',
+                index === activeTab
+                  ? 'border-border bg-card font-medium text-foreground shadow-[0_1px_3px_0_rgb(0_0_0/0.04)]'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
               )}
               onClick={() => setActiveTab(index)}
             >
@@ -116,7 +118,7 @@ function SettingsFieldInput({ field, value, onChange }: { field: SettingsField; 
   if (field.type === 'switch') {
     const checked = value === 'true' || value === true;
     return (
-      <div className='flex items-start justify-between gap-4 rounded-md border border-border px-4 py-3 md:col-span-2'>
+      <div className='flex items-start justify-between gap-4 rounded-[10px] border border-border px-4 py-3 md:col-span-2'>
         <div className='grid gap-0.5'>
           <Label htmlFor={id}>{field.label}</Label>
           {field.description ? <span className='text-muted-foreground text-xs'>{field.description}</span> : null}

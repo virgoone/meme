@@ -2,7 +2,6 @@ import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-r
 import { Send } from 'lucide-react';
 
 import { DataTableSkeleton } from '@bunship-ai/data-table';
-import { Badge } from '@bunship-ai/ui/components/badge';
 import { Button } from '@bunship-ai/ui/components/button';
 
 import { useAdminNewsletters, type Newsletter } from '../lib/admin-queries';
@@ -36,9 +35,9 @@ const columns: DataTableColumn<Newsletter>[] = [
     header: '状态',
     size: 130,
     cell: (row) =>
-      row.sentAt ? <Badge>已发送</Badge>
-        : row.campaignStatus === 'sending' ? <Badge variant='secondary'>发送中</Badge>
-          : <Badge variant='outline'>草稿</Badge>,
+      row.sentAt ? <span className='status-dot' data-tone='success'>已发送</span>
+        : row.campaignStatus === 'sending' ? <span className='status-dot' data-tone='info'>发送中</span>
+          : <span className='status-dot' data-tone='idle'>草稿</span>,
   },
   {
     id: 'created',

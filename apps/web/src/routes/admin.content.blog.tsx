@@ -2,7 +2,6 @@ import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-r
 import { Plus } from 'lucide-react';
 
 import { DataTableSkeleton } from '@bunship-ai/data-table';
-import { Badge } from '@bunship-ai/ui/components/badge';
 import { Button } from '@bunship-ai/ui/components/button';
 
 import { useAdminBlogPosts, type BlogPost } from '../lib/admin-queries';
@@ -17,8 +16,8 @@ const columns: DataTableColumn<BlogPost>[] = [
   {
     id: 'title',
     header: '标题',
-    size: 520,
-    minSize: 360,
+    size: 380,
+    minSize: 260,
     cell: (post) => (
       <div className='flex min-w-0 items-center gap-3'>
         <span className='block h-10 w-14 shrink-0 overflow-hidden rounded border border-border bg-muted' aria-hidden='true'>
@@ -38,25 +37,31 @@ const columns: DataTableColumn<BlogPost>[] = [
     header: '状态',
     size: 100,
     cell: (post) => (
-      <Badge variant={post.publishedAt ? 'default' : 'outline'}>{post.publishedAt ? '已发布' : '草稿'}</Badge>
+      <span className='status-dot' data-tone={post.publishedAt ? 'success' : 'idle'}>{post.publishedAt ? '已发布' : '草稿'}</span>
     ),
   },
   {
     id: 'publishedAt',
     header: '发布时间',
-    size: 150,
+    size: 130,
     cell: (post) => <span className='text-muted-foreground text-sm'>{formatDate(post.publishedAt)}</span>,
+  },
+  {
+    id: 'views',
+    header: '浏览',
+    size: 80,
+    cell: (post) => <span className='text-sm tabular-nums'>{(post.views ?? 0).toLocaleString('zh-CN')}</span>,
   },
   {
     id: 'meta',
     header: '信息',
-    size: 140,
+    size: 130,
     cell: (post) => <span className='text-muted-foreground text-sm'>{moodLabel(post.mood)} · {Math.round(post.readingTime ?? 0)} 分钟</span>,
   },
   {
     id: 'actions',
     header: '',
-    size: 140,
+    size: 130,
     cell: (post) => (
       <div className='flex justify-end gap-1'>
         <Button asChild variant='ghost' size='sm'>

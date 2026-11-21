@@ -18,6 +18,10 @@ bun run dev:server
 bun run dev:web
 ```
 
+## Admin MCP and AI covers
+
+The admin exposes an authorized MCP server at `/api/mcp` for listing, reading and editing articles and querying dashboard statistics, and generates article covers only through Sluice. Tokens are managed at `/admin/mcp`. Setup, tool semantics and the `SLUICE_*` settings: [docs/admin-mcp-and-covers.md](docs/admin-mcp-and-covers.md).
+
 ## Analytics
 
 Evumi uses `@evumi/tracker@0.1.15` with the TanStack Router adapter mounted once in the root layout. Public visits on `https://blog.douni.one` are sent to `https://evumi.bunship.site/api/event` in cookieless mode. Local development and preview origins do not send events. Existing GA4 and the site's own view counters remain independent.
