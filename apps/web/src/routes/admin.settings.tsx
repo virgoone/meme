@@ -2,17 +2,12 @@ import { SETTINGS_GROUPS, type SettingsField } from '@meme/shared';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import { Button } from '@bunship-ai/ui/components/button';
-import { Input } from '@bunship-ai/ui/components/input';
-import { Label } from '@bunship-ai/ui/components/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@bunship-ai/ui/components/select';
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
 import { Switch } from '@bunship-ai/ui/components/switch';
-import { Textarea } from '@bunship-ai/ui/components/textarea';
 import { cn } from '@bunship-ai/ui/lib/utils';
 
 import { useAdminSettings, useUpdateAdminSettings } from '../lib/admin-queries';
 import { AdminPage, AdminPageHeader, ErrorText, SectionCard } from '../lib/admin-ui';
+import { Button, Field, Input, Label, NativeSelect, Skeleton, Textarea } from '../lib/sluice/ui';
 
 export const Route = createFileRoute('/admin/settings')({
   component: AdminSettingsPage,
@@ -43,9 +38,9 @@ function AdminSettingsPage() {
         title='站点设置'
         description='站点、邮件、存储、广告与第三方服务配置。修改后点击保存生效。'
         action={
-          <div className='flex items-center gap-3'>
-            {mutation.isSuccess && !dirty ? <span className='text-muted-foreground text-xs'>已保存</span> : dirty ? <span className='text-muted-foreground text-xs'>有未保存的修改</span> : null}
-            <Button type='button' disabled={mutation.isPending || isPending} onClick={handleSave}>
+          <div className='flex flex-wrap items-center gap-3'>
+            {mutation.isSuccess && !dirty ? <span className='font-desc text-description type-sm'>已保存</span> : dirty ? <span className='font-desc text-description type-sm'>有未保存的修改</span> : null}
+            <Button type='button' variant='primary' disabled={mutation.isPending || isPending} onClick={handleSave}>
               {mutation.isPending ? '保存中…' : '保存'}
             </Button>
           </div>
@@ -63,8 +58,8 @@ function AdminSettingsPage() {
               type='button'
               aria-current={index === activeTab ? 'page' : undefined}
               className={cn(
-                'shrink-0 rounded-md px-3 py-2 text-left text-sm transition-colors',
-                index === activeTab ? 'bg-muted font-medium text-foreground' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                'flex min-h-10 shrink-0 items-center gap-3 whitespace-nowrap rounded-ui-lg px-3 py-2 text-left type-base transition-colors',
+                index === activeTab ? 'bg-fill font-medium text-title' : 'text-description hover:bg-fill-weak hover:text-title',
               )}
               onClick={() => setActiveTab(index)}
             >
@@ -116,10 +111,10 @@ function SettingsFieldInput({ field, value, onChange }: { field: SettingsField; 
   if (field.type === 'switch') {
     const checked = value === 'true' || value === true;
     return (
-      <div className='flex items-start justify-between gap-4 rounded-md border border-border px-4 py-3 md:col-span-2'>
+      <div className='flex items-start justify-between gap-4 rounded-ui-lg border border-border-light px-4 py-3 md:col-span-2'>
         <div className='grid gap-0.5'>
           <Label htmlFor={id}>{field.label}</Label>
-          {field.description ? <span className='text-muted-foreground text-xs'>{field.description}</span> : null}
+          {field.description ? <span className='font-desc text-description type-xs'>{field.description}</span> : null}
         </div>
         <Switch id={id} checked={checked} onCheckedChange={(next) => onChange(next)} />
       </div>
@@ -128,12 +123,10 @@ function SettingsFieldInput({ field, value, onChange }: { field: SettingsField; 
 
   const control =
     field.type === 'select' ? (
-      <Select value={stringValue} onValueChange={(next) => onChange(next)}>
-        <SelectTrigger id={id}><SelectValue placeholder={field.placeholder ?? '请选择'} /></SelectTrigger>
-        <SelectContent>
-          {field.options?.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-        </SelectContent>
-      </Select>
+      <NativeSelect id={id} value={stringValue} onChange={(event) => onChange(event.target.value)}>
+        <option value='' disabled>{field.placeholder ?? '请选择'}</option>
+        {field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </NativeSelect>
     ) : field.type === 'textarea' ? (
       <Textarea id={id} rows={3} placeholder={field.placeholder} value={stringValue} onChange={(event) => onChange(event.target.value)} />
     ) : (
@@ -148,10 +141,8 @@ function SettingsFieldInput({ field, value, onChange }: { field: SettingsField; 
     );
 
   return (
-    <div className={cn('grid content-start gap-1.5', field.type === 'textarea' && 'md:col-span-2')}>
-      <Label htmlFor={id} className='text-muted-foreground text-xs'>{field.label}</Label>
+    <Field label={field.label} htmlFor={id} hint={field.description} className={cn('content-start', field.type === 'textarea' && 'md:col-span-2')}>
       {control}
-      {field.description ? <span className='text-muted-foreground text-xs'>{field.description}</span> : null}
-    </div>
+    </Field>
   );
 }

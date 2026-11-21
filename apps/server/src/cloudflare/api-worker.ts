@@ -1,5 +1,6 @@
 import type { WorkerBindings, WorkerEnv } from '../env';
 import { exposeCloudflareRuntime } from './runtime';
+import { isOAuthDiscoveryPath } from './discovery';
 
 let appPromise: Promise<typeof import('../server').app> | null = null;
 
@@ -22,9 +23,10 @@ export default {
     }
     exposeCloudflareRuntime(env);
 
-    // Better Auth owns /api/auth/* (sign-in, OTP, session, etc.).
+    // Better Auth owns /api/auth/* (sign-in, OTP, session, etc.) and the OAuth /
+    // MCP discovery documents at the origin root (RFC 8414 / RFC 9728).
     const url = new URL(request.url);
-    if (url.pathname.startsWith('/api/auth')) {
+    if (url.pathname.startsWith('/api/auth') || isOAuthDiscoveryPath(url.pathname)) {
       const { getAuth } = await import('../auth');
       return getAuth().handler(request);
     }

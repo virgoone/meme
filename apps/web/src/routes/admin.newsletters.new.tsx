@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { AdminContentSkeleton } from '../lib/page-skeletons';
 import { useAdminBlogPosts } from '../lib/admin-queries';
+import { ErrorText } from '../lib/admin-ui';
 import {
   newsletterRequest,
   type NewsletterOptions,
@@ -33,9 +34,7 @@ function NewNewsletterPage() {
   const error = posts.error ?? options.error ?? (campaign ? saved.error : null);
   if (error)
     return (
-      <p className='admin-error' role='alert'>
-        {error.message}
-      </p>
+      <ErrorText error={error} />
     );
   if (!posts.data || !options.data || (campaign && !saved.data))
     return <AdminContentSkeleton />;

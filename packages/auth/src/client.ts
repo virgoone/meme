@@ -2,6 +2,7 @@ import {
   emailOTPClient,
   inferAdditionalFields,
 } from 'better-auth/client/plugins';
+import { oauthProviderClient } from '@better-auth/oauth-provider/client';
 import { createAuthClient } from 'better-auth/react';
 
 import type { Auth } from './server';
@@ -25,6 +26,9 @@ export const authClient = createAuthClient({
   },
   plugins: [
     emailOTPClient(),
+    // Sends the signed OAuth query of an MCP authorization along with sign-in and
+    // consent requests, so Better Auth can resume the authorization afterwards.
+    oauthProviderClient(),
     inferAdditionalFields<Auth>({ user: { role: { type: 'string' } } }),
   ],
 });

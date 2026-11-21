@@ -130,6 +130,30 @@ export function useAdminBlogPosts() {
   });
 }
 
+export type AdminPostPage = {
+  items: BlogPost[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  counts: { all: number; published: number; draft: number };
+};
+
+/** Server-paged admin article list: search, publish-status filter, page and size. */
+export function useAdminPostPage(params: { q: string; status: string; page: number; size: number }) {
+  const search = new URLSearchParams();
+  if (params.q) search.set('q', params.q);
+  if (params.status) search.set('status', params.status);
+  search.set('page', String(params.page));
+  search.set('size', String(params.size));
+  return useQuery({
+    queryKey: ['admin', 'blog-posts', 'page', params],
+    queryFn: () => adminRequest<AdminPostPage>(`/api/admin/post-list?${search}`),
+    placeholderData: (previous) => previous,
+    staleTime: 30_000,
+  });
+}
+
 export function useAdminProjects() {
   return useQuery({
     queryKey: ['admin', 'projects'],
@@ -196,6 +220,63 @@ export function useUpdateAdminSettings() {
   });
 }
 
+// ---- admin API with readable errors -----------------------------------------------
+
+/** Admin JSON call that turns the `{ message }` error envelope into an Error message. */
+async function adminRequest<T>(url: string, init?: { method?: string; body?: unknown }): Promise<T> {
+  const response = await fetch(url, {
+    method: init?.method ?? 'GET',
+    headers: { accept: 'application/json', ...(init?.body === undefined ? {} : { 'content-type': 'application/json' }) },
+    ...(init?.body === undefined ? {} : { body: JSON.stringify(init.body) }),
+  });
+  const text = await response.text();
+  let payload: unknown = null;
+  try { payload = text ? JSON.parse(text) : null; } catch { payload = null; }
+  if (!response.ok) {
+    const envelope = payload as { message?: string; error?: string } | null;
+    throw Object.assign(new Error(envelope?.message || envelope?.error || `请求失败（HTTP ${response.status}）`), { statusCode: response.status });
+  }
+  return payload as T;
+}
+
+// ---- Sluice covers ----------------------------------------------------------------
+
+export type CoverConfig = {
+  configured: boolean;
+  provider: 'sluice';
+  model: string | null;
+  size: string;
+  aspectRatios: string[];
+  defaultAspectRatio: string;
+};
+
+export type GeneratedCover = {
+  url: string;
+  key: string;
+  contentType: string;
+  bytes: number;
+  model: string;
+  aspectRatio: string;
+  size: string | null;
+  prompt: string;
+  revisedPrompt: string | null;
+};
+
+export function useCoverConfig() {
+  return useQuery({
+    queryKey: ['admin', 'cover-config'],
+    queryFn: () => adminRequest<CoverConfig>('/api/admin/covers/config'),
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useGenerateCover() {
+  return useMutation({
+    mutationFn: (input: { prompt: string; aspectRatio: string; requestId: string }) =>
+      adminRequest<GeneratedCover>('/api/admin/covers/generate', { method: 'POST', body: input }),
+  });
+}
+
 // ---- types (shared with pages) ---------------------------------------------------
 
 export type HealthStatus = {
@@ -250,6 +331,7 @@ export type BlogPost = {
   readingTime: number | null;
   publishedAt: string | null;
   coverImageUrl: string | null;
+  views?: number;
 };
 
 export type Project = {

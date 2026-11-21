@@ -1,5 +1,6 @@
 import type { WorkerBindings, WorkerEnv } from '../env';
 import { exposeCloudflareRuntime } from './runtime';
+import { isOAuthDiscoveryPath } from './discovery';
 
 let appPromise: Promise<typeof import('../server').app> | null = null;
 let webServerPromise: Promise<
@@ -53,7 +54,9 @@ export default {
     const url = new URL(request.url);
     exposeCloudflareRuntime(env);
 
-    if (url.pathname.startsWith('/api/auth')) {
+    // Better Auth owns /api/auth/* and the OAuth / MCP discovery documents at the
+    // origin root (RFC 8414 authorization server, RFC 9728 protected resource).
+    if (url.pathname.startsWith('/api/auth') || isOAuthDiscoveryPath(url.pathname)) {
       const { getAuth } = await import('../auth');
       return getAuth().handler(request);
     }
@@ -73,7 +76,7 @@ export default {
     try {
       const webServer = await loadWebServer();
       const response = await webServer.fetch(request, env);
-      if (/^\/(admin|login|confirm|newsletters)(\/|$)/.test(url.pathname) || response.status >= 400) {
+      if (/^\/(admin|login|confirm|newsletters|oauth)(\/|$)/.test(url.pathname) || response.status >= 400) {
         const headers = new Headers(response.headers);
         headers.set('x-robots-tag', 'noindex, nofollow');
         headers.set('cache-control', 'private, no-store');

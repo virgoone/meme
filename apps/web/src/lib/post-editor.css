@@ -1,28 +1,116 @@
-.admin-post-editor {
-  --ui-field-placeholder: var(--muted-foreground);
+/*
+ * Rich-text editor (remote <bunship-editor> widget) themed with Sluice's tokens.
+ *
+ * The widget renders in light DOM (no shadow root) and loads its own stylesheet;
+ * its documented theming API is the `theme`, `style-preset` and `accent-color`
+ * attributes (set in remote-editor-widget.tsx: preset `shadcn`, Sluice ink as the
+ * accent) plus the CSS design tokens it declares on `.bwe-widget-root` and on its
+ * Radix portals (`[data-radix-popper-content-wrapper]`, under
+ * `body[data-bunship-editor]` while an editor is mounted). Below, those same
+ * tokens are pointed at Sluice's values. The selectors carry one more class than
+ * the widget's own, so they win without !important, and the portals (toolbar
+ * menus, link/colour popovers, floating toolbar) follow the same theme.
+ */
+.admin-editor-host .bwe-widget-root,
+body[data-bunship-editor] [data-radix-popper-content-wrapper] {
+  --font-sans: var(--font-heading-ui);
+  --font-display: var(--font-heading-ui);
+  --font-mono: var(--font-code-ui);
+
+  --background: var(--surface);
+  --foreground: var(--text-body);
+  --card: var(--surface);
+  --card-foreground: var(--text-body);
+  --popover: var(--surface-medium);
+  --popover-foreground: var(--text-body);
+  --primary-foreground: var(--on-primary);
+  --secondary: var(--fill-weak);
+  --secondary-foreground: var(--text-title);
+  --muted: var(--fill);
+  --muted-foreground: var(--text-description);
+  --accent: var(--fill);
+  --accent-foreground: var(--text-title);
+  --destructive: var(--danger-fg);
+  --border: var(--border-light);
+  --input: var(--input-border);
+  --ring: var(--focus);
+  --highlight: var(--fill-strong);
+  --radius: 0.5rem;
+
+  /* Controls: Sluice's ghost buttons (tertiary-hover), 8 px radius, hairlines. */
+  --ui-control-radius: 8px;
+  --ui-control-border-width: 1px;
+  --ui-control-shadow: none;
+  --ui-button-radius: 8px;
+  --ui-button-font-family: var(--font-heading-ui);
+  --ui-button-font-weight: 500;
+  --ui-button-font-size: 0.875rem;
+  --ui-button-ghost-foreground: var(--text-subtitle);
+  --ui-button-ghost-bg-hover: var(--tertiary-hover);
+  --ui-button-ghost-border-hover: transparent;
+  --ui-button-outline-bg: transparent;
+  --ui-button-outline-border: var(--border-strong);
+  --ui-button-outline-bg-hover: var(--tertiary-hover);
+  --ui-button-secondary-bg: var(--secondary);
+  --ui-button-secondary-bg-hover: var(--secondary-hover);
+  --ui-toolbar-control-height: 2rem;
+  --ui-toolbar-control-font-size: 0.8125rem;
+  --ui-toolbar-control-font-weight: 500;
+  --ui-toolbar-control-padding-x: 0.625rem;
+  --ui-field-radius: 8px;
+  --ui-field-bg: var(--surface);
+  --ui-field-border-color: var(--input-border);
+  --ui-field-font-family: var(--font-heading-ui);
+  --ui-field-font-weight: 400;
+
+  /* Menus and popovers: Sluice's MenuContent (16 px, popover shadow, hairline ring). */
+  --ui-overlay-radius: 16px;
+  --ui-overlay-border-width: 0px;
+  --ui-overlay-shadow: var(--shadow-popover-ui), 0 0 0 0.5px var(--border-light);
+  --ui-menu-radius: 16px;
+  --ui-menu-border-width: 0px;
+  --ui-menu-shadow: var(--shadow-popover-ui), 0 0 0 0.5px var(--border-light);
+  --ui-menu-item-bg-hover: var(--fill-weak);
+  --ui-menu-item-bg-active: var(--fill);
+  --ui-menu-item-font-family: var(--font-heading-ui);
+  --ui-menu-item-font-weight: 400;
+  --ui-menu-label-text-transform: none;
+  --ui-tooltip-bg: var(--text-title);
+  --ui-tooltip-foreground: var(--surface);
+  --ui-tooltip-radius: 6px;
+
+  /* Editor chrome: no frame of its own (the page's TableCard is the frame); a flat
+     toolbar with a hairline under it; Sluice radii for code and callouts. */
+  --editor-frame-radius: 0px;
+  --editor-frame-border-width: 0px;
+  --editor-frame-shadow: none;
+  --editor-toolbar-radius: 0px;
+  --editor-toolbar-border-width: 0px;
+  --editor-toolbar-shadow: none;
+  --editor-inline-code-radius: 6px;
+  --editor-code-block-radius: 12px;
+  --editor-code-block-border-width: 1px;
+  --editor-callout-radius: 12px;
+  --editor-callout-border-width: 1px;
 }
 
-/* Title typography has its own field tokens, so shared Input styles cannot
-   replace it with the standard bordered form-control appearance. */
+/* The canvas: white sheet, Sluice body text, selection in fill-strong. */
+.admin-editor-host .bwe-widget-root { background: var(--surface); color: var(--text-body); }
+.admin-editor-host .bwe-widget-root ::selection { background: var(--fill-strong); }
+.admin-editor-host .bwe-widget-root [data-slate-editor='true'] { font-family: var(--font-heading-ui); color: var(--text-body); caret-color: var(--text-title); }
+
+/* The title field above the editor. */
 .admin-post-title {
-  --ui-field-bg: transparent;
-  --ui-field-border-width: 0px;
-  --ui-field-radius: 0px;
-  --ui-field-min-height: 3rem;
-  --ui-field-padding-x: 0px;
-  --ui-field-padding-y: 0.5rem;
-  --ui-field-font-size: 1.5rem;
-  --ui-field-font-weight: 600;
-  --ui-field-line-height: 1.4;
-  border-bottom: 1px solid var(--border);
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+  background: transparent;
+  padding: 6px 0 10px;
+  color: var(--text-title);
+  font: 500 1.5rem/2rem var(--font-heading-ui);
+  letter-spacing: -0.01em;
+  outline: none;
 }
-
-.admin-post-title:focus-visible {
-  border-bottom-color: var(--foreground);
-  box-shadow: none;
-}
-
-.admin-post-slug {
-  --ui-field-font-family: var(--font-mono);
-  --ui-field-font-size: 0.8125rem;
-}
+.admin-post-title::placeholder { color: var(--text-helper); }
+.admin-post-title:focus-visible { border-bottom-color: var(--focus); box-shadow: none; }

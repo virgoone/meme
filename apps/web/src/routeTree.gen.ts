@@ -9,73 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as GuestbookRouteImport } from './routes/guestbook'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as NewslettersIdRouteImport } from './routes/newsletters.$id'
-import { Route as ConfirmTokenRouteImport } from './routes/confirm.$token'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminNewslettersRouteImport } from './routes/admin.newsletters'
+import { Route as SlugRouteImport } from './routes/$slug'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as GuestbookRouteImport } from './routes/guestbook'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminCommentsRouteImport } from './routes/admin.comments'
-import { Route as AdminNewslettersNewRouteImport } from './routes/admin.newsletters.new'
-import { Route as AdminContentProjectRouteImport } from './routes/admin.content.project'
+import { Route as AdminMcpRouteImport } from './routes/admin.mcp'
+import { Route as AdminNewslettersRouteImport } from './routes/admin.newsletters'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ConfirmTokenRouteImport } from './routes/confirm.$token'
+import { Route as NewslettersIdRouteImport } from './routes/newsletters.$id'
+import { Route as OauthConsentRouteImport } from './routes/oauth.consent'
 import { Route as AdminContentBlogRouteImport } from './routes/admin.content.blog'
-import { Route as AdminContentBlogNewRouteImport } from './routes/admin.content.blog.new'
+import { Route as AdminContentProjectRouteImport } from './routes/admin.content.project'
+import { Route as AdminNewslettersNewRouteImport } from './routes/admin.newsletters.new'
 import { Route as AdminContentBlogSlugRouteImport } from './routes/admin.content.blog.$slug'
+import { Route as AdminContentBlogNewRouteImport } from './routes/admin.content.blog.new'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuestbookRoute = GuestbookRouteImport.update({
-  id: '/guestbook',
-  path: '/guestbook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlugRoute = SlugRouteImport.update({
@@ -83,34 +45,59 @@ const SlugRoute = SlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewslettersIdRoute = NewslettersIdRouteImport.update({
-  id: '/newsletters/$id',
-  path: '/newsletters/$id',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfirmTokenRoute = ConfirmTokenRouteImport.update({
-  id: '/confirm/$token',
-  path: '/confirm/$token',
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
-  id: '/subscribers',
-  path: '/subscribers',
+const GuestbookRoute = GuestbookRouteImport.update({
+  id: '/guestbook',
+  path: '/guestbook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCommentsRoute = AdminCommentsRouteImport.update({
+  id: '/comments',
+  path: '/comments',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+const AdminMcpRoute = AdminMcpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminNewslettersRoute = AdminNewslettersRouteImport.update({
@@ -118,9 +105,44 @@ const AdminNewslettersRoute = AdminNewslettersRouteImport.update({
   path: '/newsletters',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminCommentsRoute = AdminCommentsRouteImport.update({
-  id: '/comments',
-  path: '/comments',
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
+  id: '/subscribers',
+  path: '/subscribers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
+const ConfirmTokenRoute = ConfirmTokenRouteImport.update({
+  id: '/confirm/$token',
+  path: '/confirm/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewslettersIdRoute = NewslettersIdRouteImport.update({
+  id: '/newsletters/$id',
+  path: '/newsletters/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OauthConsentRoute = OauthConsentRouteImport.update({
+  id: '/oauth/consent',
+  path: '/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContentBlogRoute = AdminContentBlogRouteImport.update({
+  id: '/content/blog',
+  path: '/content/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContentProjectRoute = AdminContentProjectRouteImport.update({
+  id: '/content/project',
+  path: '/content/project',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminNewslettersNewRoute = AdminNewslettersNewRouteImport.update({
@@ -128,24 +150,14 @@ const AdminNewslettersNewRoute = AdminNewslettersNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AdminNewslettersRoute,
 } as any)
-const AdminContentProjectRoute = AdminContentProjectRouteImport.update({
-  id: '/content/project',
-  path: '/content/project',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminContentBlogRoute = AdminContentBlogRouteImport.update({
-  id: '/content/blog',
-  path: '/content/blog',
-  getParentRoute: () => AdminRoute,
+const AdminContentBlogSlugRoute = AdminContentBlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AdminContentBlogRoute,
 } as any)
 const AdminContentBlogNewRoute = AdminContentBlogNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => AdminContentBlogRoute,
-} as any)
-const AdminContentBlogSlugRoute = AdminContentBlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
   getParentRoute: () => AdminContentBlogRoute,
 } as any)
 
@@ -162,12 +174,14 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
+  '/admin/mcp': typeof AdminMcpRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -187,12 +201,14 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
+  '/admin/mcp': typeof AdminMcpRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -213,12 +229,14 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/terms': typeof TermsRoute
   '/admin/comments': typeof AdminCommentsRoute
+  '/admin/mcp': typeof AdminMcpRoute
   '/admin/newsletters': typeof AdminNewslettersRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -240,12 +258,14 @@ export interface FileRouteTypes {
     | '/projects'
     | '/terms'
     | '/admin/comments'
+    | '/admin/mcp'
     | '/admin/newsletters'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -265,12 +285,14 @@ export interface FileRouteTypes {
     | '/projects'
     | '/terms'
     | '/admin/comments'
+    | '/admin/mcp'
     | '/admin/newsletters'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -290,12 +312,14 @@ export interface FileRouteTypes {
     | '/projects'
     | '/terms'
     | '/admin/comments'
+    | '/admin/mcp'
     | '/admin/newsletters'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -317,71 +341,16 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ConfirmTokenRoute: typeof ConfirmTokenRoute
   NewslettersIdRoute: typeof NewslettersIdRoute
+  OauthConsentRoute: typeof OauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects': {
-      id: '/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guestbook': {
-      id: '/guestbook'
-      path: '/guestbook'
-      fullPath: '/guestbook'
-      preLoaderRoute: typeof GuestbookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$slug': {
@@ -391,46 +360,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/newsletters/$id': {
-      id: '/newsletters/$id'
-      path: '/newsletters/$id'
-      fullPath: '/newsletters/$id'
-      preLoaderRoute: typeof NewslettersIdRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/confirm/$token': {
-      id: '/confirm/$token'
-      path: '/confirm/$token'
-      fullPath: '/confirm/$token'
-      preLoaderRoute: typeof ConfirmTokenRouteImport
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/subscribers': {
-      id: '/admin/subscribers'
-      path: '/subscribers'
-      fullPath: '/admin/subscribers'
-      preLoaderRoute: typeof AdminSubscribersRouteImport
+    '/guestbook': {
+      id: '/guestbook'
+      path: '/guestbook'
+      fullPath: '/guestbook'
+      preLoaderRoute: typeof GuestbookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/comments': {
+      id: '/admin/comments'
+      path: '/comments'
+      fullPath: '/admin/comments'
+      preLoaderRoute: typeof AdminCommentsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
+    '/admin/mcp': {
+      id: '/admin/mcp'
+      path: '/mcp'
+      fullPath: '/admin/mcp'
+      preLoaderRoute: typeof AdminMcpRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/newsletters': {
@@ -440,11 +444,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewslettersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/comments': {
-      id: '/admin/comments'
-      path: '/comments'
-      fullPath: '/admin/comments'
-      preLoaderRoute: typeof AdminCommentsRouteImport
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/subscribers': {
+      id: '/admin/subscribers'
+      path: '/subscribers'
+      fullPath: '/admin/subscribers'
+      preLoaderRoute: typeof AdminSubscribersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/confirm/$token': {
+      id: '/confirm/$token'
+      path: '/confirm/$token'
+      fullPath: '/confirm/$token'
+      preLoaderRoute: typeof ConfirmTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletters/$id': {
+      id: '/newsletters/$id'
+      path: '/newsletters/$id'
+      fullPath: '/newsletters/$id'
+      preLoaderRoute: typeof NewslettersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oauth/consent': {
+      id: '/oauth/consent'
+      path: '/oauth/consent'
+      fullPath: '/oauth/consent'
+      preLoaderRoute: typeof OauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/content/blog': {
+      id: '/admin/content/blog'
+      path: '/content/blog'
+      fullPath: '/admin/content/blog'
+      preLoaderRoute: typeof AdminContentBlogRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/content/project': {
+      id: '/admin/content/project'
+      path: '/content/project'
+      fullPath: '/admin/content/project'
+      preLoaderRoute: typeof AdminContentProjectRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/newsletters/new': {
@@ -454,32 +507,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewslettersNewRouteImport
       parentRoute: typeof AdminNewslettersRoute
     }
-    '/admin/content/project': {
-      id: '/admin/content/project'
-      path: '/content/project'
-      fullPath: '/admin/content/project'
-      preLoaderRoute: typeof AdminContentProjectRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/content/blog': {
-      id: '/admin/content/blog'
-      path: '/content/blog'
-      fullPath: '/admin/content/blog'
-      preLoaderRoute: typeof AdminContentBlogRouteImport
-      parentRoute: typeof AdminRoute
+    '/admin/content/blog/$slug': {
+      id: '/admin/content/blog/$slug'
+      path: '/$slug'
+      fullPath: '/admin/content/blog/$slug'
+      preLoaderRoute: typeof AdminContentBlogSlugRouteImport
+      parentRoute: typeof AdminContentBlogRoute
     }
     '/admin/content/blog/new': {
       id: '/admin/content/blog/new'
       path: '/new'
       fullPath: '/admin/content/blog/new'
       preLoaderRoute: typeof AdminContentBlogNewRouteImport
-      parentRoute: typeof AdminContentBlogRoute
-    }
-    '/admin/content/blog/$slug': {
-      id: '/admin/content/blog/$slug'
-      path: '/$slug'
-      fullPath: '/admin/content/blog/$slug'
-      preLoaderRoute: typeof AdminContentBlogSlugRouteImport
       parentRoute: typeof AdminContentBlogRoute
     }
   }
@@ -511,6 +550,7 @@ const AdminContentBlogRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminCommentsRoute: typeof AdminCommentsRoute
+  AdminMcpRoute: typeof AdminMcpRoute
   AdminNewslettersRoute: typeof AdminNewslettersRouteWithChildren
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSubscribersRoute: typeof AdminSubscribersRoute
@@ -520,6 +560,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCommentsRoute: AdminCommentsRoute,
+  AdminMcpRoute: AdminMcpRoute,
   AdminNewslettersRoute: AdminNewslettersRouteWithChildren,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSubscribersRoute: AdminSubscribersRoute,
@@ -553,17 +594,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ConfirmTokenRoute: ConfirmTokenRoute,
   NewslettersIdRoute: NewslettersIdRoute,
+  OauthConsentRoute: OauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

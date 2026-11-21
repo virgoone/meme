@@ -182,13 +182,14 @@ export function RemoteEditorWidget({
         ) as RemoteEditorElement;
         element = widget;
 
+        // The widget's own theme API: `theme`, the soft `shadcn` style preset
+        // (hairlines, rounded controls, no hard shadows) and the accent token,
+        // set to Sluice's ink (black in light mode, near-white in dark mode).
+        // Its remaining design tokens are mapped to Sluice's in post-editor.css.
         const applyTheme = () => {
-          widget.setAttribute(
-            'theme',
-            document.documentElement.classList.contains('dark')
-              ? 'dark'
-              : 'light',
-          );
+          const dark = document.documentElement.classList.contains('dark');
+          widget.setAttribute('theme', dark ? 'dark' : 'light');
+          widget.setAttribute('accent-color', dark ? '#faf7f7' : '#1d1d1c');
         };
         applyTheme();
         themeObserver = new MutationObserver(applyTheme);
@@ -197,9 +198,8 @@ export function RemoteEditorWidget({
           attributeFilter: ['class'],
         });
 
-        widget.setAttribute('style-preset', 'fluxship');
-        widget.setAttribute('accent-color', '#65a30d');
-        widget.setAttribute('placeholder', 'Start writing...');
+        widget.setAttribute('style-preset', 'shadcn');
+        widget.setAttribute('placeholder', '开始写作…');
         widget.setAttribute('upload-api', uploadApi);
         widget.setAttribute('upload-url-base', uploadUrlBase);
         widget.setAttribute('min-height', String(minHeight));

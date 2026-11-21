@@ -49,7 +49,85 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Sluice console tokens (admin). Ported from sluice/web/src/styles.css; names
+     that clash with the shadcn set above get a distinct name (border-strong). */
+  --font-ui: var(--font-heading-ui);
+  --font-desc: var(--font-description-ui);
+  --font-code: var(--font-code-ui);
+  --color-bg: var(--bg);
+  --color-bg-medium: var(--bg-medium);
+  --color-surface: var(--surface);
+  --color-surface-medium: var(--surface-medium);
+  --color-surface-blur: var(--surface-blur);
+  --color-overlay: var(--overlay);
+  --color-fill-weak: var(--fill-weak);
+  --color-fill: var(--fill);
+  --color-fill-medium: var(--fill-medium);
+  --color-fill-strong: var(--fill-strong);
+  --color-border-light: var(--border-light);
+  --color-border-strong: var(--border-strong);
+  --color-divider: var(--divider);
+  --color-input-border: var(--input-border);
+  --color-input-hover: var(--input-border-hover);
+  --color-focus: var(--focus);
+  --color-title: var(--text-title);
+  --color-body: var(--text-body);
+  --color-subtitle: var(--text-subtitle);
+  --color-description: var(--text-description);
+  --color-helper: var(--text-helper);
+  --color-disabled: var(--text-disabled);
+  --color-on-primary: var(--on-primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-disabled: var(--primary-disabled);
+  --color-on-primary-disabled: var(--on-primary-disabled);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-pressed: var(--secondary-pressed);
+  --color-secondary-disabled: var(--secondary-disabled);
+  --color-tertiary-hover: var(--tertiary-hover);
+  --color-tertiary-pressed: var(--tertiary-pressed);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-border: var(--danger-border);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-pressed: var(--danger-pressed);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+  --color-success-fg: var(--success-fg);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-warning-fg: var(--warning-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+  --color-info-fg: var(--info-fg);
+  --radius-ui-xs: 6px;
+  --radius-ui-sm: 8px;
+  --radius-ui-md: 12px;
+  --radius-ui-lg: 16px;
+  --radius-ui-xl: 20px;
+  --radius-ui-2xl: 24px;
+  --shadow-ui: var(--shadow-default);
+  --shadow-card: var(--shadow-card-ui);
+  --shadow-popover: var(--shadow-popover-ui);
+  --shadow-modal: var(--shadow-modal-ui);
+  --animate-pop-in: ui-pop 200ms cubic-bezier(0, 0, 0.2, 1);
+  --animate-fade-in: ui-fade 200ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes ui-pop { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
+  @keyframes ui-fade { from { opacity: 0; } }
 }
+
+/* Sluice's type scale (12/16 13/20 14/20 15/22 16/24 18/26 20/28 24/32) as its own
+   utilities: `type-*` names keep tailwind-merge from treating a size as a colour. */
+@utility type-xs { font-size: 0.75rem; line-height: 1rem; }
+@utility type-sm { font-size: 0.8125rem; line-height: 1.25rem; }
+@utility type-base { font-size: 0.875rem; line-height: 1.25rem; }
+@utility type-md { font-size: 0.9375rem; line-height: 1.375rem; }
+@utility type-lg { font-size: 1rem; line-height: 1.5rem; }
+@utility type-xl { font-size: 1.125rem; line-height: 1.625rem; }
+@utility type-2xl { font-size: 1.25rem; line-height: 1.75rem; }
+@utility type-3xl { font-size: 1.5rem; line-height: 2rem; }
 
 /* Loading surfaces do not rely on the optional shared Tailwind theme plugin. */
 [data-slot='skeleton'],
@@ -125,16 +203,20 @@ body {
   background: var(--page);
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
+/* Element resets live in the base layer so Tailwind utilities (text colours,
+   font sizes on buttons and links) can override them. */
+@layer base {
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 p,
