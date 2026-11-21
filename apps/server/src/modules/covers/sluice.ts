@@ -113,9 +113,9 @@ export async function generateCover(
   const extension = contentType === 'image/jpeg' ? 'jpg' : contentType.split('/')[1] ?? 'png';
   const key = `meme-uploads/admin/covers/${nanoid(12)}.${extension}`;
   await putMediaObject(env.MEDIA_BUCKET, key, bytes, { contentType });
-  const base = (env.S3_URL_BASE?.trim() || '/api/media/object').replace(/\/+$/, '');
+  const mediaPath = `/api/media/object/${key}`;
   return {
-    url: `${base}/${key}`,
+    url: env.SITE_URL ? new URL(mediaPath, env.SITE_URL).href : mediaPath,
     key,
     contentType,
     bytes: bytes.byteLength,

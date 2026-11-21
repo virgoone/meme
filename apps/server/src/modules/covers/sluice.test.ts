@@ -51,13 +51,13 @@ describe('Sluice cover generation', () => {
     expect(JSON.stringify(cover)).not.toContain('sk-server-only');
   });
 
-  test('downloads URL deliveries and uses the public media base', async () => {
-    const { env, stored } = setup({ S3_URL_BASE: 'https://media.example/' });
+  test('serves downloaded covers from the site Worker even when a separate S3 base is configured', async () => {
+    const { env, stored } = setup({ S3_URL_BASE: 'https://media.example/', SITE_URL: 'https://blog.example/' });
     const fetcher = (async (url: string | URL | Request) => String(url).includes('/images/generations')
       ? new Response(JSON.stringify({ data: [{ url: 'https://bucket.example/signed.png' }] }))
       : new Response(PNG)) as typeof fetch;
     const cover = await generateCover(env, { prompt: 'x' }, fetcher);
-    expect(cover.url).toBe(`https://media.example/${cover.key}`);
+    expect(cover.url).toBe(`https://blog.example/api/media/object/${cover.key}`);
     expect(cover.aspectRatio).toBe('16:9');
     expect(stored.size).toBe(1);
   });
