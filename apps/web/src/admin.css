@@ -13,7 +13,7 @@
   --popover-foreground: #1d1d1c;
   --primary: #1d1d1c;
   --primary-foreground: #ffffff;
-  --secondary: #f5f1ef;
+  --secondary: #60200010;
   --secondary-foreground: #161616;
   --muted-surface: #f6f2f0;
   --muted-foreground: #7a6f6b;
@@ -305,6 +305,137 @@
   --ui-field-placeholder: #6b6b6b;
   --ui-overlay-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   --ui-tabs-trigger-shadow-active: none;
+}
+
+
+/* ---- Sluice console tokens ------------------------------------------------------
+   Values copied from sluice/web/src/styles.css (light and dark). Tailwind maps them
+   in styles.css (bg-fill-weak, text-description, border-border-light, ...). Sluice's
+   `--border` (the stronger line) is `--border-strong` here because shadcn owns
+   `--border`. */
+@font-face { font-family: 'Onest Variable'; src: url('/admin-fonts/onest-latin-wght.woff2') format('woff2-variations'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/admin-fonts/lato-latin-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/admin-fonts/lato-latin-700.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Geist Mono Variable'; src: url('/admin-fonts/geist-mono-latin-wght.woff2') format('woff2-variations'); font-weight: 100 900; font-display: swap; }
+
+:root body {
+  --font-heading-ui: 'Onest Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+  --font-description-ui: 'Lato', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+  --font-code-ui: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'PingFang SC', monospace;
+
+  --bg: #fbfaf9;
+  --bg-medium: #f6f0ec;
+  --surface: #ffffff;
+  --surface-medium: #ffffff;
+  --surface-blur: #ffffffcc;
+  --overlay: #00000099;
+  --fill-weak: #60000008;
+  --fill: #60200010;
+  --fill-medium: #661f0019;
+  --fill-strong: #58200020;
+  --border-light: #60200010;
+  --border-strong: #49150031;
+  --divider: #d0c4c0;
+  --input-border: #49150031;
+  --input-border-hover: #26090071;
+  --focus: #1d1d1c;
+  --text-title: #161616;
+  --text-body: #1d1d1c;
+  --text-subtitle: #554f4c;
+  --text-description: #7a6f6b;
+  --text-helper: #9f928e;
+  --text-disabled: #c4b7b4;
+  --primary-hover: #333130;
+  --primary-pressed: #3e3b3a;
+  --primary-disabled: #c4b7b4;
+  --on-primary: #ffffff;
+  --on-primary-disabled: #ffffff;
+  --secondary-hover: #661f0019;
+  --secondary-pressed: #551a0027;
+  --secondary-disabled: #60000008;
+  --tertiary-hover: #60000008;
+  --tertiary-pressed: #60200010;
+  --success-dot: #00b489;
+  --success-bg: #ebf9f6;
+  --success-border: #ccf0e7;
+  --success-fg: #13725c;
+  --warning-dot: #ff8e1d;
+  --warning-bg: #fff6e5;
+  --warning-border: #ffe3b2;
+  --warning-fg: #c2670c;
+  --danger: #f54b45;
+  --danger-bg: #ffefeb;
+  --danger-border: #fdd0c6;
+  --danger-fg: #b9241c;
+  --danger-hover: #f76e66;
+  --danger-pressed: #b9241c;
+  --info-dot: #027fff;
+  --info-bg: #f0f7ff;
+  --info-border: #cce5ff;
+  --info-fg: #1d7bd8;
+  --shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+  --shadow-card-ui: 0 2px 8px 0 rgb(0 0 0 / 0.02);
+  --shadow-popover-ui: 0 12px 24px -4px rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.1);
+  --shadow-modal-ui: 0 12px 32px -4px rgb(0 0 0 / 0.08), 0 0 1px 0 rgb(0 0 0 / 0.1);
+}
+
+:root.dark body {
+  --bg: #1d1d1c;
+  --bg-medium: #161616;
+  --surface: #242321;
+  --surface-medium: #2b2a29;
+  --surface-blur: #242321cc;
+  --fill-weak: #ffdbb70f;
+  --fill: #ffdbc917;
+  --fill-medium: #ffdcc61f;
+  --fill-strong: #ffe4d326;
+  --border-light: #ffdcc61f;
+  --border-strong: #ffe8dc38;
+  --divider: #3e3b3a;
+  --input-border: #ffe8dc38;
+  --input-border-hover: #ffeae168;
+  --focus: #faf7f7;
+  --text-title: #e5dcd9;
+  --text-body: #dcd2ce;
+  --text-subtitle: #d0c4c0;
+  --text-description: #ab9e9a;
+  --text-helper: #877a76;
+  --text-disabled: #615a57;
+  --primary-hover: #f6f0ec;
+  --primary-pressed: #ebe3e0;
+  --primary-disabled: #615a57;
+  --on-primary: #000000;
+  --on-primary-disabled: #ffffff4d;
+  --secondary-hover: #ffe4d326;
+  --secondary-pressed: #ffe9d52e;
+  --secondary-disabled: #ffdbb70f;
+  --tertiary-hover: #ffdbc917;
+  --tertiary-pressed: #ffe4d326;
+  --success-bg: #052e24;
+  --success-border: #0f3e33;
+  --success-fg: #2cc29d;
+  --warning-bg: #432507;
+  --warning-border: #7c4712;
+  --warning-fg: #f0a043;
+  --danger-bg: #450f0a;
+  --danger-border: #7f251d;
+  --danger-fg: #f76e66;
+  --info-bg: #173654;
+  --info-border: #1e548a;
+  --info-fg: #9accff;
+  --shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.2);
+  --shadow-card-ui: 0 2px 8px 0 rgb(0 0 0 / 0.16);
+  --shadow-popover-ui: 0 12px 24px -4px rgb(0 0 0 / 0.4), 0 0 1px 0 rgb(255 255 255 / 0.12);
+  --shadow-modal-ui: 0 12px 32px -4px rgb(0 0 0 / 0.5), 0 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+/* The admin, and anything it portals into <body> (menus, popovers, dialogs), uses
+   Sluice's type: Onest for UI text, Lato for descriptions, Geist Mono for code. */
+body:has(.admin-shell),
+body:has(.admin-consent) {
+  font-family: var(--font-heading-ui);
+  -webkit-font-smoothing: antialiased;
+  line-break: strict;
 }
 
 /* ---- data table classes consumed by @bunship-ai/data-table ------------------- */
@@ -686,216 +817,63 @@
   font-size: 13px;
 }
 
-/* ---- workspace shell (after Sluice's console frame) ------------------------------ */
+/* ---- workspace shell: sluice/web/src/styles.css `.app-shell` ------------------------ */
 
-.admin-shell {
-  display: grid;
-  grid-template-columns: 236px minmax(0, 1fr);
-  min-height: 100dvh;
-  padding: 12px 12px 12px 0;
-  background: var(--background);
-  transition: grid-template-columns 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-sidebar {
-  position: sticky;
-  top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  height: calc(100dvh - 24px);
-  min-width: 0;
-  overflow: clip;
-  padding: 8px 14px 4px;
-}
-
-.admin-sidebar__nav {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-.admin-sidebar__footer {
-  display: grid;
-  gap: 2px;
-  flex-shrink: 0;
-  padding-top: 8px;
-}
-
-.admin-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 6px 8px 10px;
-  border-radius: 10px;
-}
-
-.admin-compose {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: background-color 120ms ease, transform 100ms ease;
-}
-
-.admin-compose:hover { background: color-mix(in srgb, var(--primary) 88%, var(--background)); }
-.admin-compose:active { transform: scale(0.98); }
-.admin-compose svg { width: 16px; height: 16px; flex: none; }
-
-.admin-section-label {
-  padding: 0 12px 4px;
-  color: var(--muted-foreground);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.admin-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 36px;
-  min-width: 0;
-  padding: 7px 12px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  color: var(--muted-foreground);
-  font-size: 14px;
-  line-height: 20px;
-  text-align: left;
-  white-space: nowrap;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.admin-nav-link svg { width: 16px; height: 16px; flex: none; stroke-width: 1.8; }
-.admin-nav-link:hover { background: var(--muted-surface); color: var(--foreground); }
-
-/* Selected item: a white pill with a hairline and a soft shadow. */
-.admin-nav-link[aria-current='page'] {
-  border-color: var(--border);
-  background: var(--card);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04);
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.admin-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  margin-top: 8px;
-  padding: 10px 6px 4px;
-  border-top: 1px solid var(--border);
-}
-
-.admin-avatar {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  flex: none;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 0 1px var(--border);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.admin-ctl,
-.admin-shell .theme-switcher {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  flex: none;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--muted-foreground);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04);
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.admin-ctl:hover,
-.admin-shell .theme-switcher:hover { background: var(--muted-surface); color: var(--foreground); }
-.admin-ctl svg,
-.admin-shell .theme-switcher svg { width: 16px; height: 16px; }
-.admin-ctl--quiet { border-color: transparent; background: transparent; box-shadow: none; }
-
-.admin-label { transition: opacity 150ms ease 75ms, visibility 0s; }
-
-.admin-sheet {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.admin-topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 48px;
-  min-width: 0;
-  padding: 0 8px;
-}
-
-.admin-topbar__logo { display: none; }
-.admin-ctl.admin-menu-trigger { display: none; }
-
-/* The page sheet: one white surface with a hairline, as in Sluice. */
-.admin-content {
-  flex: 1;
-  min-width: 0;
-  padding: 28px 32px 48px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  background: var(--card);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04);
-  container-type: inline-size;
-}
-
-/* Collapsed rail: icons stay put, labels fade out. */
-.admin-rail { grid-template-columns: 68px minmax(0, 1fr); }
-.admin-rail .admin-sidebar { padding-inline: 10px; }
-.admin-rail .admin-sidebar .admin-label { opacity: 0; visibility: hidden; width: 0; transition: opacity 100ms ease, visibility 0s 100ms; }
-.admin-rail .admin-sidebar .admin-section-label { height: 4px; padding: 0; }
-.admin-rail .admin-brand { padding-inline: 6px; }
-.admin-rail .admin-compose { width: 36px; padding: 0; margin-inline: auto; }
-.admin-rail .admin-nav-link { gap: 0; justify-content: center; padding-inline: 0; }
-.admin-rail .admin-user { justify-content: center; padding-inline: 0; }
-
-.admin-drawer { display: grid; gap: 14px; padding: 12px 12px 16px; border-radius: 0 0 20px 20px; background: var(--card); }
-.admin-drawer .admin-brand { padding-right: 40px; }
-
-@media (max-width: 1023px) {
-  .admin-content { padding: 24px 20px 40px; }
-}
-
+/* The navigation owns its scroll; the page sheet uses all remaining width. */
+.app-shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100dvh; padding: 12px 12px 12px 0; background: var(--bg); transition: grid-template-columns 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.app-sidebar { position: sticky; top: 12px; display: flex; flex-direction: column; height: calc(100dvh - 24px); min-width: 0; overflow: clip; padding: 12px 14px; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 4px 12px 28px; transition: padding-left 200ms cubic-bezier(0.4, 0, 0.2, 1), padding-right 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.sidebar-context { min-width: 0; }
+.sidebar-navigation { min-height: 0; flex: 1; overflow-y: auto; scrollbar-width: thin; }
+.sidebar-footer { flex-shrink: 0; padding-top: 20px; padding-bottom: 4px; }
+.sidebar-user { padding: 16px 8px 0; transition: padding-left 200ms cubic-bezier(0.4, 0, 0.2, 1), padding-right 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.app-sidebar .scope-label { white-space: nowrap; transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1) 75ms, visibility 0s; }
+.app-sheet { display: flex; flex-direction: column; min-width: 0; gap: 12px; }
+.app-sheet > main { flex: 1; border: 1px solid var(--border-light); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow-default); }
+.app-header { flex-shrink: 0; min-width: 0; background: var(--bg); }
+.app-content { container-type: inline-size; }
+/* The rail is as wide as an icon tab plus the sidebar padding, so navigation icons stay put
+   while the column narrows; the labels fade out and only the brand and avatar slide. */
+.sidebar-rail { grid-template-columns: 68px minmax(0, 1fr); }
+.sidebar-rail .sidebar-brand { padding-left: 6px; padding-right: 6px; }
+.sidebar-rail .sidebar-user { padding-left: 4px; padding-right: 4px; }
+.sidebar-rail .app-sidebar .scope-label { opacity: 0; visibility: hidden; transition: opacity 100ms cubic-bezier(0, 0, 0.2, 1), visibility 0s 100ms; }
+.sidebar-rail .app-sidebar :is(.scope-label, .scope-label *) { text-overflow: clip; }
 @media (max-width: 639px) {
-  .admin-shell { grid-template-columns: minmax(0, 1fr); padding: 0; }
-  .admin-sidebar { display: none; }
-  .admin-topbar { position: sticky; top: 0; z-index: 30; height: 56px; padding: 0 12px; background: var(--background); }
-  .admin-topbar__logo { display: block; flex: none; }
-  .admin-ctl.admin-menu-trigger { display: grid; }
-  .admin-sheet { gap: 0; }
-  .admin-content { padding: 20px 16px 36px; border-radius: 20px 20px 0 0; border-bottom: 0; }
+  .app-shell { grid-template-columns: minmax(0, 1fr); padding: 0; }
+  .app-sidebar { display: none; }
+  .app-header { position: sticky; top: 0; z-index: 30; background: var(--bg); }
+  .app-sheet { gap: 8px; }
+  .app-sheet > main { border-radius: 20px; }
 }
+
+/* The drawer trigger is phone-only. Unlayered, so the editor widget's global
+   utilities (its own `.grid`) cannot show it again on wide screens. */
+@media (min-width: 640px) { .app-header .admin-menu-trigger { display: none; } }
+
+/* The site's theme toggle, as Sluice's round header control (shell.tsx ctlCls). */
+.admin-shell .theme-switcher,
+.admin-drawer .theme-switcher {
+  display: grid; place-items: center; width: 32px; height: 32px; flex: none; padding: 0;
+  border: 1px solid var(--border-light); border-radius: 9999px; background: var(--surface);
+  color: var(--text-subtitle); box-shadow: var(--shadow-default); transition: background-color 120ms, color 120ms;
+}
+.admin-shell .theme-switcher:hover, .admin-drawer .theme-switcher:hover { background: var(--fill-weak); color: var(--text-title); }
+.admin-shell .theme-switcher svg, .admin-drawer .theme-switcher svg { width: 16px; height: 16px; }
+
+/* Status pill: a colored dot and a neutral label (sluice styles.css `.status-pill`). */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px; flex: none;
+  border: 1px solid var(--border-light); border-radius: 9999px; background: var(--surface);
+  font: 400 12px/16px var(--font-description-ui); color: var(--text-body); white-space: nowrap;
+}
+.status-pill::before { content: ''; width: 6px; height: 6px; flex: none; border-radius: 9999px; background: var(--dot, var(--fill-medium)); }
+.status-pill[data-tone='live'] { --dot: var(--success-dot); }
+.status-pill[data-tone='building'] { --dot: var(--info-dot); }
+.status-pill[data-tone='failed'] { --dot: var(--danger); }
+.status-pill[data-tone='pending'] { --dot: var(--warning-dot); }
+.status-pill[data-tone='sleeping'] { --dot: var(--text-description); }
+.status-pill[data-tone='idle'] { --dot: var(--fill-strong); color: var(--text-description); }
 
 /* ---- small shared pieces ----------------------------------------------------------- */
 

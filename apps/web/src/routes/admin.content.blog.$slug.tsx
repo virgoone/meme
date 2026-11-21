@@ -3,18 +3,11 @@ import { createPostSlug, isValidPostSlug } from '@meme/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-
-import { Badge } from '@bunship-ai/ui/components/badge';
-import { Button } from '@bunship-ai/ui/components/button';
-import { Input } from '@bunship-ai/ui/components/input';
-import { Label } from '@bunship-ai/ui/components/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@bunship-ai/ui/components/select';
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
-import { Textarea } from '@bunship-ai/ui/components/textarea';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useAdminPost, type PostDetail } from '../lib/admin-queries';
-import { AdminPage, ErrorText, SectionCard } from '../lib/admin-ui';
+import { ErrorText } from '../lib/admin-ui';
+import { Badge, Button, Field, Input, NativeSelect, Skeleton, Textarea } from '../lib/sluice/ui';
 import { CoverGenerator } from '../lib/cover-generator';
 import { MainImageUploader } from '../lib/main-image-uploader';
 import { postToEditorValue } from '../lib/post-editor-value';
@@ -91,95 +84,71 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
     },
   });
 
+  const saving = saveMutation.isPending;
+  const savedCover = isNew ? '' : (post.data?.mainImageUrl ?? post.data?.coverImageUrl ?? '');
+  const coverChanged = mainImageUrl.trim() !== savedCover;
+
   if (!isNew && post.isPending) {
     return (
-      <AdminPage className='admin-post-editor'>
-        <EditorToolbar isNew={false} title='' saving={false} onSave={() => undefined} />
-        <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
-          <div className='grid gap-6'>
-            <Skeleton className='h-12 w-3/4' />
-            <Skeleton className='h-10 w-1/2' />
-            <Skeleton className='h-[560px] w-full' />
-          </div>
+      <div className='admin-post-editor flex flex-col gap-6' role='status' aria-label='文章加载中'>
+        <EditorHeader isNew={false} title='' saving={false} onSave={() => undefined} />
+        <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_336px]'>
           <div className='grid gap-4'>
-            <Skeleton className='h-32 w-full' />
-            <Skeleton className='h-56 w-full' />
-            <Skeleton className='h-48 w-full' />
+            <Skeleton className='h-10 w-3/4' />
+            <Skeleton className='h-9 w-1/2' />
+            <Skeleton className='h-[560px] w-full rounded-ui-xl' />
           </div>
+          <Skeleton className='h-[480px] w-full rounded-ui-xl' />
         </div>
-      </AdminPage>
+      </div>
     );
   }
 
   if (!isNew && (post.isError || !post.data)) {
     return (
-      <AdminPage className='admin-post-editor'>
-        <EditorToolbar isNew={false} title='编辑文章' saving={false} onSave={() => undefined} />
+      <div className='admin-post-editor flex flex-col gap-6'>
+        <EditorHeader isNew={false} title='编辑文章' saving={false} onSave={() => undefined} />
         <ErrorText error={post.error ?? new Error('文章不存在')} />
-      </AdminPage>
+      </div>
     );
   }
 
-  const saving = saveMutation.isPending;
-  const savedCover = isNew ? '' : (post.data?.mainImageUrl ?? post.data?.coverImageUrl ?? '');
-  const coverChanged = mainImageUrl.trim() !== savedCover;
-  const status = saveMutation.isSuccess ? '已保存' : saveMutation.isError ? null : null;
-
   return (
-    <AdminPage className='admin-post-editor'>
-      <EditorToolbar
+    <div className='admin-post-editor flex flex-col gap-6'>
+      <EditorHeader
         isNew={isNew}
         title={title}
+        published={!!publishedAt}
         saving={saving}
         previewSlug={!isNew && post.data?.publishedAt ? post.data.slug : undefined}
         onSave={() => saveMutation.mutate()}
-        status={status}
+        status={saveMutation.isSuccess ? '已保存' : null}
         error={saveMutation.isError ? saveMutation.error : null}
       />
 
-      <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'>
-        <div className='grid min-w-0 content-start gap-6'>
-          <div className='grid gap-4'>
-            <div className='grid min-w-0 content-start gap-1.5'>
-              <Label htmlFor='post-title' className='sr-only'>标题</Label>
-              <Input
-                id='post-title'
-                value={title}
-                placeholder='文章标题'
-                className='admin-post-title'
-                onChange={(event) => {
-                  setTitle(event.target.value);
-                  if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
-                }}
-              />
-            </div>
-            <div className='grid items-start gap-4 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)]'>
-              <div className='grid min-w-0 content-start gap-1.5'>
-                <Label htmlFor='post-slug' className='text-muted-foreground text-xs'>Slug</Label>
-                <Input
-                  id='post-slug'
-                  value={nextSlug}
-                  className='admin-post-slug'
-                  placeholder='url-friendly-slug'
-                  onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }}
-                />
-                <span className='break-all text-muted-foreground text-xs'>公开地址：/{nextSlug || '…'}</span>
-              </div>
-              <div className='grid min-w-0 content-start gap-1.5'>
-                <Label htmlFor='post-description' className='text-muted-foreground text-xs'>摘要</Label>
-                <Textarea
-                  id='post-description'
-                  value={description}
-                  rows={2}
-                  className='min-h-[38px]'
-                  placeholder='一两句话说明这篇文章讲什么，用于列表、RSS 和分享卡片。'
-                  onChange={(event) => setDescription(event.target.value)}
-                />
-              </div>
-            </div>
+      <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_336px]'>
+        <div className='flex min-w-0 flex-col gap-4'>
+          <label htmlFor='post-title' className='sr-only'>标题</label>
+          <input
+            id='post-title'
+            value={title}
+            placeholder='文章标题'
+            className='admin-post-title'
+            onChange={(event) => {
+              setTitle(event.target.value);
+              if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
+            }}
+          />
+          <div className='grid items-start gap-4 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)]'>
+            <Field label='Slug' htmlFor='post-slug' hint={<span className='break-all'>公开地址：/{nextSlug || '…'}</span>}>
+              <Input id='post-slug' inputSize='md' value={nextSlug} className='font-code type-sm' placeholder='url-friendly-slug' onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }} />
+            </Field>
+            <Field label='摘要' htmlFor='post-description' hint='用于列表、RSS 和分享卡片。'>
+              <Textarea id='post-description' value={description} rows={2} className='min-h-9 py-2' placeholder='一两句话说明这篇文章讲什么' onChange={(event) => setDescription(event.target.value)} />
+            </Field>
           </div>
 
-          <SectionCard title='正文' className='min-w-0' bodyClassName='min-w-0 p-0'>
+          <section aria-label='正文' className='min-w-0 overflow-hidden rounded-ui-xl border border-border-light bg-surface'>
             {isNew || contentReadySlug === post.data?.slug ? (
               <RemoteEditorWidget value={content} onChange={setContent} className='admin-editor-host' minHeight={640} />
             ) : (
@@ -192,64 +161,67 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
                 </div>
               </div>
             )}
-          </SectionCard>
+          </section>
         </div>
 
-        <aside className='grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-4' aria-label='文章设置'>
-          <SectionCard title='发布' action={<Badge variant={publishedAt ? 'default' : 'outline'}>{publishedAt ? '已发布' : '草稿'}</Badge>}>
-            <div className='grid gap-3'>
-              <div className='grid min-w-0 content-start gap-1.5'>
-                <Label htmlFor='post-published-at' className='text-muted-foreground text-xs'>发布时间</Label>
-                <Input id='post-published-at' type='datetime-local' value={publishedAt} onChange={(event) => setPublishedAt(event.target.value)} />
-                <span className='text-muted-foreground text-xs'>留空保存为草稿，前台不会展示。</span>
-              </div>
-              <Button className='w-full' disabled={saving} onClick={() => saveMutation.mutate()}>
-                {saving ? '保存中…' : publishedAt ? '保存并发布' : '保存草稿'}
-              </Button>
-              {saveMutation.isSuccess ? <span className='text-center text-muted-foreground text-xs'>已保存</span> : null}
-              {saveMutation.isError ? <ErrorText error={saveMutation.error} className='text-xs' /> : null}
-            </div>
-          </SectionCard>
+        <aside className='min-w-0 divide-y divide-border-light rounded-ui-xl border border-border-light bg-surface' aria-label='文章设置'>
+          <SidePanel title='发布' action={publishedAt ? <Badge tone='ok'>已发布</Badge> : <Badge>草稿</Badge>}>
+            <Field label='发布时间' htmlFor='post-published-at' hint='留空保存为草稿，前台不会展示。'>
+              <Input id='post-published-at' type='datetime-local' value={publishedAt} onChange={(event) => setPublishedAt(event.target.value)} />
+            </Field>
+            <Button variant='primary' className='w-full' loading={saving} onClick={() => saveMutation.mutate()}>
+              {saving ? '保存中…' : publishedAt ? '保存并发布' : '保存草稿'}
+            </Button>
+            {saveMutation.isError ? <ErrorText error={saveMutation.error} className='type-sm' /> : null}
+          </SidePanel>
 
-          <SectionCard
-            title='封面图'
-            action={coverChanged ? <span className='status-dot' data-tone='pending'>未保存</span> : null}
-          >
+          <SidePanel title='封面图' action={coverChanged ? <Badge tone='warn'>未保存</Badge> : null}>
             <MainImageUploader value={mainImageUrl} onChange={setMainImageUrl} />
-          </SectionCard>
+          </SidePanel>
 
-          <SectionCard title='生成封面' description='提示词发送到 Sluice，图片存入站点媒体库。'>
+          <SidePanel title='生成封面' description='提示词发送到 Sluice，图片存入站点媒体库。'>
             <CoverGenerator title={title} description={description} currentCover={mainImageUrl} onAdopt={setMainImageUrl} />
-          </SectionCard>
+          </SidePanel>
 
-          <SectionCard title='元信息'>
-            <div className='grid gap-4'>
-              <div className='grid min-w-0 content-start gap-1.5'>
-                <Label htmlFor='post-mood' className='text-muted-foreground text-xs'>心情</Label>
-                <Select value={mood} onValueChange={(value) => setMood(value as Mood)}>
-                  <SelectTrigger id='post-mood'><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='neutral'>日常</SelectItem>
-                    <SelectItem value='happy'>开心</SelectItem>
-                    <SelectItem value='sad'>低落</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className='grid min-w-0 content-start gap-1.5'>
-                <Label htmlFor='post-reading-time' className='text-muted-foreground text-xs'>阅读时长（分钟）</Label>
-                <Input id='post-reading-time' inputMode='numeric' value={readingTime} onChange={(event) => setReadingTime(event.target.value)} />
-              </div>
-            </div>
-          </SectionCard>
+          <SidePanel title='元信息'>
+            <Field label='心情' htmlFor='post-mood'>
+              <NativeSelect id='post-mood' value={mood} onChange={(event) => setMood(event.target.value as Mood)}>
+                <option value='neutral'>日常</option>
+                <option value='happy'>开心</option>
+                <option value='sad'>低落</option>
+              </NativeSelect>
+            </Field>
+            <Field label='阅读时长（分钟）' htmlFor='post-reading-time'>
+              <Input id='post-reading-time' inputMode='numeric' value={readingTime} onChange={(event) => setReadingTime(event.target.value)} />
+            </Field>
+          </SidePanel>
         </aside>
       </div>
-    </AdminPage>
+    </div>
   );
 }
 
-function EditorToolbar({ isNew, title, saving, previewSlug, onSave, status, error }: {
+/** One section of the settings column (Sluice Block typography, hairline-separated). */
+function SidePanel({ title, description, action, children }: { title: string; description?: string; action?: ReactNode; children: ReactNode }) {
+  return (
+    <section className='flex min-w-0 flex-col gap-3 p-4'>
+      <div className='flex items-start justify-between gap-2'>
+        <div className='min-w-0'>
+          <h2 className='font-medium text-title type-md'>{title}</h2>
+          {description ? <p className='mt-0.5 font-desc text-description type-sm'>{description}</p> : null}
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/** Page header in Sluice's PageHeader layout, with a back button and the save actions. */
+function EditorHeader({ isNew, title, published, saving, previewSlug, onSave, status, error }: {
   isNew: boolean;
   title: string;
+  published?: boolean;
   saving: boolean;
   previewSlug?: string;
   onSave: () => void;
@@ -257,26 +229,29 @@ function EditorToolbar({ isNew, title, saving, previewSlug, onSave, status, erro
   error?: unknown;
 }) {
   return (
-    <header className='flex flex-wrap items-center justify-between gap-3 border-border border-b pb-4'>
-      <div className='flex min-w-0 items-center gap-3'>
-        <Button asChild variant='ghost' size='icon' className='size-8 shrink-0'>
-          <Link to='/admin/content/blog' aria-label='返回文章列表'><ArrowLeft aria-hidden='true' /></Link>
+    <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
+      <div className='flex min-w-0 items-start gap-3'>
+        <Button asChild size='icon-sm' variant='ghost' className='mt-0.5'>
+          <Link to='/admin/content/blog' aria-label='返回文章列表'><ArrowLeft /></Link>
         </Button>
-        <div className='grid min-w-0 gap-0.5'>
-          <span className='text-muted-foreground text-xs'>{isNew ? '新文章' : '编辑文章'}</span>
-          <h1 className='truncate font-semibold text-base leading-tight'>{title || (isNew ? '未命名文章' : '加载中…')}</h1>
+        <div className='flex min-w-0 flex-col gap-1'>
+          <div className='flex items-center gap-2 text-description type-sm'>
+            {isNew ? '新文章' : '编辑文章'}
+            {!isNew && published !== undefined ? (published ? <Badge tone='ok'>已发布</Badge> : <Badge>草稿</Badge>) : null}
+          </div>
+          <h1 className='min-w-0 truncate font-medium text-title type-2xl tracking-[-0.01em]'>{title || (isNew ? '未命名文章' : '加载中…')}</h1>
         </div>
       </div>
-      <div className='flex items-center gap-2'>
-        {error ? <ErrorText error={error} className='text-xs' /> : status ? <span className='text-muted-foreground text-xs'>{status}</span> : null}
+      <div className='flex shrink-0 flex-wrap items-center gap-2 sm:pt-0.5'>
+        {error ? <ErrorText error={error} className='type-sm' /> : status ? <span className='font-desc text-description type-sm'>{status}</span> : null}
         {previewSlug ? (
-          <Button asChild variant='outline' size='sm'>
-            <Link to='/$slug' params={{ slug: previewSlug }} target='_blank'><ExternalLink aria-hidden='true' />预览</Link>
+          <Button asChild>
+            <Link to='/$slug' params={{ slug: previewSlug }} target='_blank'><ExternalLink />预览</Link>
           </Button>
         ) : null}
-        <Button size='sm' disabled={saving} onClick={onSave}>{saving ? '保存中…' : '保存'}</Button>
+        <Button variant='primary' loading={saving} onClick={onSave}>{saving ? '保存中…' : '保存'}</Button>
       </div>
-    </header>
+    </div>
   );
 }
 

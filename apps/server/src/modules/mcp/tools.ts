@@ -4,13 +4,13 @@ import type { WorkerEnv } from '../../env';
 import { AppError } from '../../middleware/errorHandler';
 import { listComments } from '../comments/service';
 import { listNewsletters, listSubscribers } from '../newsletter/service';
-import { getImportedPostBySlug, listImportedPosts, type UpdatePostInput, updateImportedPostBySlug } from '../posts/service';
+import { getImportedPostBySlug, listImportedPosts, PostVersionConflictError, type UpdatePostInput, updateImportedPostBySlug } from '../posts/service';
+import { settings } from '@meme/db';
 import { listProjects } from '../projects/service';
 import { getReactions } from '../reactions/service';
 import { getAdminStats } from '../system/stats';
 import { postDayViewsKey, postViewsKey, readViews, viewDay } from '../system/views';
 import { applyBlockOperations, type BlockOperation, BlockOperationError, blockAttributes, blocksToMarkdown, nodeText, parseOperations } from './content';
-import type { McpScope } from './tokens';
 
 type JsonSchema = Record<string, unknown>;
 
@@ -18,11 +18,14 @@ export type McpTool = {
   name: string;
   title: string;
   description: string;
-  scope: McpScope;
+  scope: 'read' | 'write';
   inputSchema: JsonSchema;
   annotations: { readOnlyHint: boolean; destructiveHint?: boolean; idempotentHint?: boolean; openWorldHint: false };
-  run: (env: WorkerEnv, args: Record<string, unknown>) => Promise<unknown>;
+  run: (env: WorkerEnv, args: Record<string, unknown>, context: ToolContext) => Promise<unknown>;
 };
+
+/** Who is calling: a stable identity for scoping idempotency records. */
+export type ToolContext = { actor: string };
 
 /** Raised for caller mistakes; surfaced to the model as a tool error, not a protocol error. */
 export class ToolInputError extends Error {}
@@ -121,14 +124,16 @@ export const MCP_TOOLS: McpTool[] = [
     description: [
       'Edits one article through the same service the admin editor uses. Only the fields you pass change; publish status and publishedAt are kept unless you pass publishedAt (ISO time to publish, null to make it a draft).',
       'Body edits are block operations addressed by blockId (from get_post), applied in order: set_text {blockId,text} replaces the text of a plain text block keeping its marks; set_attributes {blockId,attributes} merges attributes such as an image url/width/align (null removes one); replace_block {blockId,block} swaps in a full Slate element keeping the blockId; insert_after {afterBlockId|null,block} inserts a new block (null = at the top); delete_block {blockId}.',
-      'Blocks you do not name are saved exactly as stored. Pass expectedUpdatedAt (from get_post) to refuse the edit if someone saved the article in the meantime.',
+      'Blocks you do not name are saved exactly as stored. Pass expectedUpdatedAt (from get_post): the version check runs in the same transaction as the write, so on a conflict nothing changes.',
+      'Pass a fresh requestId (8-64 chars of [A-Za-z0-9_-]) per intended edit and reuse it when retrying after a timeout or lost response: a request that already committed returns its original result with replayed=true instead of applying twice, and inserted blocks get IDs derived from it.',
     ].join(' '),
     scope: 'write',
     inputSchema: {
       type: 'object',
       properties: {
         slug: slugSchema,
-        expectedUpdatedAt: { type: 'string', description: 'updatedAt from get_post; the edit fails if the article changed since.' },
+        expectedUpdatedAt: { type: 'string', description: 'updatedAt from get_post; the edit fails, changing nothing, if the article changed since.' },
+        requestId: { type: 'string', pattern: '^[A-Za-z0-9_-]{8,64}$', description: 'Idempotency key: reuse it only to retry the same edit.' },
         title: { type: 'string', maxLength: 250 },
         newSlug: { type: 'string', description: 'Rename the article URL.' },
         description: { type: ['string', 'null'] },
@@ -157,11 +162,18 @@ export const MCP_TOOLS: McpTool[] = [
       additionalProperties: false,
     },
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
-    run: async (env, args) => {
+    run: async (env, args, context) => {
       const slug = requireString(args.slug, 'slug');
+      const requestId = args.requestId === undefined ? null : requireRequestId(args.requestId);
+      const fingerprint = requestId ? await sha256Hex(JSON.stringify(args)) : '';
+      const recordKey = requestId ? `mcp:op:${context.actor}:${requestId}` : null;
+      if (recordKey) {
+        const replay = await readOperationRecord(env, recordKey, fingerprint);
+        if (replay) return replay;
+      }
       const post = await requirePost(env, slug);
-      if (args.expectedUpdatedAt !== undefined && args.expectedUpdatedAt !== post.updatedAt) {
-        throw new ToolInputError(`The article was saved at ${post.updatedAt} after the version you read (${String(args.expectedUpdatedAt)}). Read it again with get_post and reapply the edit.`);
+      if (args.expectedUpdatedAt !== undefined && args.expectedUpdatedAt !== null && typeof args.expectedUpdatedAt !== 'string') {
+        throw new ToolInputError('expectedUpdatedAt must be the updatedAt string from get_post');
       }
       let operations: BlockOperation[];
       try {
@@ -193,7 +205,7 @@ export const MCP_TOOLS: McpTool[] = [
       let changedBlocks: string[] = [];
       if (operations.length) {
         try {
-          const result = applyBlockOperations(blocks, operations);
+          const result = applyBlockOperations(blocks, operations, { idSeed: requestId ? `${context.actor}:${requestId}` : undefined });
           input.slateJson = result.blocks;
           changedBlocks = result.changed;
         } catch (error) {
@@ -202,7 +214,25 @@ export const MCP_TOOLS: McpTool[] = [
         }
       }
 
-      const saved = await withToolErrors(() => updateImportedPostBySlug(env, slug, input));
+      let saved: Awaited<ReturnType<typeof updateImportedPostBySlug>>;
+      try {
+        saved = await withToolErrors(() => updateImportedPostBySlug(env, slug, input, {
+          expectedUpdatedAt: typeof args.expectedUpdatedAt === 'string' || args.expectedUpdatedAt === null ? args.expectedUpdatedAt : undefined,
+          // The replay record commits in the same transaction as the edit, so a
+          // retry either finds it (and replays) or the edit never happened.
+          extraStatements: recordKey ? (db, written) => [db.insert(settings).values({
+            key: recordKey,
+            value: { fingerprint, result: { slug: written.slug, updatedAt: written.updatedAt, changedBlocks } },
+          })] : undefined,
+        }));
+      } catch (error) {
+        if (recordKey && error instanceof ToolInputError === false && /constraint/i.test(String(error))) {
+          // A concurrent retry with the same requestId committed first.
+          const replay = await readOperationRecord(env, recordKey, fingerprint);
+          if (replay) return replay;
+        }
+        throw error;
+      }
       if (!saved) throw new ToolInputError(`Article ${slug} does not exist`);
       return {
         slug: saved.slug,
@@ -334,6 +364,25 @@ export const MCP_TOOLS: McpTool[] = [
   },
 ];
 
+async function readOperationRecord(env: WorkerEnv, key: string, fingerprint: string) {
+  const rows = await env.DB.prepare('SELECT value FROM settings WHERE key = ?').bind(key).all<{ value: string }>();
+  const raw = rows.results[0]?.value;
+  if (!raw) return null;
+  const record = (typeof raw === 'string' ? JSON.parse(raw) : raw) as { fingerprint: string; result: Record<string, unknown> };
+  if (record.fingerprint !== fingerprint) throw new ToolInputError('requestId was already used for a different edit; send a new requestId for a new edit.');
+  return { ...record.result, replayed: true };
+}
+
+function requireRequestId(value: unknown) {
+  if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{8,64}$/.test(value)) throw new ToolInputError('requestId must be 8-64 characters of A-Z, a-z, 0-9, _ or -');
+  return value;
+}
+
+async function sha256Hex(value: string) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 async function requirePost(env: WorkerEnv, slug: string) {
   const post = await getImportedPostBySlug(env, slug, { includeDrafts: true });
   if (!post) throw new ToolInputError(`Article ${slug} does not exist`);
@@ -345,6 +394,9 @@ async function withToolErrors<T>(run: () => Promise<T>) {
   try {
     return await run();
   } catch (error) {
+    if (error instanceof PostVersionConflictError) {
+      throw new ToolInputError(`Version conflict: the article was saved at ${error.currentUpdatedAt} after the version you read. Nothing was changed. Read it again with get_post and reapply the edit.`);
+    }
     if (error instanceof AppError && error.statusCode < 500) throw new ToolInputError(error.message);
     throw error;
   }

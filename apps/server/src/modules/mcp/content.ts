@@ -48,7 +48,7 @@ export function parseOperations(value: unknown): BlockOperation[] {
   });
 }
 
-export function applyBlockOperations(blocks: EditorBlockNode[], operations: BlockOperation[]) {
+export function applyBlockOperations(blocks: EditorBlockNode[], operations: BlockOperation[], options?: { idSeed?: string }) {
   const next = [...blocks];
   const changed = new Set<string>();
   const used = new Set(next.map((block) => getBlockId(block)).filter((id): id is string => !!id));
@@ -87,7 +87,7 @@ export function applyBlockOperations(blocks: EditorBlockNode[], operations: Bloc
       case 'insert_after': {
         const index = operation.afterBlockId === null ? -1 : indexOf(operation.afterBlockId);
         let id = getBlockId(operation.block);
-        if (!id || used.has(id)) id = newBlockId(used);
+        if (!id || used.has(id)) id = newBlockId(used, options?.idSeed ? `${options.idSeed}:${operations.indexOf(operation)}` : undefined);
         used.add(id);
         next.splice(index + 1, 0, withBlockId(operation.block, id));
         changed.add(id);
@@ -129,10 +129,21 @@ function withBlockId(block: EditorBlockNode, blockId: string): EditorBlockNode {
   return { ...copy, id: blockId, blockId, blockID: blockId };
 }
 
-function newBlockId(used: Set<string>) {
-  let id = '';
-  do id = `block_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`; while (used.has(id));
+/** A random ID, or one derived from `seed` so a retried request inserts the same IDs. */
+function newBlockId(used: Set<string>, seed?: string) {
+  let id = seed ? `block_${seededHash(seed)}` : '';
+  while (!id || used.has(id)) id = seed && !id ? `block_${seededHash(seed)}` : `block_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
   return id;
+}
+
+function seededHash(seed: string) {
+  let a = 0x811c9dc5;
+  let b = 0x01000193;
+  for (let index = 0; index < seed.length; index += 1) {
+    a = Math.imul(a ^ seed.charCodeAt(index), 0x01000193);
+    b = Math.imul(b ^ seed.charCodeAt(index), 0x5bd1e995);
+  }
+  return `${(a >>> 0).toString(16).padStart(8, '0')}${(b >>> 0).toString(16).padStart(8, '0')}`.slice(0, 12);
 }
 
 function requireString(value: unknown, field: string) {

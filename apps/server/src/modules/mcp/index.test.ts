@@ -10,13 +10,14 @@ let role: string | null = 'admin';
 mock.module('../../auth', () => ({
   getAuth: () => ({ api: { getSession: async () => role ? { user: { id: 'owner', role }, session: {} } : null } }),
 }));
-const { mcpModule } = await import('./index');
+const { handleMcpHttp, handleMcpRequest, resolvePrincipal } = await import('./index');
 const { postsModule } = await import('../posts');
 const { adminModule } = await import('../admin');
-const app = new Elysia({ aot: false }).use(errorHandler).use(postsModule).use(adminModule).use(mcpModule);
+const app = new Elysia({ aot: false }).use(errorHandler).use(postsModule).use(adminModule);
 
 let sqlite: Database;
 let kv: Map<string, string>;
+let env: WorkerEnv;
 const migrations = new URL('../../../../../packages/db/drizzle/', import.meta.url);
 
 beforeEach(() => {
@@ -38,7 +39,7 @@ beforeEach(() => {
     run() { return Promise.resolve(this.execute()); }
     execute() { return { success: true, results: sqlite.prepare(this.sql).all(...this.values), meta: {} }; }
   }
-  const env = {
+  env = {
     SITE_URL: 'https://blog.example', TRUSTED_ORIGINS: 'https://blog.example',
     MEME_KV: { get: async (key: string) => kv.get(key) ?? null, put: async (key: string, value: string) => { kv.set(key, value); } },
     DB: {
@@ -57,17 +58,24 @@ function http(path: string, method = 'GET', body?: unknown, headers: Record<stri
   }));
 }
 
+/** Scopes the verified token carries; the OAuth flow itself is covered end-to-end. */
 async function issueToken(scopes: string[] = ['read', 'write']) {
-  const response = await http('/admin/mcp/tokens', 'POST', { name: 'Claude', scopes });
-  expect(response.status).toBe(201);
-  return (await response.json()) as { token: string; record: { id: string; prefix: string; scopes: string[] } };
+  return { token: scopes.map((scope) => `meme:${scope}`).join(' ') };
 }
 
 let rpcId = 0;
-async function rpc(token: string | null, method: string, params?: unknown) {
-  const response = await http('/mcp', 'POST', { jsonrpc: '2.0', id: ++rpcId, method, ...(params === undefined ? {} : { params }) },
-    token ? { authorization: `Bearer ${token}` } : {});
-  return { status: response.status, body: response.status === 202 ? null : await response.json() };
+async function send(token: string, message: unknown) {
+  try {
+    const response = await handleMcpRequest(JSON.stringify(message), env, { userId: 'owner', clientId: 'client', scopes: new Set(token.split(' ')) });
+    return { status: response.status, body: response.status === 202 ? null : await response.json() };
+  } catch (error) {
+    // createInsufficientScopeError: requireMcpAuth turns it into a 403 challenge.
+    return { status: (error as { statusCode?: number }).statusCode ?? 500, body: null, error };
+  }
+}
+
+async function rpc(token: string, method: string, params?: unknown) {
+  return send(token, { jsonrpc: '2.0', id: ++rpcId, method, ...(params === undefined ? {} : { params }) });
 }
 
 async function call(token: string, name: string, args: Record<string, unknown> = {}) {
@@ -87,42 +95,41 @@ async function seedPost(publishedAt: string | null = '2026-10-01T08:00:00.000Z')
 }
 
 describe('MCP authorization', () => {
-  test('rejects missing, unknown and revoked tokens, and only admins manage tokens', async () => {
-    expect((await rpc(null, 'tools/list')).status).toBe(401);
-    expect((await rpc('meme_mcp_forged', 'tools/list')).status).toBe(401);
-    const { token, record } = await issueToken(['read']);
-    expect(token.startsWith(record.prefix)).toBe(true);
-    expect((await rpc(token, 'ping')).body.result).toEqual({});
-
-    const listed = await (await http('/admin/mcp/tokens')).json();
-    expect(listed).toHaveLength(1);
-    expect(JSON.stringify(listed)).not.toContain(token);
-    expect(listed[0].hash).toBeUndefined();
-    expect(JSON.stringify(await (await http('/admin/settings')).json())).not.toContain('mcp:tokens');
-
-    role = 'user';
-    expect((await http('/admin/mcp/tokens')).status).toBe(403);
-    expect((await http('/admin/mcp/tokens', 'POST', { name: 'x' })).status).toBe(403);
-    role = 'admin';
-    expect((await http(`/admin/mcp/tokens/${record.id}`, 'DELETE')).status).toBe(200);
-    expect((await rpc(token, 'ping')).status).toBe(401);
-  });
-
-  test('rejects foreign browser origins and GET streams', async () => {
-    const { token } = await issueToken();
-    const foreign = await http('/mcp', 'POST', { jsonrpc: '2.0', id: 1, method: 'ping' }, { authorization: `Bearer ${token}`, origin: 'https://evil.example' });
+  test('foreign browser origins and non-POST methods are refused before token verification', async () => {
+    const foreign = await handleMcpHttp(new Request('http://localhost/api/mcp', { method: 'POST', headers: { origin: 'https://evil.example' }, body: '{}' }), env);
     expect(foreign.status).toBe(403);
-    expect((await http('/mcp', 'GET', undefined, { authorization: `Bearer ${token}` })).status).toBe(405);
+    expect((await handleMcpHttp(new Request('http://localhost/api/mcp'), env)).status).toBe(405);
   });
 
-  test('read tokens neither list nor run write tools', async () => {
+  test('a verified token maps to a current admin with a live consent for that client', async () => {
+    const now = Date.now();
+    sqlite.prepare("INSERT INTO ba_user (id, name, email, email_verified, role, created_at, updated_at) VALUES ('owner', 'Owner', 'owner@example.com', 1, 'admin', ?, ?)").run(now, now);
+    sqlite.prepare("INSERT INTO ba_oauth_client (id, client_id, name, redirect_uris, created_at, updated_at) VALUES ('c1', 'client', 'Claude', ?, ?, ?)").run(JSON.stringify(['http://127.0.0.1:33418/callback']), now, now);
+    sqlite.prepare("INSERT INTO ba_oauth_consent (id, client_id, user_id, scopes, created_at, updated_at) VALUES ('k1', 'client', 'owner', 'meme:read', ?, ?)").run(now, now);
+    const claims = { sub: 'owner', azp: 'client', scope: 'openid meme:read' };
+    const principal = await resolvePrincipal(env, claims);
+    expect(principal).toMatchObject({ userId: 'owner', clientId: 'client' });
+    expect([...(principal as { scopes: Set<string> }).scopes]).toEqual(['openid', 'meme:read']);
+
+    sqlite.prepare("UPDATE ba_user SET role = 'user' WHERE id = 'owner'").run();
+    expect(((await resolvePrincipal(env, claims)) as Response).status).toBe(403);
+    sqlite.prepare("UPDATE ba_user SET role = 'admin' WHERE id = 'owner'").run();
+    // Deleting the consent (Better Auth /oauth2/delete-consent) disconnects at once,
+    // even though the signed access token itself has not expired yet.
+    sqlite.prepare("DELETE FROM ba_oauth_consent WHERE id = 'k1'").run();
+    expect(((await resolvePrincipal(env, claims)) as Response).status).toBe(401);
+    expect(((await resolvePrincipal(env, { ...claims, sub: 'ghost' })) as Response).status).toBe(401);
+  });
+
+  test('meme:read lists and runs queries only; edits need meme:write (403 insufficient_scope)', async () => {
     await seedPost();
     const { token } = await issueToken(['read']);
     const tools = (await rpc(token, 'tools/list')).body.result.tools.map((tool: { name: string }) => tool.name);
     expect(tools).toContain('get_post');
     expect(tools).not.toContain('update_post');
-    const denied = await call(token, 'update_post', { slug: 'mcp-fixture', title: 'Hijacked' });
-    expect(denied.isError).toBe(true);
+    const denied = await rpc(token, 'tools/call', { name: 'update_post', arguments: { slug: 'mcp-fixture', title: 'Hijacked' } });
+    expect(denied.status).toBe(403);
+    expect(String((denied.error as Error).message ?? denied.error)).toMatch(/insufficient_scope|meme:write/);
     expect((await (await http('/admin/posts/mcp-fixture')).json()).title).toBe('MCP fixture');
   });
 });
@@ -133,8 +140,8 @@ describe('MCP protocol', () => {
     const init = await rpc(token, 'initialize', { protocolVersion: '2025-03-26', capabilities: {}, clientInfo: { name: 'test', version: '1' } });
     expect(init.body.result.protocolVersion).toBe('2025-03-26');
     expect(init.body.result.capabilities.tools).toBeDefined();
-    expect((await rpc(token, 'initialize', { protocolVersion: '1999-01-01' })).body.result.protocolVersion).toBe('2025-06-18');
-    const note = await http('/mcp', 'POST', { jsonrpc: '2.0', method: 'notifications/initialized' }, { authorization: `Bearer ${token}` });
+    expect((await rpc(token, 'initialize', { protocolVersion: '1999-01-01' })).body.result.protocolVersion).toBe('2025-11-25');
+    const note = await send(token, { jsonrpc: '2.0', method: 'notifications/initialized' });
     expect(note.status).toBe(202);
     expect((await rpc(token, 'resources/list')).body.error.code).toBe(-32601);
   });
@@ -233,6 +240,69 @@ describe('MCP content tools', () => {
     expect(after.blocks).toHaveLength(1);
     expect(after.blocks[0]).toMatchObject({ blockId: 'k1', plainText: 'Legacy body' });
     expect(after.blocks[0].slateJson.children[0]).toMatchObject({ text: 'Legacy body', bold: true });
+  });
+});
+
+describe('MCP edit consistency', () => {
+  test('a version conflict is decided inside the write transaction and changes nothing', async () => {
+    await seedPost();
+    const before = await (await http('/admin/posts/mcp-fixture')).json();
+    const { token } = await issueToken();
+    // Another save lands between the tool's read and its batch write.
+    const db = (globalThis as { __memeCloudflareRuntime?: { env: WorkerEnv } }).__memeCloudflareRuntime?.env.DB as unknown as { batch: (statements: unknown[]) => Promise<unknown> };
+    const batch = db.batch;
+    db.batch = async (statements) => {
+      db.batch = batch;
+      sqlite.prepare("UPDATE imported_posts SET updated_at = '2030-01-01T00:00:00.000Z', title = 'Saved elsewhere' WHERE slug = 'mcp-fixture'").run();
+      return batch(statements);
+    };
+    const result = await call(token, 'update_post', {
+      slug: 'mcp-fixture', expectedUpdatedAt: before.updatedAt, title: 'From MCP',
+      operations: [{ op: 'set_text', blockId: before.blocks[0].blockId, text: 'Should not land' }],
+    });
+    expect(result.isError).toBe(true);
+    expect(result.content[0]?.text).toContain('Version conflict');
+    const after = await (await http('/admin/posts/mcp-fixture')).json();
+    expect(after.title).toBe('Saved elsewhere');
+    expect(after.blocks.map((block: { slateJson: unknown }) => block.slateJson)).toEqual(before.blocks.map((block: { slateJson: unknown }) => block.slateJson));
+  });
+
+  test('legacy blocks without an internal ID keep their persisted block_id, so comment anchors survive', async () => {
+    sqlite.prepare("INSERT INTO imported_posts (id, sanity_id, slug, title, published_at, portable_text_json, slate_json) VALUES ('old', 'old', 'old-post', 'Old', '2023-01-01T00:00:00Z', '[]', '[]')").run();
+    const insert = sqlite.prepare("INSERT INTO post_blocks (id, post_id, block_id, portable_text_key, sort_index, type, portable_text_json, slate_json, plain_text) VALUES (?, 'old', ?, ?, ?, 'p', ?, ?, ?)");
+    insert.run('old:anchor-a', 'anchor-a', 'anchor-a', 0, JSON.stringify({ _type: 'slate', _key: 'anchor-a' }), JSON.stringify({ type: 'p', children: [{ text: 'First' }] }), 'First');
+    insert.run('old:anchor-b', 'anchor-b', 'anchor-b', 1, JSON.stringify({ _type: 'slate', _key: 'anchor-b' }), JSON.stringify({ type: 'p', children: [{ text: 'Second' }] }), 'Second');
+    sqlite.prepare("INSERT INTO comments (user_id, post_id, body) VALUES ('u', 'old', ?)").run(JSON.stringify({ text: 'Anchored', blockId: 'anchor-b' }));
+    const { token } = await issueToken();
+    const read = (await call(token, 'get_post', { slug: 'old-post' })).structuredContent;
+    expect(read.blocks.map((block: { blockId: string }) => block.blockId)).toEqual(['anchor-a', 'anchor-b']);
+    expect((await call(token, 'update_post', { slug: 'old-post', title: 'Old, retitled' })).isError).toBeUndefined();
+    await call(token, 'update_post', { slug: 'old-post', operations: [{ op: 'set_text', blockId: 'anchor-a', text: 'First, edited' }] });
+    const after = await (await http('/admin/posts/old-post')).json();
+    expect(after.blocks.map((block: { blockId: string }) => block.blockId)).toEqual(['anchor-a', 'anchor-b']);
+    const comments = (await call(token, 'list_comments')).structuredContent.items;
+    expect(after.blocks.some((block: { blockId: string }) => block.blockId === comments[0].blockId)).toBe(true);
+  });
+
+  test('a retried request with the same requestId replays instead of inserting twice', async () => {
+    await seedPost();
+    const before = await (await http('/admin/posts/mcp-fixture')).json();
+    const { token } = await issueToken();
+    const edit = {
+      slug: 'mcp-fixture', requestId: 'retry-0001',
+      operations: [{ op: 'insert_after', afterBlockId: before.blocks[0].blockId, block: { type: 'p', children: [{ text: 'Inserted once' }] } }],
+    };
+    const first = await call(token, 'update_post', edit);
+    expect(first.isError).toBeUndefined();
+    const retry = await call(token, 'update_post', edit);
+    expect(retry.structuredContent).toMatchObject({ replayed: true, updatedAt: first.structuredContent.updatedAt, changedBlocks: first.structuredContent.changedBlocks });
+    const after = await (await http('/admin/posts/mcp-fixture')).json();
+    expect(after.blocks.filter((block: { plainText: string }) => block.plainText === 'Inserted once')).toHaveLength(1);
+    expect(after.blocks).toHaveLength(before.blocks.length + 1);
+    const reused = await call(token, 'update_post', { ...edit, title: 'Different edit' });
+    expect(reused.isError).toBe(true);
+    expect(reused.content[0]?.text).toContain('requestId was already used');
+    expect(JSON.stringify(await (await http('/admin/settings')).json())).not.toContain('mcp:op:');
   });
 });
 

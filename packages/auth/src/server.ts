@@ -1,5 +1,13 @@
 import {
   authAccount,
+  authJwks,
+  authOauthAccessToken,
+  authOauthClient,
+  authOauthClientAssertion,
+  authOauthClientResource,
+  authOauthConsent,
+  authOauthRefreshToken,
+  authOauthResource,
   authSession,
   authUser,
   authVerification,
@@ -11,9 +19,10 @@ import {
   type OriginEnv,
   resolveTrustedOrigins,
 } from '@meme/shared';
+import { mcp } from '@better-auth/mcp';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { emailOTP } from 'better-auth/plugins';
+import { emailOTP, jwt } from 'better-auth/plugins';
 import type { D1Database } from '@cloudflare/workers-types';
 import { Resend } from 'resend';
 
@@ -66,6 +75,10 @@ async function sendOtpEmail(
   }
 }
 
+/** MCP tool permissions, requested by clients and granted on the consent page. */
+export const MCP_SCOPES = { read: 'meme:read', write: 'meme:write' } as const;
+export const MCP_RESOURCE_PATH = '/api/mcp';
+
 /**
  * Build the Better Auth instance for a given runtime env. Passwordless
  * email-OTP sign-in (auto-creates the user on first sign-in), cookie sessions,
@@ -88,6 +101,14 @@ export function createAuth(env: AuthEnv) {
         session: authSession,
         account: authAccount,
         verification: authVerification,
+        jwks: authJwks,
+        oauthClient: authOauthClient,
+        oauthResource: authOauthResource,
+        oauthClientResource: authOauthClientResource,
+        oauthRefreshToken: authOauthRefreshToken,
+        oauthAccessToken: authOauthAccessToken,
+        oauthConsent: authOauthConsent,
+        oauthClientAssertion: authOauthClientAssertion,
       },
     }),
     user: {
@@ -118,6 +139,9 @@ export function createAuth(env: AuthEnv) {
       cookiePrefix: 'meme',
     },
     trustedOrigins: resolveTrustedOrigins(env),
+    // The JWT plugin only signs MCP access tokens and serves /jwks; its own
+    // session-to-JWT /token endpoint is not used (as in the MCP plugin docs).
+    disabledPaths: ['/token'],
     plugins: [
       emailOTP({
         otpLength: 6,
@@ -126,10 +150,35 @@ export function createAuth(env: AuthEnv) {
           await sendOtpEmail(env, { email, otp });
         },
       }),
+      jwt({ disableSettingJwtHeader: true }),
+      // MCP authorization server (OAuth 2.1 + RFC 9728/8707) from @better-auth/mcp.
+      // Sign-in reuses the site's email-OTP login; the consent page lists the
+      // requested scopes. MCP clients register themselves (RFC 7591 DCR) because
+      // the Workers runtime has no DNS-pinning transport for CIMD documents.
+      mcp({
+        loginPage: '/login',
+        consentPage: '/oauth/consent',
+        resource: `${baseURL}${MCP_RESOURCE_PATH}`,
+        scopes: ['openid', 'profile', 'email', 'offline_access', MCP_SCOPES.read, MCP_SCOPES.write],
+        clientRegistrationDefaultScopes: ['openid', 'profile', 'offline_access', MCP_SCOPES.read],
+        clientRegistrationAllowedScopes: ['openid', 'profile', 'email', 'offline_access', MCP_SCOPES.read, MCP_SCOPES.write],
+        allowDynamicClientRegistration: true,
+        allowUnauthenticatedClientRegistration: true,
+        clientRegistrationDefaultApplicationType: 'infer',
+        // Access tokens are signed JWTs checked against JWKS without a database
+        // lookup; keep them short-lived so revocation takes effect quickly.
+        accessTokenExpiresIn: 15 * 60,
+        refreshTokenExpiresIn: 30 * 24 * 60 * 60,
+      }),
     ],
   });
 }
 
 export type Auth = ReturnType<typeof createAuth>;
+
+// Resource-server helpers for the MCP endpoint (apps/server), re-exported so the
+// Worker code uses the same Better Auth packages as the authorization server.
+export { requireMcpAuth } from '@better-auth/mcp';
+export { createInsufficientScopeError } from 'better-auth/oauth2';
 export type Session = Auth['$Infer']['Session'];
 export type AuthUserInfo = Session['user'] & { role?: string };

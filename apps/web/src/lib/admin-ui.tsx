@@ -1,48 +1,41 @@
-import { DataTable } from '@bunship-ai/data-table/components/data-table';
-import { DataTableProvider } from '@bunship-ai/data-table/components/data-table-provider';
-import { Skeleton } from '@bunship-ai/ui/components/skeleton';
+/**
+ * Page primitives shared by the admin routes. They render Sluice's console pieces
+ * (lib/sluice): PageHeader, the Stat tile, a hairline card, and the TableCard +
+ * DataTable + PageFooter list frame, so every admin page follows the same layout.
+ */
 import { cn } from '@bunship-ai/ui/lib/utils';
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-  type ColumnDef,
-} from '@tanstack/react-table';
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 
-/** Page scaffold: full width, consistent vertical rhythm. */
+import { type Column, DataTable } from './sluice/data-table';
+import { PageFooter, paginate } from './sluice/list-controls';
+import { PageHeader, Skeleton, TableCard } from './sluice/ui';
+
+/** Page scaffold; the shell's main element already stacks pages with a 24 px gap. */
 export function AdminPage({ children, className }: { children: ReactNode; className?: string }) {
   return <section className={cn('flex w-full min-w-0 flex-col gap-6', className)}>{children}</section>;
 }
 
 export function AdminPageHeader({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
-  return (
-    <header className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
-      <div className='flex min-w-0 flex-1 flex-col gap-1'>
-        <h1 className='min-w-0 truncate font-medium text-2xl leading-8 tracking-[-0.01em] max-sm:text-xl'>{title}</h1>
-        {description ? <p className='max-w-2xl text-pretty text-muted-foreground text-sm'>{description}</p> : null}
-      </div>
-      {action ? <div className='flex shrink-0 flex-wrap items-center gap-2 sm:pt-0.5'>{action}</div> : null}
-    </header>
-  );
+  return <PageHeader title={title} description={description} actions={action} />;
 }
 
 export function StatGrid({ children }: { children: ReactNode }) {
-  return <div className='grid grid-cols-2 gap-3 xl:grid-cols-4'>{children}</div>;
+  return <div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>{children}</div>;
 }
 
-/** Sluice stat tile: hairline box, quiet label, medium-weight tabular number. */
+/** sluice components/common.tsx Stat */
 export function StatCard({ title, value, hint, extra }: { title: string; value: ReactNode; hint?: string; extra?: ReactNode }) {
   return (
-    <div className='flex min-w-0 flex-col gap-1 rounded-xl border border-border bg-card p-4'>
-      <span className='text-muted-foreground text-[13px]'>{title}</span>
-      <strong className='truncate font-medium text-2xl tabular-nums tracking-tight'>{value}</strong>
-      {hint ? <span className='text-muted-foreground text-xs'>{hint}</span> : null}
+    <div className='flex min-w-0 flex-col gap-1 rounded-ui-xl border border-border-light bg-surface p-4'>
+      <span className='font-desc text-description type-sm'>{title}</span>
+      <span className='truncate font-medium text-title type-3xl tabular-nums'>{value}</span>
+      {hint ? <span className='font-desc text-description type-sm'>{hint}</span> : null}
       {extra}
     </div>
   );
 }
 
+/** A hairline card with Sluice's CardHeader (sluice ui/card.tsx) typography. */
 export function SectionCard({ title, description, action, children, className, bodyClassName }: {
   title?: string;
   description?: string;
@@ -52,24 +45,24 @@ export function SectionCard({ title, description, action, children, className, b
   bodyClassName?: string;
 }) {
   return (
-    <section className={cn('min-w-0 rounded-xl border border-border bg-card', className)}>
+    <section className={cn('min-w-0 rounded-ui-xl border border-border-light bg-surface', className)}>
       {title ? (
-        <header className='flex min-h-12 flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pt-4'>
-          <div className='grid min-w-0 gap-0.5'>
-            <h2 className='font-medium text-[15px] leading-[22px]'>{title}</h2>
-            {description ? <p className='text-muted-foreground text-[13px]'>{description}</p> : null}
+        <div className='flex min-h-12 flex-wrap items-start justify-between gap-x-3 gap-y-2 px-4 pt-3.5'>
+          <div className='min-w-0'>
+            <h2 className='font-medium text-title type-md'>{title}</h2>
+            {description ? <p className='mt-0.5 font-desc text-description type-sm'>{description}</p> : null}
           </div>
           {action ? <div className='flex shrink-0 flex-wrap items-center gap-1.5'>{action}</div> : null}
-        </header>
+        </div>
       ) : null}
-      <div className={cn('px-5 pt-3 pb-5', !title && 'pt-5', bodyClassName)}>{children}</div>
+      <div className={cn('px-4 pt-3 pb-4', !title && 'pt-4', bodyClassName)}>{children}</div>
     </section>
   );
 }
 
 export function ErrorText({ error, className }: { error: unknown; className?: string }) {
   const message = error instanceof Error ? error.message : String(error);
-  return <p role='alert' className={cn('text-destructive text-sm', className)}>{message}</p>;
+  return <p role='alert' className={cn('font-desc text-danger-fg type-base', className)}>{message}</p>;
 }
 
 export function AdminState({ state, error }: { state: 'loading' | 'error' | 'success'; error: string | null }) {
@@ -82,62 +75,52 @@ export function AdminState({ state, error }: { state: 'loading' | 'error' | 'suc
       </div>
     );
   }
-  if (state === 'error') return <p className='text-destructive text-sm'>{error}</p>;
+  if (state === 'error') return <p className='text-danger-fg type-base'>{error}</p>;
   return null;
 }
-
-export function AdminTable({ columns, rows }: { columns: string[]; rows: (string | number | null | undefined)[][] }) {
-  const tableColumns = columns.map((column, index): DataTableColumn<RowData> => ({
-    id: `${index}-${column}`,
-    header: column,
-    cell: (row) => row[index] ?? '-',
-  }));
-  const tableRows = rows.map((row, index) => ({ id: String(index), ...row }));
-  return <SimpleDataTable columns={tableColumns} data={tableRows} />;
-}
-
-type RowData = Record<number, string | number | null | undefined> & { id: string };
 
 export type DataTableColumn<TData> = {
   id: string;
   header: ReactNode;
   className?: string;
+  /** Kept for older call sites; Sluice's table sizes columns from content. */
   size?: number;
   minSize?: number;
   maxSize?: number;
+  hideOnMobile?: boolean;
   cell: (row: TData) => ReactNode;
 };
 
-export function SimpleDataTable<TData>({ columns, data, getRowId, pageSize = 10 }: {
+/**
+ * A client-paged list in Sluice's frame: TableCard, DataTable and PageFooter.
+ * `toolbar` sits in the card above the table (sluice ListToolbar placement).
+ */
+export function SimpleDataTable<TData>({ columns, data, getRowId, pageSize = 25, toolbar, onRowClick, caption, empty }: {
   columns: DataTableColumn<TData>[];
   data: TData[];
   getRowId?: (row: TData, index: number) => string;
   pageSize?: number;
+  toolbar?: ReactNode;
+  onRowClick?: (row: TData) => void;
+  caption?: string;
+  /** Shown instead of the table when `data` is empty. */
+  empty?: ReactNode;
 }) {
-  const tableColumns: ColumnDef<TData>[] = columns.map((column) => ({
-    id: column.id,
-    header: () => column.header,
-    cell: ({ row }) => column.cell(row.original),
-    size: column.size,
-    minSize: column.minSize,
-    maxSize: column.maxSize,
-    enableSorting: false,
-    enableHiding: false,
-  }));
-
-  const table = useReactTable({
-    data,
-    columns: tableColumns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getRowId: getRowId ? (row, index) => getRowId(row, index) : undefined,
-    initialState: { pagination: { pageIndex: 0, pageSize } },
-  });
-
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(pageSize);
+  const slice = paginate(data, page, size);
+  const ids = new Map(data.map((row, index) => [row, getRowId ? getRowId(row, index) : String(index)]));
+  const tableColumns: Column<TData>[] = columns.map((column) => ({ id: column.id, header: column.header, cell: column.cell, hideOnMobile: column.hideOnMobile, className: column.className }));
   return (
-    <DataTableProvider locale='zh'>
-      <DataTable table={table} showPagination={data.length > pageSize} />
-    </DataTableProvider>
+    <TableCard>
+      {toolbar ? <div className='border-border-light border-b p-2 sm:px-3'>{toolbar}</div> : null}
+      {data.length === 0 && empty ? empty : (
+        <>
+          <DataTable columns={tableColumns} data={slice.rows} getRowId={(row) => ids.get(row) ?? ''} onRowClick={onRowClick} caption={caption} />
+          <PageFooter slice={slice} onPage={setPage} onSize={(next) => { setSize(next); setPage(1); }} />
+        </>
+      )}
+    </TableCard>
   );
 }
 
@@ -152,3 +135,11 @@ export function countThisMonth<T extends { createdAt: string | null }>(rows: T[]
   const target = new Date().toISOString().slice(0, 7);
   return rows.filter((row) => row.createdAt?.slice(0, 7) === target).length;
 }
+
+export function AdminTable({ columns, rows }: { columns: string[]; rows: (string | number | null | undefined)[][] }) {
+  const tableColumns = columns.map((column, index): DataTableColumn<RowData> => ({ id: `${index}-${column}`, header: column, cell: (row) => row[index] ?? '-' }));
+  const tableRows = rows.map((row, index) => ({ id: String(index), ...row }));
+  return <SimpleDataTable columns={tableColumns} data={tableRows} getRowId={(row) => row.id} />;
+}
+
+type RowData = Record<number, string | number | null | undefined> & { id: string };

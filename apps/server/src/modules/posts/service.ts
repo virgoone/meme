@@ -109,6 +109,35 @@ function postListFilter(options?: { includeDrafts?: boolean; status?: 'all' | 'p
   return and(...conditions);
 }
 
+export type AdminPostPage = PostPage<PostListItem> & {
+  /** Totals for the status filter chips, under the current search. */
+  counts: { all: number; published: number; draft: number };
+};
+
+/** One page of the admin article list: search, status filter, offset paging. */
+export async function listAdminPostPage(
+  env: WorkerEnv,
+  options: { query?: string; status?: 'all' | 'published' | 'draft'; page?: unknown; size?: unknown },
+): Promise<AdminPostPage> {
+  const db = createDatabase(env.DB);
+  const size = [10, 25, 50, 100].includes(Number(options.size)) ? Number(options.size) : 25;
+  const status = options.status ?? 'all';
+  const [row] = await db
+    .select({
+      all: sql<number>`count(*)`,
+      published: sql<number>`sum(case when ${importedPosts.publishedAt} is not null then 1 else 0 end)`,
+    })
+    .from(importedPosts)
+    .where(postListFilter({ status: 'all', query: options.query }));
+  const counts = { all: Number(row?.all ?? 0), published: Number(row?.published ?? 0), draft: 0 };
+  counts.draft = counts.all - counts.published;
+  const total = status === 'all' ? counts.all : counts[status];
+  const totalPages = Math.max(1, Math.ceil(total / size));
+  const page = Math.min(normalizePage(options.page), totalPages);
+  const items = await listImportedPosts(env, { limit: size, offset: (page - 1) * size, status, query: options.query });
+  return { items, total, page, pageSize: size, totalPages, counts };
+}
+
 export async function listPublishedPostPage(env: WorkerEnv, requestedPage: unknown): Promise<PostPage<PostListItem>> {
   const db = createDatabase(env.DB);
   const [count] = await db.select({ total: sql<number>`count(*)` }).from(importedPosts).where(isNotNull(importedPosts.publishedAt));
@@ -165,14 +194,36 @@ export async function getImportedPostBySlug(
   };
 }
 
+export type UpdatePostOptions = {
+  /**
+   * Optimistic concurrency: the save happens only if the stored `updated_at` is
+   * still this value. The check runs inside the same batch transaction as the
+   * article and block writes, so a conflict changes nothing.
+   */
+  expectedUpdatedAt?: string | null;
+  /** Extra statements committed atomically with the save (e.g. an idempotency record). */
+  extraStatements?: (db: ReturnType<typeof createDatabase>, saved: { id: string; slug: string; updatedAt: string }) => BatchItem[];
+};
+
+type BatchItem = Parameters<ReturnType<typeof createDatabase>['batch']>[0][number];
+
+export class PostVersionConflictError extends AppError {
+  constructor(readonly currentUpdatedAt: string | null) {
+    super(`文章已在 ${currentUpdatedAt ?? '未知时间'} 被保存，请重新读取后再修改`, 409);
+  }
+}
+
 export async function updateImportedPostBySlug(
   env: WorkerEnv,
   slug: string,
   input: UpdatePostInput,
+  options: UpdatePostOptions = {},
 ): Promise<PostDetail | null> {
   validatePostInput(input);
   const existing = await getImportedPostBySlug(env, slug, { includeDrafts: true });
   if (!existing) return null;
+  const expected = options.expectedUpdatedAt;
+  if (expected !== undefined && expected !== existing.updatedAt) throw new PostVersionConflictError(existing.updatedAt);
 
   const db = createDatabase(env.DB);
   const slateBlocks = normalizeSlateBlocks(
@@ -197,6 +248,11 @@ export async function updateImportedPostBySlug(
       ? estimateReadingTime(slateBlocks)
       : input.readingTime;
 
+  // Strictly increasing per article, so two saves in the same millisecond still
+  // get distinct versions for optimistic concurrency.
+  const now = Date.now();
+  const previous = existing.updatedAt ? Date.parse(existing.updatedAt) : Number.NaN;
+  const updatedAt = new Date(Number.isFinite(previous) && previous >= now ? previous + 1 : now).toISOString();
   const update = db
     .update(importedPosts)
     .set({
@@ -213,12 +269,28 @@ export async function updateImportedPostBySlug(
           : input.publishedAt,
       slateJson: slateBlocks,
       portableTextJson: slateBlocks.map((block, index) => slateBlockToPortableText(block, getBlockId(block) ?? `block_${index}`)),
-      updatedAt: new Date().toISOString(),
+      updatedAt,
     })
     .where(eq(importedPosts.id, existing.id));
 
-  await db.batch([update, db.delete(postBlocks).where(eq(postBlocks.postId, existing.id)),
-    ...blockInserts(db, existing.id, slateBlocks)]);
+  // The read above is only a fast path. The guard below re-checks the version
+  // inside the batch transaction: when another save landed in between, it
+  // re-inserts the article's own primary key, the constraint error aborts the
+  // whole batch, and nothing (article, blocks, extra records) is written.
+  const guard = expected === undefined ? [] : [db.insert(importedPosts).select(
+    db.select().from(importedPosts).where(and(eq(importedPosts.id, existing.id), sql`${importedPosts.updatedAt} IS NOT ${expected}`)),
+  )];
+  try {
+    await db.batch([...guard, update, db.delete(postBlocks).where(eq(postBlocks.postId, existing.id)),
+      ...blockInserts(db, existing.id, slateBlocks),
+      ...(options.extraStatements?.(db, { id: existing.id, slug: nextSlug, updatedAt }) ?? [])] as [BatchItem, ...BatchItem[]]);
+  } catch (error) {
+    if (expected !== undefined && /constraint/i.test(String(error))) {
+      const [current] = await db.select({ updatedAt: importedPosts.updatedAt }).from(importedPosts).where(eq(importedPosts.id, existing.id)).limit(1);
+      if (current && current.updatedAt !== expected) throw new PostVersionConflictError(current.updatedAt);
+    }
+    throw error;
+  }
 
   return getImportedPostBySlug(env, nextSlug, { includeDrafts: true });
 }

@@ -6,7 +6,7 @@ import { listComments } from '../comments/service';
 import { listNewsletters, listSubscribers } from '../newsletter/service';
 import { getAllSettings, upsertSettings } from '../settings/service';
 import { clampLimit } from '../shared';
-import { getImportedPostBySlug, listImportedPosts } from '../posts/service';
+import { getImportedPostBySlug, listAdminPostPage, listImportedPosts } from '../posts/service';
 import { getAdminStats } from '../system/stats';
 import { AppError } from '../../middleware/errorHandler';
 
@@ -15,6 +15,16 @@ export const adminModule = new Elysia({ prefix: '/admin' })
   .get('/posts', ({ query, set }) => {
     set.headers['cache-control'] = 'private, no-store';
     return listImportedPosts(getCloudflareRuntimeEnv(), { limit: clampLimit(query.limit, 100), includeDrafts: true });
+  }, { admin: true })
+  .get('/post-list', ({ query, set }) => {
+    set.headers['cache-control'] = 'private, no-store';
+    const status = query.status === 'published' || query.status === 'draft' ? query.status : 'all';
+    return listAdminPostPage(getCloudflareRuntimeEnv(), {
+      query: typeof query.q === 'string' ? query.q.slice(0, 200) : undefined,
+      status,
+      page: query.page,
+      size: query.size,
+    });
   }, { admin: true })
   .get('/posts/:slug', async ({ params, set }) => {
     set.headers['cache-control'] = 'private, no-store';

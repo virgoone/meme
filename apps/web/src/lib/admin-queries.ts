@@ -130,6 +130,30 @@ export function useAdminBlogPosts() {
   });
 }
 
+export type AdminPostPage = {
+  items: BlogPost[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  counts: { all: number; published: number; draft: number };
+};
+
+/** Server-paged admin article list: search, publish-status filter, page and size. */
+export function useAdminPostPage(params: { q: string; status: string; page: number; size: number }) {
+  const search = new URLSearchParams();
+  if (params.q) search.set('q', params.q);
+  if (params.status) search.set('status', params.status);
+  search.set('page', String(params.page));
+  search.set('size', String(params.size));
+  return useQuery({
+    queryKey: ['admin', 'blog-posts', 'page', params],
+    queryFn: () => adminRequest<AdminPostPage>(`/api/admin/post-list?${search}`),
+    placeholderData: (previous) => previous,
+    staleTime: 30_000,
+  });
+}
+
 export function useAdminProjects() {
   return useQuery({
     queryKey: ['admin', 'projects'],
@@ -250,41 +274,6 @@ export function useGenerateCover() {
   return useMutation({
     mutationFn: (input: { prompt: string; aspectRatio: string; requestId: string }) =>
       adminRequest<GeneratedCover>('/api/admin/covers/generate', { method: 'POST', body: input }),
-  });
-}
-
-// ---- MCP access tokens ------------------------------------------------------------
-
-export type McpToken = {
-  id: string;
-  name: string;
-  prefix: string;
-  scopes: Array<'read' | 'write'>;
-  createdAt: string;
-  lastUsedAt: string | null;
-};
-
-export function useMcpTokens() {
-  return useQuery({
-    queryKey: ['admin', 'mcp-tokens'],
-    queryFn: () => adminRequest<McpToken[]>('/api/admin/mcp/tokens'),
-  });
-}
-
-export function useCreateMcpToken() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (input: { name: string; scopes: Array<'read' | 'write'> }) =>
-      adminRequest<{ token: string; record: McpToken }>('/api/admin/mcp/tokens', { method: 'POST', body: input }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['admin', 'mcp-tokens'] }),
-  });
-}
-
-export function useRevokeMcpToken() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => adminRequest<{ revoked: boolean }>(`/api/admin/mcp/tokens/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['admin', 'mcp-tokens'] }),
   });
 }
 

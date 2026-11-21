@@ -28,6 +28,7 @@ import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ConfirmTokenRouteImport } from './routes/confirm.$token'
 import { Route as NewslettersIdRouteImport } from './routes/newsletters.$id'
+import { Route as OauthConsentRouteImport } from './routes/oauth.consent'
 import { Route as AdminContentBlogRouteImport } from './routes/admin.content.blog'
 import { Route as AdminContentProjectRouteImport } from './routes/admin.content.project'
 import { Route as AdminNewslettersNewRouteImport } from './routes/admin.newsletters.new'
@@ -129,6 +130,11 @@ const NewslettersIdRoute = NewslettersIdRouteImport.update({
   path: '/newsletters/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OauthConsentRoute = OauthConsentRouteImport.update({
+  id: '/oauth/consent',
+  path: '/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminContentBlogRoute = AdminContentBlogRouteImport.update({
   id: '/content/blog',
   path: '/content/blog',
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/confirm/$token': typeof ConfirmTokenRoute
   '/newsletters/$id': typeof NewslettersIdRoute
+  '/oauth/consent': typeof OauthConsentRoute
   '/admin/content/blog': typeof AdminContentBlogRouteWithChildren
   '/admin/content/project': typeof AdminContentProjectRoute
   '/admin/newsletters/new': typeof AdminNewslettersNewRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/confirm/$token'
     | '/newsletters/$id'
+    | '/oauth/consent'
     | '/admin/content/blog'
     | '/admin/content/project'
     | '/admin/newsletters/new'
@@ -329,6 +341,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ConfirmTokenRoute: typeof ConfirmTokenRoute
   NewslettersIdRoute: typeof NewslettersIdRoute
+  OauthConsentRoute: typeof OauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -466,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewslettersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/oauth/consent': {
+      id: '/oauth/consent'
+      path: '/oauth/consent'
+      fullPath: '/oauth/consent'
+      preLoaderRoute: typeof OauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/content/blog': {
       id: '/admin/content/blog'
       path: '/content/blog'
@@ -574,6 +594,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ConfirmTokenRoute: ConfirmTokenRoute,
   NewslettersIdRoute: NewslettersIdRoute,
+  OauthConsentRoute: OauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

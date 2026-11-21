@@ -2,7 +2,8 @@ import { emailOtp, signIn } from '@meme/auth/client';
 import { useId, useState } from 'react';
 
 type AuthFormProps = {
-  onSuccess?: () => void;
+  /** Receives Better Auth's reply; during an OAuth (MCP) sign-in it carries `{ redirect, url }`. */
+  onSuccess?: (data: unknown) => void;
 };
 
 export function AuthForm({ onSuccess }: AuthFormProps) {
@@ -43,7 +44,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
       setError(result.error.message ?? '验证码错误或已过期。');
       return;
     }
-    onSuccess?.();
+    onSuccess?.(result.data);
   }
 
   const errorId = `${id}-error`;

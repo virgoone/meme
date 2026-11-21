@@ -20,7 +20,7 @@ bun run dev:web
 
 ## Admin MCP and AI covers
 
-The admin exposes an authorized MCP server at `/api/mcp` for listing, reading and editing articles and querying dashboard statistics, and generates article covers only through Sluice. Tokens are managed at `/admin/mcp`. Setup, tool semantics and the `SLUICE_*` settings: [docs/admin-mcp-and-covers.md](docs/admin-mcp-and-covers.md).
+The admin exposes an MCP server at `/api/mcp` for listing, reading and editing articles and querying dashboard statistics, authorized by Better Auth's MCP OAuth provider (site login + consent), and generates article covers only through Sluice. Connected clients are listed at `/admin/mcp`. Setup, tool semantics and the `SLUICE_*` settings: [docs/admin-mcp-and-covers.md](docs/admin-mcp-and-covers.md).
 
 ## Analytics
 

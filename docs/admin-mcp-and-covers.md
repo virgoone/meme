@@ -2,64 +2,49 @@
 
 ## MCP server
 
-The Worker serves a Model Context Protocol endpoint at `POST /api/mcp` (Streamable HTTP, stateless, JSON responses; protocol versions `2025-06-18`, `2025-03-26`, `2024-11-05`). `GET /api/mcp` returns 405 because the server never pushes messages.
+The Worker serves a Model Context Protocol endpoint at `POST /api/mcp` (Streamable HTTP, stateless, JSON responses). `GET` and `DELETE` return 405 because the server never pushes messages.
 
-### Authorization
+### Authorization: Better Auth MCP (OAuth 2.1)
 
-- Tokens are created under **Admin → MCP 接入** (`/admin/mcp`). A token is shown once; the server stores only its SHA-256 in the `settings` row `mcp:tokens`, which the general settings API never returns.
-- Clients send `Authorization: Bearer meme_mcp_…`. A missing, unknown or revoked token gets 401 with `WWW-Authenticate: Bearer`. Failed attempts are rate-limited per IP (30 per 5 minutes, KV).
-- Scopes: `read` (all query tools) and `write` (adds `update_post`). `tools/list` only lists what the token may call.
-- Browser requests from an origin outside `SITE_URL`/`TRUSTED_ORIGINS` get 403 (DNS-rebinding protection required by the MCP spec).
-- Revoking takes effect on the next request.
+Authorization is Better Auth's official MCP integration, `@better-auth/mcp` 1.7.27 (with `@better-auth/oauth-provider` and the `jwt` plugin, `better-auth` 1.7.27), configured in `packages/auth/src/server.ts`. There is no Meme-specific token, token table or token UI.
+
+- **Discovery.** An unauthenticated call gets `401` with `WWW-Authenticate: Bearer resource_metadata="{origin}/.well-known/oauth-protected-resource/api/mcp", scope="meme:read"`. That RFC 9728 document names the authorization server `{origin}/api/auth`, whose RFC 8414 metadata is at `{origin}/.well-known/oauth-authorization-server/api/auth` (both root `/.well-known/*` paths are routed to Better Auth by the Worker).
+- **Registration.** MCP clients register with RFC 7591 dynamic client registration (`allowDynamicClientRegistration` + `allowUnauthenticatedClientRegistration`), because the Workers runtime has no DNS-pinning transport for CIMD documents. Registering alone grants nothing: tokens still require the steps below. Allowed client scopes are limited to `openid profile email offline_access meme:read meme:write`; the default is read-only.
+- **Sign-in and consent.** `/oauth2/authorize` (PKCE S256) sends the browser to `/login` with a signed query; the existing email-OTP sign-in carries it (`oauthProviderClient`) and Better Auth resumes the authorization. The consent page `/oauth/consent` lists the requested scopes and posts the decision to `/oauth2/consent`, which records it in `ba_oauth_consent`.
+- **Tokens.** Access tokens are JWTs (signed with the `jwt` plugin's key in `ba_jwks`), audience-bound to `{origin}/api/mcp`, valid 15 minutes. With `offline_access` a refresh token (30 days, rotated; Better Auth's MCP default replay window of 30 s for lost responses) is stored in `ba_oauth_refresh_token`.
+- **Resource checks.** `requireMcpAuth` verifies signature (in-process JWKS), issuer, audience, expiry and `azp`, and requires `meme:read`. Meme then maps the token to a person on every call: `sub` must still be a user with `role = admin`, and a consent for that (user, client) must still exist. `update_post` needs `meme:write`; without it the call is answered `403` with an RFC 6750 `insufficient_scope` challenge naming the scope (step-up).
+- **Revocation semantics.** Disconnecting a client in **Admin → MCP 接入** deletes its consent through Better Auth's `/oauth2/delete-consent`: Meme refuses its next call immediately even though the JWT itself has not expired. `/oauth2/revoke` (RFC 7009) revokes refresh tokens, so the client cannot renew; an already issued access JWT is not stored and stays cryptographically valid until it expires (at most 15 minutes) unless the consent is also deleted. Demoting the user from admin also takes effect on the next call.
+- **Schema.** `packages/db/drizzle/0007_mcp_oauth.sql` adds the provider tables (`ba_jwks`, `ba_oauth_client`, `ba_oauth_resource`, `ba_oauth_client_resource`, `ba_oauth_refresh_token`, `ba_oauth_access_token`, `ba_oauth_consent`, `ba_oauth_client_assertion`), generated from Better Auth's `getAuthTables()`. It must be applied before deploying; this PR does not run it in production.
 
 ### Tools
 
 | Tool | Scope | What it does |
 | --- | --- | --- |
-| `list_posts` | read | Articles newest first, drafts included; `status`, `query`, `limit`, `offset`; views per article |
-| `get_post` | read | Metadata, full text as Markdown, and every block with its `blockId`, type, text and attributes; `includeSlate` adds each block's exact Slate JSON |
-| `update_post` | write | Edits through `updateImportedPostBySlug`, the same service as the admin editor |
-| `get_site_stats` | read | The dashboard numbers (`getAdminStats`); `includeDaily` adds the series |
-| `get_post_stats` | read | Total / 7-day / N-day views with a daily series, reaction counts (KV) and comment count |
-| `list_comments`, `list_subscribers`, `list_newsletters`, `list_projects` | read | Existing admin list services |
+| `list_posts` | `meme:read` | Articles newest first, drafts included; `status`, `query`, `limit`, `offset`; views per article |
+| `get_post` | `meme:read` | Metadata, full text as Markdown, and every block with its `blockId`, type, text and attributes; `includeSlate` adds each block's exact Slate JSON |
+| `update_post` | `meme:write` | Edits through `updateImportedPostBySlug`, the same service as the admin editor |
+| `get_site_stats` | `meme:read` | The dashboard numbers (`getAdminStats`); `includeDaily` adds the series |
+| `get_post_stats` | `meme:read` | Total / 7-day / N-day views with a daily series, reaction counts (KV) and comment count |
+| `list_comments`, `list_subscribers`, `list_newsletters`, `list_projects` | `meme:read` | Existing admin list services |
 
-### Edit semantics
+### Edit semantics and client contract
 
 `update_post` changes only the fields it is given:
 
 - `publishedAt` absent keeps the publish state; an ISO time publishes, `null` turns the article into a draft. `readingTime` absent keeps the stored value.
-- Body edits are operations on block IDs from `get_post`, applied in order: `set_text` (plain text blocks; a single-leaf block keeps its marks; blocks with links or nested nodes are refused), `set_attributes` (merge, `null` deletes, e.g. image `width`/`align`/`url`), `replace_block` (keeps the block ID), `insert_after` (new ID unless one is given), `delete_block`.
-- The body is rebuilt with `postToEditorBlocks` (now in `@meme/editor`, shared with the admin editor). Blocks authored in Slate are written back exactly as stored, so untouched rich text, links, image size/alignment and comment anchors (block IDs) do not change. Imported Portable Text blocks are converted the same way the editor converts them when opened.
-- `expectedUpdatedAt` (from `get_post`) refuses the edit when the article was saved in the meantime.
+- Body edits are operations on block IDs from `get_post`, applied in order: `set_text` (plain text blocks; a single-leaf block keeps its marks; blocks with links or nested nodes are refused), `set_attributes` (merge, `null` deletes, e.g. image `width`/`align`/`url`), `replace_block` (keeps the block ID), `insert_after`, `delete_block`.
+- The body is rebuilt with `postToEditorBlocks` (shared with the admin editor). Blocks authored in Slate are written back exactly as stored; rows whose Slate JSON lacks an internal ID inherit their persisted `block_id`, so comment anchors survive any edit.
+- **Concurrency.** Pass `expectedUpdatedAt` from `get_post`. The check is repeated inside the same batch transaction as the article, block and replay-record writes (a guard statement re-inserts the article's primary key when the stored version differs, which aborts the whole batch), so a conflict changes nothing. Versions are strictly increasing per article.
+- **Retries.** Pass a new `requestId` (8–64 chars) per intended edit and reuse it only to retry that edit. The result is recorded in the same transaction as the edit (`settings` row `mcp:op:{user}:{client}:{requestId}`). A retry after a lost response returns the original result with `replayed: true` instead of applying again; reusing a `requestId` for different arguments is refused. Inserted blocks get IDs derived from the `requestId`. Without a `requestId`, a client that lost a response should `get_post` and compare `updatedAt` before retrying; with only `expectedUpdatedAt`, a blind retry is rejected as a conflict and changes nothing.
 
 ### Connecting
 
 ```sh
-claude mcp add --transport http meme-blog https://blog.douni.one/api/mcp \
-  --header "Authorization: Bearer $MEME_MCP_TOKEN"
+claude mcp add --transport http meme-blog https://blog.douni.one/api/mcp
+# then /mcp in Claude Code and authenticate meme-blog in the browser
 ```
 
-Clients without remote HTTP support can use `mcp-remote`:
-
-```json
-{
-  "mcpServers": {
-    "meme-blog": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://blog.douni.one/api/mcp", "--header", "Authorization:Bearer ${MEME_MCP_TOKEN}"],
-      "env": { "MEME_MCP_TOKEN": "meme_mcp_…" }
-    }
-  }
-}
-```
-
-Smoke test:
-
-```sh
-curl -s https://blog.douni.one/api/mcp \
-  -H "Authorization: Bearer $MEME_MCP_TOKEN" -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_site_stats","arguments":{}}}'
-```
+Clients with remote MCP support use `{ "url": "https://blog.douni.one/api/mcp" }`; others can bridge with `npx -y mcp-remote https://blog.douni.one/api/mcp`.
 
 ## Covers generated through Sluice
 

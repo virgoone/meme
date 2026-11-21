@@ -174,3 +174,23 @@ describe('post creation and persistence', () => {
     });
   }
 });
+
+describe('admin post list page', () => {
+  test('searches, filters by status, counts and pages server-side', async () => {
+    for (let i = 1; i <= 12; i++) {
+      await request('/posts', 'POST', { title: `Cloudflare note ${i}`, slug: `cf-${i}`, ...(i % 3 === 0 ? {} : { publishedAt: `2026-10-${String(i).padStart(2, '0')}T00:00:00Z` }) });
+    }
+    await request('/posts', 'POST', { title: 'Other topic', slug: 'other', publishedAt: '2026-09-01T00:00:00Z' });
+    const all = await (await request('/admin/post-list?q=cloudflare&size=10')).json();
+    expect(all).toMatchObject({ total: 12, page: 1, pageSize: 10, totalPages: 2, counts: { all: 12, published: 8, draft: 4 } });
+    expect(all.items).toHaveLength(10);
+    const second = await (await request('/admin/post-list?q=cloudflare&size=10&page=2')).json();
+    expect(second.items).toHaveLength(2);
+    const drafts = await (await request('/admin/post-list?status=draft')).json();
+    expect(drafts.items.map((post: { slug: string }) => post.slug).sort()).toEqual(['cf-12', 'cf-3', 'cf-6', 'cf-9']);
+    expect((await (await request('/admin/post-list?q=50%25_off')).json()).total).toBe(0);
+    expect((await (await request('/admin/post-list?page=99')).json()).page).toBe(1);
+    role = 'user';
+    expect((await request('/admin/post-list')).status).toBe(403);
+  });
+});

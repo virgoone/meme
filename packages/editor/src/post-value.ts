@@ -1,4 +1,4 @@
-import { type EditorBlockNode, withStableBlockIds } from './block-id';
+import { type EditorBlockNode, getBlockId, withStableBlockIds } from './block-id';
 import { type LegacyListFormat, legacyCode, legacyListFormats } from './legacy-post-format';
 
 type Node = { [key: string]: unknown; type?: string; children?: Array<Record<string, unknown>> };
@@ -57,9 +57,15 @@ export function postToEditorBlocks(post: StoredPostValue, options?: { attachPort
   const fromBlocks = (post.blocks ?? []).flatMap((block, index) => {
     if (!block.slateJson || typeof block.slateJson !== 'object') return [];
     const original = (block.portableTextJson ?? {}) as PortableBlock;
-    const node = attach === 'legacy' && original._type === 'slate'
+    let node: Node = attach === 'legacy' && original._type === 'slate'
       ? (block.slateJson as Node)
       : { ...(block.slateJson as Node), portableTextJson: block.portableTextJson };
+    // Older rows keep their identity only in the persisted block_id column. Carry it
+    // onto the node so a save does not mint a content-derived ID and orphan the
+    // comment anchors that point at the stored one.
+    if (!getBlockId(node as EditorBlockNode) && block.blockId) {
+      node = { ...node, id: block.blockId, blockId: block.blockId, blockID: block.blockId };
+    }
     return [restoreLegacyFormatting(node, original, listFormats[index])];
   });
   const value = fromBlocks.length ? fromBlocks : Array.isArray(post.slateJson) ? post.slateJson : [];
