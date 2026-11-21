@@ -11,6 +11,7 @@ mock.module('../../auth', () => ({
   getAuth: () => ({ api: { getSession: async () => role ? { user: { id: 'owner', role }, session: {} } : null } }),
 }));
 const { handleMcpHttp, handleMcpRequest, resolvePrincipal } = await import('./index');
+type McpPrincipal = import('./index').McpPrincipal;
 const { postsModule } = await import('../posts');
 const { adminModule } = await import('../admin');
 const app = new Elysia({ aot: false }).use(errorHandler).use(postsModule).use(adminModule);
@@ -105,8 +106,8 @@ describe('MCP authorization', () => {
     const now = Date.now();
     sqlite.prepare("INSERT INTO ba_user (id, name, email, email_verified, role, created_at, updated_at) VALUES ('owner', 'Owner', 'owner@example.com', 1, 'admin', ?, ?)").run(now, now);
     sqlite.prepare("INSERT INTO ba_oauth_client (id, client_id, name, redirect_uris, created_at, updated_at) VALUES ('c1', 'client', 'Claude', ?, ?, ?)").run(JSON.stringify(['http://127.0.0.1:33418/callback']), now, now);
-    sqlite.prepare("INSERT INTO ba_oauth_consent (id, client_id, user_id, scopes, created_at, updated_at) VALUES ('k1', 'client', 'owner', 'meme:read', ?, ?)").run(now, now);
-    const claims = { sub: 'owner', azp: 'client', scope: 'openid meme:read' };
+    sqlite.prepare("INSERT INTO ba_oauth_consent (id, client_id, user_id, scopes, created_at, updated_at) VALUES ('k1', 'client', 'owner', ?, ?, ?)").run(JSON.stringify(['openid', 'meme:read']), now, now);
+    const claims = { sub: 'owner', azp: 'client', scope: 'openid meme:read', aud: 'https://blog.example/api/mcp' };
     const principal = await resolvePrincipal(env, claims);
     expect(principal).toMatchObject({ userId: 'owner', clientId: 'client' });
     expect([...(principal as { scopes: Set<string> }).scopes]).toEqual(['openid', 'meme:read']);
@@ -119,6 +120,54 @@ describe('MCP authorization', () => {
     sqlite.prepare("DELETE FROM ba_oauth_consent WHERE id = 'k1'").run();
     expect(((await resolvePrincipal(env, claims)) as Response).status).toBe(401);
     expect(((await resolvePrincipal(env, { ...claims, sub: 'ghost' })) as Response).status).toBe(401);
+  });
+
+  test('effective scopes are the token scopes the current consent still grants for this resource', async () => {
+    const now = Date.now();
+    const resource = 'https://blog.example/api/mcp';
+    sqlite.prepare("INSERT INTO ba_user (id, name, email, email_verified, role, created_at, updated_at) VALUES ('owner', 'Owner', 'owner@example.com', 1, 'admin', ?, ?)").run(now, now);
+    sqlite.prepare("INSERT INTO ba_oauth_client (id, client_id, name, redirect_uris, created_at, updated_at) VALUES ('c1', 'client', 'Claude', ?, ?, ?)").run(JSON.stringify(['http://127.0.0.1:33418/callback']), now, now);
+    const grant = (id: string, scopes: string[], resources: string[] | null) =>
+      sqlite.prepare("INSERT INTO ba_oauth_consent (id, client_id, user_id, scopes, resources, created_at, updated_at) VALUES (?, 'client', 'owner', ?, ?, ?, ?)")
+        .run(id, JSON.stringify(scopes), resources ? JSON.stringify(resources) : null, now, now);
+
+    // 1. Read-write authorization: the token keeps write.
+    grant('rw', ['openid', 'offline_access', 'meme:read', 'meme:write'], [resource]);
+    const writeToken = { sub: 'owner', azp: 'client', aud: resource, scope: 'openid offline_access meme:read meme:write' };
+    expect([...((await resolvePrincipal(env, writeToken)) as { scopes: Set<string> }).scopes]).toContain('meme:write');
+
+    // 2. Disconnect, then authorize again read-only. The earlier JWT is still
+    //    unexpired and still says meme:write, but write must not come back.
+    sqlite.prepare("DELETE FROM ba_oauth_consent WHERE id = 'rw'").run();
+    expect(((await resolvePrincipal(env, writeToken)) as Response).status).toBe(401);
+    grant('ro', ['openid', 'meme:read'], [resource]);
+    const reduced = (await resolvePrincipal(env, writeToken)) as { scopes: Set<string> };
+    expect([...reduced.scopes].sort()).toEqual(['meme:read', 'openid']);
+    const tools = (await (await handleMcpRequest(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }), env, reduced as McpPrincipal)).json()).result.tools.map((tool: { name: string }) => tool.name);
+    expect(tools).not.toContain('update_post');
+    await seedPost();
+    const write = await handleMcpRequest(JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'update_post', arguments: { slug: 'mcp-fixture', title: 'Restored write?' } } }), env, reduced as McpPrincipal).catch((error) => error);
+    expect((write as { statusCode?: number }).statusCode).toBe(403);
+    expect((await (await http('/admin/posts/mcp-fixture')).json()).title).toBe('MCP fixture');
+
+    // 3. A token is never widened by the consent: a read-only token stays read-only
+    //    even when the owner later grants write.
+    sqlite.prepare("UPDATE ba_oauth_consent SET scopes = ? WHERE id = 'ro'").run(JSON.stringify(['openid', 'meme:read', 'meme:write']));
+    const readToken = { sub: 'owner', azp: 'client', aud: resource, scope: 'meme:read' };
+    expect([...((await resolvePrincipal(env, readToken)) as { scopes: Set<string> }).scopes]).toEqual(['meme:read']);
+
+    // 4. Resource binding: a consent for another resource, or a token for another
+    //    audience, does not authorize this endpoint.
+    sqlite.prepare("UPDATE ba_oauth_consent SET resources = ? WHERE id = 'ro'").run(JSON.stringify(['https://other.example/mcp']));
+    expect(((await resolvePrincipal(env, readToken)) as Response).status).toBe(401);
+    sqlite.prepare("UPDATE ba_oauth_consent SET resources = ? WHERE id = 'ro'").run(JSON.stringify([resource]));
+    expect(((await resolvePrincipal(env, { ...readToken, aud: 'https://other.example/mcp' })) as Response).status).toBe(401);
+
+    // 5. A consent that no longer grants meme:read answers with an insufficient_scope challenge.
+    sqlite.prepare("UPDATE ba_oauth_consent SET scopes = ? WHERE id = 'ro'").run(JSON.stringify(['openid']));
+    const noRead = (await resolvePrincipal(env, readToken)) as Response;
+    expect(noRead.status).toBe(403);
+    expect(noRead.headers.get('www-authenticate')).toContain('insufficient_scope');
   });
 
   test('meme:read lists and runs queries only; edits need meme:write (403 insufficient_scope)', async () => {

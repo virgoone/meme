@@ -70,7 +70,8 @@
       "scripts/**/*.cjs",
       "!apps/**/dist/**/*",
       "!apps/web/src/routeTree.gen.ts",
-      "!**/*.d.ts"
+      "!**/*.d.ts",
+      "!apps/web/public/editor-widget"
     ]
   },
   "formatter": {

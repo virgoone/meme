@@ -62,19 +62,63 @@ export async function handleMcpHttp(request: Request, env: WorkerEnv, bodyText?:
   return protectedHandler(replay);
 }
 
+/** Better Auth stores string arrays as JSON text on SQLite; accept that or a space/comma list. */
+function parseList(value: unknown): string[] {
+  if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string');
+  if (typeof value !== 'string' || !value.trim()) return [];
+  const text = value.trim();
+  if (text.startsWith('[')) {
+    try { return parseList(JSON.parse(text)); } catch { return []; }
+  }
+  return text.split(/[\s,]+/).filter(Boolean);
+}
+
+/**
+ * Turns verified token claims into the caller's effective permissions. The
+ * token alone is not enough: its scopes are intersected with what the owner has
+ * currently granted this client for this resource (Better Auth's consent rows).
+ * So after a disconnect and a new read-only authorization, an older still-valid
+ * token that carried meme:write is reduced to read access, and a token whose
+ * audience or consent does not cover this MCP resource is refused.
+ */
 export async function resolvePrincipal(env: WorkerEnv, claims: Record<string, unknown>): Promise<McpPrincipal | Response> {
+  const resource = mcpResource(env);
   const userId = typeof claims.sub === 'string' ? claims.sub : '';
   const clientId = typeof claims.azp === 'string' ? claims.azp : typeof claims.client_id === 'string' ? claims.client_id : '';
-  const scopes = new Set(typeof claims.scope === 'string' ? claims.scope.split(' ').filter(Boolean) : []);
+  const tokenScopes = new Set(parseList(claims.scope));
+  const audiences = parseList(claims.aud);
+  const deny = (status: number, message: string, challenge?: string) => Response.json(rpcError(null, -32001, message), {
+    status,
+    headers: { 'cache-control': 'no-store', ...(challenge ? { 'www-authenticate': challenge, 'access-control-expose-headers': 'WWW-Authenticate' } : {}) },
+  });
+  if (!userId || !clientId) return deny(401, 'Unauthorized: the token has no subject or client');
+  if (audiences.length && !audiences.includes(resource)) return deny(401, 'Unauthorized: the token was not issued for this MCP resource');
+
   const rows = await env.DB.prepare(`
-    SELECT u.role AS role,
-      (SELECT count(*) FROM ba_oauth_consent c WHERE c.user_id = u.id AND c.client_id = ?) AS consents
-    FROM ba_user u WHERE u.id = ?`).bind(clientId, userId).all<{ role: string | null; consents: number }>();
-  const row = rows.results[0];
-  const deny = (status: number, message: string) => Response.json(rpcError(null, -32001, message), { status, headers: { 'cache-control': 'no-store' } });
-  if (!row || !clientId) return deny(401, 'Unauthorized: the account behind this token no longer exists');
-  if (row.role !== 'admin') return deny(403, 'Forbidden: MCP access requires a Meme admin account');
-  if (Number(row.consents) === 0) return deny(401, 'Unauthorized: this client was disconnected; authorize again');
+    SELECT u.role AS role, c.id AS consent_id, c.scopes AS scopes, c.resources AS resources
+    FROM ba_user u LEFT JOIN ba_oauth_consent c ON c.user_id = u.id AND c.client_id = ?
+    WHERE u.id = ?`).bind(clientId, userId).all<{ role: string | null; consent_id: string | null; scopes: unknown; resources: unknown }>();
+  const user = rows.results[0];
+  if (!user) return deny(401, 'Unauthorized: the account behind this token no longer exists');
+  if (user.role !== 'admin') return deny(403, 'Forbidden: MCP access requires a Meme admin account');
+
+  // A consent applies when it names this resource, or names none (granted before
+  // resources were recorded).
+  const granted = new Set<string>();
+  let applicable = 0;
+  for (const row of rows.results) {
+    if (!row.consent_id) continue;
+    const resources = parseList(row.resources);
+    if (resources.length && !resources.includes(resource)) continue;
+    applicable += 1;
+    for (const scope of parseList(row.scopes)) granted.add(scope);
+  }
+  if (applicable === 0) return deny(401, 'Unauthorized: this client was disconnected; authorize again');
+
+  const scopes = new Set([...tokenScopes].filter((scope) => granted.has(scope)));
+  if (!scopes.has(MCP_SCOPES.read)) {
+    return deny(403, 'Forbidden: the current authorization does not include meme:read', `Bearer error="insufficient_scope", scope="${MCP_SCOPES.read}"`);
+  }
   return { userId, clientId, scopes };
 }
 

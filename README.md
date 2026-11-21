@@ -22,6 +22,10 @@ bun run dev:web
 
 The admin exposes an MCP server at `/api/mcp` for listing, reading and editing articles and querying dashboard statistics, authorized by Better Auth's MCP OAuth provider (site login + consent), and generates article covers only through Sluice. Connected clients are listed at `/admin/mcp`. Setup, tool semantics and the `SLUICE_*` settings: [docs/admin-mcp-and-covers.md](docs/admin-mcp-and-covers.md).
 
+## Editor widget
+
+The admin rich-text editor is the pinned build of [`virgoone/editor-widget`](https://github.com/virgoone/editor-widget) recorded in `apps/web/editor-widget.lock.json` (commit and a digest of its `dist/` files). `bun run build:web` and `bun run dev:web` run `apps/web/scripts/fetch-editor-widget.ts` first, which copies that build into `apps/web/public/editor-widget/<commit>/` (git-ignored, verified against the digest, reused when already in place), so the site serves the widget and all its chunks from its own origin. To move to another widget commit, edit `commit` and run `bun --cwd apps/web editor-widget:update-lock`. `VITE_EDITOR_WIDGET_URL` still overrides the URL. Inside the widget, Excalidraw blocks fall back to esm.sh for their hand-drawn fonts and PlantUML previews render on plantuml.com; editing itself needs neither.
+
 ## Analytics
 
 Evumi uses `@evumi/tracker@0.1.15` with the TanStack Router adapter mounted once in the root layout. Public visits on `https://blog.douni.one` are sent to `https://evumi.bunship.site/api/event` in cookieless mode. Local development and preview origins do not send events. Existing GA4 and the site's own view counters remain independent.
