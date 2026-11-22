@@ -98,19 +98,3 @@ body[data-bunship-editor] [data-radix-popper-content-wrapper] {
 .admin-editor-host .bwe-widget-root { background: var(--surface); color: var(--text-body); }
 .admin-editor-host .bwe-widget-root ::selection { background: var(--fill-strong); }
 .admin-editor-host .bwe-widget-root [data-slate-editor='true'] { font-family: var(--font-heading-ui); color: var(--text-body); caret-color: var(--text-title); }
-
-/* The title field above the editor. */
-.admin-post-title {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  border-bottom: 1px solid var(--border-light);
-  background: transparent;
-  padding: 6px 0 10px;
-  color: var(--text-title);
-  font: 500 1.5rem/2rem var(--font-heading-ui);
-  letter-spacing: -0.01em;
-  outline: none;
-}
-.admin-post-title::placeholder { color: var(--text-helper); }
-.admin-post-title:focus-visible { border-bottom-color: var(--focus); box-shadow: none; }

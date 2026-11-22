@@ -8,7 +8,9 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useAdminPost, type PostDetail } from '../lib/admin-queries';
 import { ErrorText } from '../lib/admin-ui';
-import { Badge, Button, Field, Input, NativeSelect, Skeleton, Textarea } from '../lib/sluice/ui';
+import { Badge, Button, Field, Input, Textarea, Skeleton } from '../lib/sluice/ui';
+import { PublishDatePicker } from '../lib/sluice/publish-date-picker';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@bunship-ai/ui/components/select';
 import { CoverGenerator } from '../lib/cover-generator';
 import { MainImageUploader } from '../lib/main-image-uploader';
 import { postToEditorValue } from '../lib/post-editor-value';
@@ -129,26 +131,6 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
 
       <div className='grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_336px]'>
         <div className='flex min-w-0 flex-col gap-4'>
-          <label htmlFor='post-title' className='sr-only'>标题</label>
-          <input
-            id='post-title'
-            value={title}
-            placeholder='文章标题'
-            className='admin-post-title'
-            onChange={(event) => {
-              setTitle(event.target.value);
-              if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
-            }}
-          />
-          <div className='grid items-start gap-4 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)]'>
-            <Field label='Slug' htmlFor='post-slug' hint={<span className='break-all'>公开地址：/{nextSlug || '…'}</span>}>
-              <Input id='post-slug' inputSize='md' value={nextSlug} className='font-code type-sm' placeholder='url-friendly-slug' onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }} />
-            </Field>
-            <Field label='摘要' htmlFor='post-description' hint='用于列表、RSS 和分享卡片。'>
-              <Textarea id='post-description' value={description} rows={2} className='min-h-9 py-2' placeholder='一两句话说明这篇文章讲什么' onChange={(event) => setDescription(event.target.value)} />
-            </Field>
-          </div>
-
           <section aria-label='正文' className='min-w-0 overflow-hidden rounded-ui-xl border border-border-light bg-surface'>
             {isNew || contentReadySlug === post.data?.slug ? (
               <RemoteEditorWidget value={content} onChange={setContent} className='admin-editor-host' minHeight={640} />
@@ -166,9 +148,30 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
         </div>
 
         <aside className='min-w-0 divide-y divide-border-light rounded-ui-xl border border-border-light bg-surface' aria-label='文章设置'>
+          <SidePanel title='文章信息'>
+            <Field label='标题' htmlFor='post-title'>
+              <Input
+                id='post-title'
+                value={title}
+                placeholder='文章标题'
+                inputSize='md'
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                  if (isNew && !slugEdited) setNextSlug(createPostSlug(event.target.value));
+                }}
+              />
+            </Field>
+            <Field label='摘要' htmlFor='post-description'>
+              <Textarea id='post-description' rows={3} className='resize-y' value={description} placeholder='简要描述文章内容' onChange={(event) => setDescription(event.target.value)} />
+            </Field>
+            <Field label='Slug' htmlFor='post-slug'>
+              <Input id='post-slug' inputSize='md' value={nextSlug} className='font-code' placeholder='url-friendly-slug' onChange={(event) => { setNextSlug(event.target.value); setSlugEdited(true); }} />
+            </Field>
+          </SidePanel>
+
           <SidePanel title='发布' action={publishedAt ? <Badge tone='ok'>已发布</Badge> : <Badge>草稿</Badge>}>
             <Field label='发布时间' htmlFor='post-published-at' hint='留空保存为草稿，前台不会展示。'>
-              <Input id='post-published-at' type='datetime-local' value={publishedAt} onChange={(event) => setPublishedAt(event.target.value)} />
+              <PublishDatePicker id='post-published-at' value={publishedAt} onChange={setPublishedAt} />
             </Field>
             <Button variant='primary' className='w-full' loading={saving} onClick={() => saveMutation.mutate()}>
               {saving ? '保存中…' : publishedAt ? '保存并发布' : '保存草稿'}
@@ -186,11 +189,14 @@ export function AdminBlogEditorPage({ slug }: { slug?: string }) {
 
           <SidePanel title='元信息'>
             <Field label='心情' htmlFor='post-mood'>
-              <NativeSelect id='post-mood' value={mood} onChange={(event) => setMood(event.target.value as Mood)}>
-                <option value='neutral'>日常</option>
-                <option value='happy'>开心</option>
-                <option value='sad'>低落</option>
-              </NativeSelect>
+              <Select value={mood} onValueChange={(value) => setMood(value as Mood)}>
+                <SelectTrigger id='post-mood' className='w-full'><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='neutral'>日常</SelectItem>
+                  <SelectItem value='happy'>开心</SelectItem>
+                  <SelectItem value='sad'>低落</SelectItem>
+                </SelectContent>
+              </Select>
             </Field>
             <Field label='阅读时长（分钟）' htmlFor='post-reading-time'>
               <Input id='post-reading-time' inputMode='numeric' value={readingTime} onChange={(event) => setReadingTime(event.target.value)} />

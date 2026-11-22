@@ -29,7 +29,7 @@ export function CoverGenerator({ title, description, currentCover, onAdopt }: {
 }) {
   const config = useCoverConfig();
   const generate = useGenerateCover();
-  const [prompt, setPrompt] = useState('');
+  const [customPrompt, setCustomPrompt] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<string | null>(null);
   const [candidate, setCandidate] = useState<GeneratedCover | null>(null);
   const [adoptedUrl, setAdoptedUrl] = useState<string | null>(null);
@@ -49,9 +49,13 @@ export function CoverGenerator({ title, description, currentCover, onAdopt }: {
 
   const ratio = aspectRatio ?? config.data.defaultAspectRatio;
   const suggestion = [title.trim(), description.trim()].filter(Boolean).join('。');
+  const articlePrompt = suggestion
+    ? `根据以下文章信息创作一张贴合主题的博客封面，以视觉意象表达核心内容，构图清晰，不添加文字或水印。\n标题：${title.trim()}\n摘要：${description.trim()}`.slice(0, 4000)
+    : '';
+  const prompt = customPrompt ?? articlePrompt;
   const run = () => {
     const text = prompt.trim();
-    if (!text) return;
+    if (!text || generate.isPending) return;
     generate.mutate({ prompt: text, aspectRatio: ratio, requestId: newRequestId() }, {
       onSuccess: (cover) => { setCandidate(cover); setAdoptedUrl(null); },
     });
@@ -63,22 +67,24 @@ export function CoverGenerator({ title, description, currentCover, onAdopt }: {
       <div className='grid gap-1.5'>
         <div className='flex items-center justify-between gap-2'>
           <Label htmlFor='cover-prompt' className='text-muted-foreground text-xs'>画面描述</Label>
-          {suggestion && !prompt ? (
-            <button type='button' className='text-muted-foreground text-xs underline-offset-2 hover:text-foreground hover:underline' onClick={() => setPrompt(`为文章《${title.trim() || '未命名'}》绘制封面：${description.trim() || title.trim()}`)}>
-              用标题和摘要填入
-            </button>
+          {suggestion && customPrompt !== null ? (
+            <Button type='button' variant='ghost' size='sm' onClick={() => setCustomPrompt(null)}>
+              恢复自动描述
+            </Button>
           ) : null}
         </div>
         <Textarea
           id='cover-prompt'
+          aria-describedby='cover-prompt-hint'
           value={prompt}
           rows={3}
           maxLength={4000}
-          placeholder='例如：清晨的海边小屋，薄雾，极简扁平插画，留白充足'
-          onChange={(event) => setPrompt(event.target.value)}
+          placeholder='填写文章标题或摘要即可自动生成描述，也可以在这里自定义画面'
+          onChange={(event) => setCustomPrompt(event.target.value)}
           onKeyDown={(event) => { if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') run(); }}
         />
       </div>
+      <p id='cover-prompt-hint' className='text-muted-foreground text-xs'>{customPrompt === null ? '描述随当前标题和摘要更新，无需先保存文章；也可直接修改画面描述。' : '当前使用自定义描述；恢复后将重新跟随文章标题和摘要。'}</p>
       <div className='flex flex-wrap items-end gap-2'>
         <div className='grid min-w-[8.5rem] flex-1 gap-1.5'>
           <Label htmlFor='cover-ratio' className='text-muted-foreground text-xs'>画幅</Label>
@@ -89,7 +95,7 @@ export function CoverGenerator({ title, description, currentCover, onAdopt }: {
             </SelectContent>
           </Select>
         </div>
-        <Button type='button' className='shrink-0' disabled={pending || !prompt.trim()} onClick={run}>
+        <Button type='button' variant='outline' className='shrink-0' disabled={pending || !prompt.trim()} onClick={run}>
           {pending ? <Loader2 aria-hidden='true' className='animate-spin' /> : <Sparkles aria-hidden='true' />}
           {pending ? '生成中…' : candidate ? '重新生成' : '生成'}
         </Button>
@@ -120,7 +126,7 @@ export function CoverGenerator({ title, description, currentCover, onAdopt }: {
             ) : (
               <span className='flex gap-1.5'>
                 <Button type='button' variant='ghost' size='sm' onClick={() => setCandidate(null)}><X aria-hidden='true' />放弃</Button>
-                <Button type='button' size='sm' onClick={() => { onAdopt(candidate.url); setAdoptedUrl(candidate.url); }}><Check aria-hidden='true' />采用</Button>
+                <Button type='button' variant='outline' size='sm' onClick={() => { onAdopt(candidate.url); setAdoptedUrl(candidate.url); }}><Check aria-hidden='true' />采用</Button>
               </span>
             )}
           </figcaption>

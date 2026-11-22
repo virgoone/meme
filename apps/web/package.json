@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bun scripts/fetch-editor-widget.ts && vite build",
     "check-types": "tsc --noEmit",
-    "dev": "bun scripts/fetch-editor-widget.ts && vite --host 127.0.0.1 --port 3000",
+    "dev": "bun scripts/fetch-editor-widget.ts && node scripts/dev-web.mjs --host 127.0.0.1 --port 3000",
     "editor-widget:update-lock": "UPDATE_EDITOR_WIDGET_LOCK=1 bun scripts/fetch-editor-widget.ts"
   },
   "dependencies": {
